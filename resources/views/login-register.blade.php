@@ -2,6 +2,6 @@
 
 @section('content')
      
-  @livewire('login-register-user-controller')
 
+<h1>AL FIIIIIIIIINNNNNNNN!!!!!!!!!!</h1>
 @endsection
