@@ -7,7 +7,7 @@
     					<h3><b>Empleados</b></h3>
     				</div> 
     			</div>    		
-                @include('common.inputBuscarBtnNuevo')
+                @include('common.inputBuscarBtnNuevo', ['create' => 'Empleados_create'])
                 @include('common.alerts') <!-- mensajes -->
                 <div class="table-resposive scroll">
                     <table class="table table-hover table-checkable table-sm">
@@ -32,7 +32,7 @@
                                 <td>{{$r->fecha_nac}}</td>
                                 <td>{{$r->fecha_ingreso}}</td> -->
                                 <td class="text-center">
-                                    @include('common.actions') <!-- botons editar y eliminar -->
+                                     @include('common.actions', ['edit' => 'Empleados_edit', 'destroy' => 'Empleados_destroy']) <!--botones editar y eliminar -->            
                                 </td>
                             </tr>
                             @endforeach
@@ -42,7 +42,7 @@
             </div>
     	</div> 
     </div>
-
+    @can('Empleados_create')
 	<div class="col-sm-12 col-md-6 layout-spacing">
 		<div class="widget-content-area">
             <div class="widget-one">
@@ -104,6 +104,7 @@
             </div>
         </div>	
 	</div>
+    @endcan
 </div>
 
 <style type="text/css" scoped>

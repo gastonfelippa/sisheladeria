@@ -51,22 +51,12 @@
     <!--  BEGIN NAVBAR  -->
     <div class="header-container">
         <header class="header navbar navbar-expand-sm">
-
             <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></a>
-
-            <div class="nav-logo align-self-center">
-                <a class="navbar-brand" href="index.html"><img alt="logo" src="{{ asset('images/logoheladeria.png') }}"> <span class="navbar-brand-name">SisHeladería</span></a>
-            </div>
-
+            
             <ul class="navbar-item flex-row mr-auto">
-                <li class="nav-item align-self-center search-animated">
-                    <form class="form-inline search-full form-inline search" role="search">
-                        <div class="search-bar">
-                            <input type="text" class="form-control search-form-control  ml-lg-auto" placeholder="Buscar...">
-                        </div>
-                    </form>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search toggle-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </li>
+                <div class="nav-logo align-self-center">
+                @yield('logo')
+                </div>
             </ul>
 
             <ul class="navbar-item flex-row nav-dropdowns">           
@@ -83,7 +73,7 @@
                         <div class="media">
                             <img src="assets/img/90x90.jpg" class="img-fluid" alt="admin-profile">
                             <div class="media-body align-self-center">
-                                <h6>@guest Heladería @else {{Auth::user()->name }} @endguest</h6>
+                                <h6>@guest Heladería @else {{Auth::user()->nombre }}  @endguest</h6>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -101,7 +91,6 @@
                             </div>
                         </div>
                     </div>
-
                 </li>
             </ul>
         </header>
@@ -130,89 +119,123 @@
                 
                 <ul class="list-unstyled menu-categories" id="topAccordion">
                 <!-- ESTADÍSTICAS -->
+                @can('Estadisticas_index')
                     <li class="menu single-menu ">
                         <a href="#dashboard" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle autodroprown">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chart"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                                 <span>ESTADÍSTICAS</span>
                             </div>
-                        </a>                   
+                        </a>               
                     </li>
+                @endcan                
                 <!-- ABM -->
+                @can('Abm_index')
                     <li class="menu single-menu">
                         <a href="#" >
                             <div class="">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layout"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                                 <span>ABM</span>
                             </div>                           
                         </a>
                         <ul class="collapse submenu list-unstyled" id="components" data-parent="#topAccordion">
+                        @can('Productos_index')
                             <li>
                                 <a href="{{ url('productos') }}"> PRODUCTOS  </a>
                             </li>
-                            <li>
-                                <a href="{{ url('rubros') }}"> RUBROS  </a>
-                            </li>
+                        @endcan
+                        @can('Clientes_index')
                             <li>
                                 <a href="{{ url('clientes') }}"> CLIENTES  </a>
                             </li>
+                        @endcan
+                        @can('Rubros_index')
+                            <li>
+                                <a href="{{ url('rubros') }}"> RUBROS  </a>
+                            </li>
+                        @endcan
+                        @can('Empleados_index')
                             <li>
                                 <a href="{{ url('empleados') }}"> EMPLEADOS  </a>
-                            </li>
+                            </li>                            
+                        @endcan
+                        @can('Gastos_index')
                             <li>
                                 <a href="{{ url('gastos') }}"> GASTOS  </a>
                             </li>
+                        @endcan
                             <!-- <li>
                                 <a href="{{ url('tipogastos') }}"> TIPOS DE GASTOS  </a>
                             </li> -->
                         </ul>                         
                     </li>
-                <!-- CONFIG -->    
+                @endcan
+                <!-- CONFIG --> 
+                @can('Config_index')   
                     <li class="menu single-menu">
                         <a href="#components" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                                 <span>CONFIG</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
                         <ul class="collapse submenu list-unstyled" id="components" data-parent="#topAccordion">
+                        @can('Empresa_index')
                             <li>
-                                <a href="#">EMPRESA </a>
+                                <a href="{{ url('empresa') }}">EMPRESA </a>
                             </li>
+                        @endcan
+                        @can('Permisos_index')   
+                            <li>
+                                <a href="{{ url('permisos') }}">ROLES Y PERMISOS </a>
+                            </li>
+                        @endcan
                         </ul>
                     </li>
+                @endcan
                 <!-- FACTURAS -->
+                @can('Facturas_index')
                     <li class="menu single-menu">
                         <a href="{{ url('facturas') }}" >
                             <div class="">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                                 <span>FACTURAS</span>
                             </div>                           
                         </a>                        
                     </li>
+                @endcan
                 <!-- CAJA -->
+                @can('Caja_index')
                     <li class="menu single-menu">
                         <a href="#tables" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layout"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                                 <span>CAJA</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
                         <ul class="collapse submenu list-unstyled" id="tables"  data-parent="#topAccordion">
+                        @can('CorteDeCaja_index')
                             <li>
-                                <a href="#"> HACER CORTE </a>
+                                <a href="{{ url('cortedecaja') }}" > HACER CORTE </a>
                             </li>
+                        @endcan
+                        @can('MovimientosDiarios_index')
                             <li>
-                                <a href="#"> MOVIMIENTOS </a>
+                                <a href="{{ url('movimientos') }}"> MOVIMIENTOS DIARIOS</a>
                             </li>
+                        @endcan
+                        @can('CajaRepartidor_index')
                             <li>
                                 <a href="{{ url('cajarepartidor') }}"> REPARTIDOR </a>
                             </li>
+                        @endcan
                         </ul>
                     </li>
+                @endcan
                 <!-- COTIZACIONES -->
+                @can('Cotizaciones_index')
                     <li class="menu single-menu">
                         <a href="#forms" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -229,7 +252,9 @@
                             </li>                          
                          </ul>
                     </li>
+                @endcan
                 <!-- REPORTES -->
+                @can('Reportes_index')
                     <li class="menu single-menu">
                         <a href="#page" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -240,17 +265,18 @@
                         </a>
                         <ul class="collapse submenu list-unstyled" id="page"  data-parent="#topAccordion">
                             <li>
-                                <a href="#"> VENTAS DEL DIA </a>
+                                <a href="{{ url('ventasdiarias') }}"> VENTAS DEL DIA </a>
                             </li>
+                            @can('VentasPorFechas_index')
                             <li>
-                                <a  href="#"> VENTAS POR FECHAS </a>
-                            </li>
-                            <li>
-                                <a href="#"> COTIZACIONES </a>
-                            </li>                            
+                                <a  href="{{ url('ventasporfechas') }}"> VENTAS POR FECHAS </a>
+                            </li>  
+                            @endcan                        
                         </ul>
                     </li>
+                @endcan
                 <!-- USUARIOS -->
+                @can('Usuarios_index')
                     <li class="menu single-menu">
                         <a href="#more" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -259,15 +285,14 @@
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
+                        
                         <ul class="collapse submenu list-unstyled" id="more" data-parent="#topAccordion">
                             <li>
-                                <a href="#">OPERADORES</a>
-                            </li>
-                            <li>
-                                <a href="{{url('clientes')}}"> CLIENTES </a>
-                            </li>                    
+                                <a href="{{url('usuarios')}}">OPERADORES</a>
+                            </li>                   
                         </ul>
                     </li>
+                @endcan
                 </ul>
             </nav>
         </div>
@@ -334,7 +359,7 @@
 
 
 
- <!-- <script type="text/javascript">
+  <!-- <script>
      window.livewire.on('msg-ok', msgok => {
         toastr.success(msg-ok, "info")
      });

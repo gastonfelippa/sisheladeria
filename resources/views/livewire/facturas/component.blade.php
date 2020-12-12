@@ -13,20 +13,37 @@
                 <div class="row">
                     <div class="col-sm-6 col-md-4">
                         <h6>Fecha {{\Carbon\Carbon::now()->format('d-m-Y')}} </h6>
-                    </div>
+                    </div>                    
                     <div class="col-sm-6 col-md-8 text-right">
-                        <button type="button" wire:click="dejar_pendiente()" onclick="setfocus('cantidad')" 
-                            class="btn btn-dark">
-                            Dejar Pendiente   
-                        </button>
-                        <button type="button" wire:click="terminar_factura()" onclick="setfocus('cantidad')" 
-                            class="btn btn-primary">
-                            Cobrar   
-                        </button>
-                        <button type="button" class="btn btn-success">
-                            <a href="{{url('pdfFactDel',array($id_factura))}}">
-                            Imprimir</a>
-                        </button>
+                        @if($dejar_pendiente)
+                            <button id="pendiente" type="button" wire:click="dejar_pendiente()" onclick="setfocus('barcode')" 
+                                class="btn btn-dark" enabled>
+                                Dejar Pendiente   
+                            </button>
+                        @else
+                            <button id="pendiente" type="button" wire:click="dejar_pendiente()" onclick="setfocus('barcode')" 
+                                class="btn btn-dark" disabled>
+                                Dejar Pendiente   
+                            </button>
+                        @endif 
+                        @if($total == 0)                       
+                            <button type="button" wire:click="terminar_factura()" onclick="setfocus('barcode')" 
+                                class="btn btn-primary" disabled>
+                                Cobrar   
+                            </button>
+                            <button type="button" class="btn btn-success" disabled>                                
+                                Imprimir
+                            </button>
+                        @else
+                            <button type="button" wire:click="terminar_factura()" onclick="setfocus('barcode')" 
+                                class="btn btn-primary" enabled>
+                                Cobrar   
+                            </button>
+                            <button type="button" class="btn btn-success" enabled>
+                                <a href="{{url('pdfFactDel',array($id_factura))}}">
+                                Imprimir</a>
+                            </button>
+                        @endif
                     </div>
                 </div>
             @if($grabar_encabezado)
@@ -82,7 +99,7 @@
                         <span class="badge badge-primary ml-4"
                             wire:click.prevent="modificarEncabezado()">Modificar Cli/Rep</span>
                     </div>
-                </div>
+                </div>                
             @endif
 			@include('common.alerts')
 				<div class="table-responsive scroll">
@@ -99,12 +116,12 @@
 						<tbody>
 							@foreach($info as $r)
 							<tr class="table-danger">
-								<td class="text-center">{{number_format($r->cantidad,0)}}</td>
+								<td class="text-center">{{number_format($r->cantidad,2)}}</td>
 								<td class="text-left">{{$r->producto}}</td>
 								<td class="text-right">{{$r->precio}}</td>
 								<td class="text-right">{{number_format($r->importe,2)}}</td>
 								<td class="text-center">
-									@include('common.actions')
+									@include('common.actions', ['edit' => 'Facturas_edit_item', 'destroy' => 'Facturas_destroy_item'])
 								</td>
 							</tr>
 							@endforeach
@@ -118,40 +135,48 @@
         <div class="widget-content-area">
             <div class="widget-one">
                 <h5>
-                    <b>@if($selected_id ==0) Agregar Producto  @else Editar Producto @endif  </b>
+                    <b>@if($selected_id ==0) Agregar Item  @else Editar Item @endif  </b>
                 </h5>
                 <form>
                     @include('common.messages')    
                     <div class="row">
                         <div class="form-group col-sm-12 col-md-2">
-                            <label >Cantidad</label>
-                            <input id="cantidad" wire:model.lazy="cantidad" onclick.keydown.enter="setfocus('productos')" type="text" 
-                                class="form-control form-control-sm">
+                            <label>Cantidad</label>
+                            <input id="cantidad" wire:model.lazy="cantidad" onclick.keydown.enter="setfocus('barcode')" type="text" 
+                                class="form-control form-control-sm text-center">
+                        </div> 
+                        <div class="form-group col-sm-12 col-md-3">
+                            <label >Código</label>
+                            <input id="barcode" wire:model.lazy="barcode"  type="text" 
+                                onclick.keydown.enter="setfocus('guardar')" class="form-control form-control-sm">
                         </div>
-                        <div class="form-group col-sm-12 col-md-6">
-                            <label>Productos</label><span class="badge badge-primary ml-4" >
-                                    <a href="{{ url('productos') }}" style="color: white">Agregar</a></span>  
+                        <div class="form-group col-sm-12 col-md-4">
+                            <label>Productos</label>
+                            @can('Facturas_create_producto')
+                            <span class="badge badge-primary ml-4" >
+                                    <a href="{{ url('productos') }}" style="color: white">Agregar</a></span>                            
+                            @endcan
                             <select id="producto" wire:model="producto" class="form-control form-control-sm text-center">
                                 <option value="Elegir" >Elegir</option>
                                 @foreach($productos as $t)
-                                <option value="{{ $t->id }}" wire:click="buscarProducto({{$t->id}})"
+                                <option value="{{ $t->id }}" wire:click.prevent="buscarProducto({{$t->codigo}})"
                                     wire:tab="buscarProducto({{$t->id}})">
                                     {{$t->descripcion}}                         
                                 </option> 
                                 @endforeach                               
                             </select>			               
                         </div>            
-                        <div class="form-group col-sm-12 col-md-4">
+                        <div class="form-group col-sm-12 col-md-3">
                             <label >Precio Unitario</label>
-                            <input wire:model="precio" type="text" class="form-control form-control-sm" disabled>
+                            <input wire:model.lazy="precio" type="text" class="form-control form-control-sm" disabled>
                         </div>
                     </div>
                     <div class="row ">
                         <div class="col-12 mt-1 text-left">
-                            <button type="button" wire:click="resetInput()" onclick="setfocus('cantidad')" class="btn btn-dark mr-1">
+                            <button type="button" wire:click="resetInput()" onclick="setfocus('barcode')" class="btn btn-dark mr-1">
                                 <i class="mbri-left"></i> Cancelar
                             </button>
-                            <button type="button" wire:click="StoreOrUpdate()" onclick="setfocus('cantidad')" class="btn btn-primary ml-2">
+                            <button id="guardar" type="button" wire:click="StoreOrUpdate()" onclick="setfocus('barcode')" class="btn btn-primary ml-2">
                                 <i class="mbri-success"></i> Guardar
                             </button>
                         </div>
@@ -163,7 +188,7 @@
             <div class="widget-one"> 
                 <div class="row m-1 rounded">
                     <img src="images/helados.jpg" class="img-fluid" 
-                        alt="Responsive image" style="height:150px;width:555px">
+                        alt="Responsive image" style="height:150px;width:585px">
                 </div>
             </div>
         </div>         
@@ -195,30 +220,24 @@
         closeOnConfirm: false
     },
 		function() {
-			console.log('ID', id);
 			window.livewire.emit('deleteRow', id)    
 			toastr.success('info', 'Registro eliminado con éxito')
 			swal.close()   
         })
     }
+
     function buscarProducto(id)
     { 
         window.livewire.emit(buscarProducto(id))
     }
-    // function buscarDomicilio(id)
-    // { 
-    //     console.log('ID', id);
-    //     window.livewire.emit(buscarDomicilio(id))
-    // }
+
     window.onload = function() {
-        document.getElementById("cantidad").focus();
+        document.getElementById("barcode").focus();
+        document.getElementById("cantidad").value="1";
     }
+
     function setfocus($id) {
         document.getElementById($id).focus();
     }
-    function habilitarCombos(){        
-        $('#comboCliente').removeAttr('disabled');
-        $('#comboRepartidor').removeAttr('disabled');        
-    };
 
 </script>

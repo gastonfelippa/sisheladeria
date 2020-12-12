@@ -43,7 +43,7 @@ return [
     */
 
     'asset_url'  => null,
-   // 'asset_url'  => 'http://sisheladeria.test:8080/public',
+   // 'asset_url'  => 'http://sisheladeria.test:8080',
 
 
 

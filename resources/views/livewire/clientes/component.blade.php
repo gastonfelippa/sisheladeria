@@ -6,8 +6,8 @@
     				<div class="col-xl-12 text-center">
     					<h3><b>Clientes</b></h3>
     				</div> 
-    			</div>    		
-				@include('common.inputBuscarBtnNuevo')
+    			</div>    	
+				@include('common.inputBuscarBtnNuevo', ['create' => 'Clientes_create'])
 				@include('common.alerts') <!-- mensajes -->
 				<div class="table-responsive scroll">
 					<table class="table table-hover table-checkable table-sm mb-4">
@@ -16,7 +16,9 @@
 								<th class="text-center">NOMBRE</th>
 								<th class="text-center">DIRECCIÓN</th>
 								<th class="text-center">TELÉFONO</th>
+								@can('Clientes_edit')
 								<th class="text-center">ACCIONES</th>
+								@endcan
 							</tr>
 						</thead>
 						<tbody>
@@ -26,7 +28,7 @@
 								<td class="text-capitalize">{{$r->direccion}}</td>
 								<td class="text-center">{{$r->telefono}}</td>
 								<td class="text-center">
-									@include('common.actions') <!-- botons editar y eliminar -->
+									@include('common.actions', ['edit' => 'Clientes_edit', 'destroy' => 'Clientes_destroy']) <!-- botones editar y eliminar -->
 								</td>
 							</tr>
 							@endforeach
@@ -36,7 +38,7 @@
 			</div>
     	</div> 
     </div>
-
+	@can('Clientes_create')
 	<div class="col-sm-12 col-md-6 layout-spacing">
 		<div class="widget-content-area">
             <div class="widget-one">
@@ -78,6 +80,7 @@
             </div>
         </div>	
 	</div>
+	@endcan
 </div>
 
 <style type="text/css" scoped>

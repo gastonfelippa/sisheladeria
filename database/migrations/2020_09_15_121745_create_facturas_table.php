@@ -16,11 +16,14 @@ class CreateFacturasTable extends Migration
         Schema::create('facturas', function (Blueprint $table) {
             $table->id();
             
-            $table->unsignedBigInteger('cliente_id');
+            $table->unsignedBigInteger('cliente_id')->nullable();
             $table->foreign('cliente_id')->references('id')->on('clientes');
 
-            $table->unsignedBigInteger('repartidor_id');
+            $table->unsignedBigInteger('repartidor_id')->nullable();
             $table->foreign('repartidor_id')->references('id')->on('empleados');
+
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
          
             $table->decimal('importe',10,2);
             $table->enum('estado', ['ABIERTA','PAGADA', 'PENDIENTE', 'CTACTE', 'ANULADA'])->default('ABIERTA');

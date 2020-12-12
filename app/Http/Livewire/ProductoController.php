@@ -9,12 +9,19 @@ use App\Rubro;
 
 class ProductoController extends Component
 {
-	public $rubro ='Elegir', $descripcion, $estado='DISPONIBLE', $precio_costo, $precio_venta;
-	public $selected_id = null, $search, $rubros;
+	public $rubro ='Elegir', $descripcion, $estado='DISPONIBLE', $precio_costo=null, $precio_venta;
+	public $codigo, $codigo_sugerido, $selected_id = null, $search, $rubros;
 	
 	public function render()
 	{
 		$this->rubros = Rubro::all();
+
+		if($this->selected_id == null) {
+			$nuevo_codigo = Producto::select('id')->orderBy('id','desc')->first();
+			$this->codigo_sugerido = $nuevo_codigo->id + 1;
+		}else{
+			$this->codigo_sugerido = $this->selected_id;
+		}
 
 		if(strlen($this->search) > 0) 
 		{
@@ -50,8 +57,9 @@ class ProductoController extends Component
 
 	public function resetInput()
 	{
+		$this->codigo = '';
 		$this->descripcion = '';
-		$this->precio_costo = '';
+		$this->precio_costo = null;
 		$this->precio_venta = '';
 		$this->rubro = 'Elegir';
 		$this->estado = 'DISPONIBLE';
@@ -63,7 +71,8 @@ class ProductoController extends Component
 	{
 		$record = Producto::find($id);
 		$this->selected_id = $id;
-		$this->rubro = $record->rubro_id;
+		$this->rubro = $record->rubro_id;		
+		$this->codigo = $record->codigo;
 		$this->descripcion = $record->descripcion;
 		$this->precio_costo = $record->precio_costo;
 		$this->precio_venta = $record->precio_venta;
@@ -78,32 +87,48 @@ class ProductoController extends Component
 		
 		$this->validate([
 			'rubro' => 'required',
+			'codigo' => 'required',
 			'descripcion' => 'required',
-			'precio_costo' => 'required',
 			'precio_venta' => 'required',
 			'estado' => 'required'
+		//	'precio_costo' => 'required',
         ]);
         
-        //valida si existe otro cajón con el mismo nombre (edicion de productos)
+        //valida si existe otro producto con el mismo nombre (edicion de productos)
         if($this->selected_id > 0) {
             $existe = Producto::where('descripcion', $this->descripcion)
                 ->where('id', '<>', $this->selected_id)
-                ->select('descripcion')
                 ->get();
         
             if( $existe->count() > 0) {
                 session()->flash('msg-error', 'Ya existe el Producto');
                 $this->resetInput();
                 return;
-            }
+			}
+			//valida si existe otro producto con el mismo código (edicion de productos)
+			$existe = Producto::where('codigo', $this->codigo)
+				->where('id', '<>', $this->selected_id)
+				->get();
+	
+			if( $existe->count() > 0) {
+				session()->flash('msg-error', 'Ya existe el Código');
+				$this->resetInput();
+				return;
+		}
         }else{
-            //valida si existe otro cajón con el mismo nombre (nuevos registros)
-            $existe = Producto::where('descripcion', $this->descripcion)
-                ->select('descripcion')
-                ->get();
+            //valida si existe otro producto con el mismo nombre (nuevos registros)
+			$existe = Producto::where('descripcion', $this->descripcion)->get();
         
             if($existe->count() > 0 ) {
                 session()->flash('msg-error', 'Ya existe el Producto');
+                $this->resetInput();
+                return;
+			}
+			//valida si existe otro producto con el mismo código de barras (nuevos registros)
+			$existe = Producto::where('codigo', $this->codigo)->get();
+        
+            if($existe->count() > 0 ) {
+                session()->flash('msg-error', 'Ya existe el Código');
                 $this->resetInput();
                 return;
             }
@@ -112,6 +137,7 @@ class ProductoController extends Component
 		if($this->selected_id <=0)
 		{
 			$cajon = Producto::create([
+				'codigo' => $this->codigo,
 				'descripcion' => ucwords($this->descripcion),
 				'precio_costo' => $this->precio_costo,
 				'precio_venta' => $this->precio_venta,
@@ -120,12 +146,15 @@ class ProductoController extends Component
 			]);
 		}
 		else {
+		//	dd($this->precio_costo);
 			$record = Producto::find($this->selected_id);
+				if ($this->precio_costo == '') $this->precio_costo = 0.00;
 			$record->update([
+				'codigo' => $this->codigo,
 				'descripcion' => ucwords($this->descripcion),
-				'precio_costo' => $this->precio_costo,
+				'precio_costo' => $this->precio_costo,			
 				'precio_venta' => $this->precio_venta,
-				'frubro_id' => $this->rubro,
+				'rubro_id' => $this->rubro,
 				'estado' => $this->estado
 			]);
 		}

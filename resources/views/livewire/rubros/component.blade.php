@@ -7,7 +7,7 @@
     					<h3><b>Rubros</b></h3>
     				</div> 
     			</div>    		
-				@include('common.inputBuscarBtnNuevo')
+				@include('common.inputBuscarBtnNuevo', ['create' => 'Rubros_create'])
 				@include('common.alerts') <!-- mensajes -->
 				<div class="table-responsive scroll">
 					<table class="table table-hover table-checkable table-sm">
@@ -24,7 +24,7 @@
 								<td>{{$r->descripcion}}</td>
 								<td>{{$r->margen}}</td>
 								<td class="text-center">
-									@include('common.actions') <!-- botons editar y eliminar -->
+									@include('common.actions', ['edit' => 'Rubros_edit', 'destroy' => 'Rubros_destroy']) <!-- botons editar y eliminar -->
 								</td>
 							</tr>
 							@endforeach
@@ -34,7 +34,7 @@
 			</div>
     	</div> 
     </div>
-
+	@can('Rubros_create')
 	<div class="col-sm-12 col-md-6 layout-spacing">
 		<div class="widget-content-area">
             <div class="widget-one">
@@ -66,6 +66,7 @@
             </div>
         </div>	
 	</div>
+	@endcan
 </div>
 
 <style type="text/css" scoped>
