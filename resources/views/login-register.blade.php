@@ -16,6 +16,6 @@
 
 @section('content')
      
-  @livewire('producto-controller')
+  @livewire('login-register-user-controller')
 
 @endsection
