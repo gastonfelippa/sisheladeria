@@ -8,11 +8,11 @@
 
 
 
-@section('logo')
+<!-- @section('logo')
      
   @livewire('logo-controller')
 
-@endsection
+@endsection -->
 
 @section('content')
      
