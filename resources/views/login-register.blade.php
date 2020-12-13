@@ -1,7 +1,21 @@
 @extends('layouts.app')
 
-@section('content')
+<!-- @section('content')
      
 
 <h1>AL FIIIIIIIIINNNNNNNN!!!!!!!!!!</h1>
+@endsection -->
+
+
+
+@section('logo')
+     
+  @livewire('logo-controller')
+
+@endsection
+
+@section('content')
+     
+  @livewire('producto-controller')
+
 @endsection
