@@ -1,10 +1,6 @@
 <!-- @extends('layouts.app') -->
 
-<!-- @section('logo')
-     
-  @livewire('logo-controller')
 
-@endsection -->
 
 @section('content')
      
