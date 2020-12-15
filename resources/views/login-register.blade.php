@@ -1,18 +1,10 @@
 @extends('layouts.app')
 
-<!-- @section('content')
-     
-
-<h1>AL FIIIIIIIIINNNNNNNN!!!!!!!!!!</h1>
-@endsection -->
-
-
-
-<!-- @section('logo')
+@section('logo')
      
   @livewire('logo-controller')
 
-@endsection -->
+@endsection
 
 @section('content')
      
