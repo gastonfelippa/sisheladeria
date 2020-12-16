@@ -31,8 +31,7 @@ class UsuarioController extends Component
                 ->paginate($this->pagination);
                 
                 return view('livewire.usuarios.component', ['info' => $info]);
-            }
-        
+            }        
     }
     
     public function updatingSearch()
