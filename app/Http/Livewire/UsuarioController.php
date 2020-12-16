@@ -11,7 +11,7 @@ class UsuarioController extends Component
 {
     use WithPagination;
 
-    public $tipo = "Elegir", $nombre, $apellido, $telefono, $movil, $email, $direccion, $password;
+    public $tipo = "Elegir", $nombre, $apellido, $telefono, $movil, $email, $direccion = "---", $password;
     public $selected_id, $search, $login = 0;
     public $action = 1, $pagination = 5;
 
