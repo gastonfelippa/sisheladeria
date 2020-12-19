@@ -13,9 +13,9 @@ class LoginRegisterUserController extends Component
     {
         // $user = User::all();
         // if($user->count() > 0)
-        return view ('auth.login');
+        // return view ('auth.login');
         // else
-        // return view ('auth.register');
+        return view ('auth.register');
 
     }
 
