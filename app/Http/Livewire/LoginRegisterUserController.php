@@ -11,10 +11,10 @@ class LoginRegisterUserController extends Component
     
     public function render()
     {
-        // $user = User::all();
-        // if($user->count() > 0)
-        // return view ('auth.login');
-        // else
+        $user = User::all();
+        if($user->count() > 0)
+        return view ('auth.login');
+        else
         return view ('auth.register');
 
     }
