@@ -123,6 +123,6 @@ class UserSeeder extends Seeder
         ]);
 
         $user = User::find(1);
-        $user->assingRole('SuperAdmin');
+        $user->assignRole('SuperAdmin');
     }
 }
