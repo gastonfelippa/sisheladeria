@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCajareparidorTable extends Migration
+class CreateCajarepartidorTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,17 @@ class CreateCajareparidorTable extends Migration
      */
     public function up()
     {
-        Schema::create('cajareparidor', function (Blueprint $table) {
+        Schema::create('cajarepartidor', function (Blueprint $table) {
             $table->id();
+            $table->decimal('importe', 10,2)->default(0);
+            $table->enum('tipo', ['Ingreso','Gasto'])->default('Ingreso');
+            $table->enum('estado', ['Pendiente','Terminado'])->default('Pendiente');
+            $table->unsignedBigInteger('gasto_id');
+            $table->foreign('gasto_id')->references('id')->on('gastos');
+
+            $table->unsignedBigInteger('empleado_id');
+            $table->foreign('empleado_id')->references('id')->on('empleados');
+            
             $table->timestamps();
         });
     }
