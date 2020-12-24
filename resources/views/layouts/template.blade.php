@@ -171,7 +171,7 @@
                     </li>
                 @endcan
                 <!-- CONFIG --> 
-                @can('Config_index')   
+                <!-- @can('Config_index')    -->
                     <li class="menu single-menu">
                         <a href="#components" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -181,19 +181,19 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
                         <ul class="collapse submenu list-unstyled" id="components" data-parent="#topAccordion">
-                        @can('Empresa_index')
+                        <!-- @can('Empresa_index') -->
                             <li>
                                 <a href="{{ url('empresa') }}">EMPRESA </a>
                             </li>
-                        @endcan
-                        @can('Permisos_index')   
+                        <!-- @endcan -->
+                        <!-- @can('Permisos_index')    -->
                             <li>
                                 <a href="{{ url('permisos') }}">ROLES Y PERMISOS </a>
                             </li>
-                        @endcan
+                        <!-- @endcan -->
                         </ul>
                     </li>
-                @endcan
+                <!-- @endcan -->
                 <!-- FACTURAS -->
                 @can('Facturas_index')
                     <li class="menu single-menu">

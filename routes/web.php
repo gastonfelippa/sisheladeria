@@ -35,12 +35,12 @@ Route::view('gastos', 'gastos')->middleware('permission:Gastos_index');
 Route::view('movimientos', 'movimientos')->middleware('permission:MovimientosDiarios_index');
 Route::view('cortedecaja', 'cortedecaja')->middleware('permission:CorteDeCaja_index');
 Route::view('cajarepartidor', 'cajarepartidor')->middleware('permission:CajaRepartidor_index');
-Route::view('empresa', 'empresa')->middleware('permission:Empresa_index');
 Route::view('ventasdiarias', 'ventasdiarias')->middleware('permission:VentasDiarias_index');
 Route::view('ventasporfechas', 'ventasporfechas')->middleware('permission:VentasPorFechas_index');
 Route::view('usuarios', 'usuarios')->middleware('permission:Usuarios_index');
-Route::view('permisos', 'permisos')->middleware('permission:Usuarios_index');
 
+Route::view('permisos', 'permisos');
+Route::view('empresa', 'empresa');
 
 
 //rutas de impresion
