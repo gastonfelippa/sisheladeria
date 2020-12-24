@@ -39,8 +39,8 @@ Route::view('ventasdiarias', 'ventasdiarias')->middleware('permission:VentasDiar
 Route::view('ventasporfechas', 'ventasporfechas')->middleware('permission:VentasPorFechas_index');
 Route::view('usuarios', 'usuarios')->middleware('permission:Usuarios_index');
 
-Route::view('permisos', 'permisos');
-Route::view('empresa', 'empresa');
+Route::view('permisos', 'permisos')->middleware('permission:Usuarios_index');
+Route::view('empresa', 'empresa')->middleware('permission:Empresa_index');
 
 
 //rutas de impresion
