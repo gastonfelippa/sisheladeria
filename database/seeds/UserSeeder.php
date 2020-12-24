@@ -107,7 +107,7 @@ class UserSeeder extends Seeder
             'Facturas_edit_item',
             'Facturas_destroy_item',
             'Caja_index',
-            'HacerCortes_index',
+            'CorteDeCaja_index',
             'MovimientosDiarios_index',
             'CajaRepartidor_index',
             'Estadisticas_index',
@@ -115,7 +115,11 @@ class UserSeeder extends Seeder
             'Config_index',
             'Reportes_index',
             'VentasDiarias_index',
-            'VentasPorFechas_index'
+            'VentasPorFechas_index',
+            'Movimientos_index',
+            'Movimientos_create',
+            'Movimientos_edit',
+            'Movimientos_destroy'
         ]);
 
         $user = User::find(1);
