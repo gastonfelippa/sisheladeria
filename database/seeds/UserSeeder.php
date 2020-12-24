@@ -53,7 +53,7 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'Facturas_destroy_item']);
 
         Permission::create(['name' => 'Caja_index']);
-        Permission::create(['name' => 'HacerCorte_index']);
+        Permission::create(['name' => 'CorteDeCaja_index']);
         Permission::create(['name' => 'MovimientosDiarios_index']);
         Permission::create(['name' => 'CajaRepartidor_index']);
 
@@ -65,6 +65,11 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'Usuarios_create']);
         Permission::create(['name' => 'Usuarios_edit']);
         Permission::create(['name' => 'Usuarios_destroy']);
+
+        Permission::create(['name' => 'Movimientos_index']);
+        Permission::create(['name' => 'Movimientos_create']);
+        Permission::create(['name' => 'Movimientos_edit']);
+        Permission::create(['name' => 'Movimientos_destroy']);
 
         //lista de roles
         $superadmin = Role::create(['name' => 'SuperAdmin']);      
