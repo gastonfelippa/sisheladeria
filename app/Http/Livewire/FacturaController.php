@@ -74,13 +74,15 @@ class FacturaController extends Component
                 $this->dejar_pendiente = false;
             }
         }
+        $info = DetFactura::all();
 
-        $info = DetFactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
-                ->leftjoin('productos as p','p.id','detfacturas.producto_id')
-                ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
-                ->where('detfacturas.factura_id', $this->id_factura)
-                ->orderBy('detfacturas.id', 'asc')->get();  
-
+        if($info->count() == 0){
+            $info = DetFactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
+                    ->leftjoin('productos as p','p.id','detfacturas.producto_id')
+                    ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
+                    ->where('detfacturas.factura_id', $this->id_factura)
+                    ->orderBy('detfacturas.id', 'asc')->get();  
+        }    
         $this->total = 0;
 
         foreach ($info as $i)
