@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\DetFactura;
+use App\Detfactura;
 use App\Producto;
 use App\Factura;
 use App\Cliente;
@@ -74,10 +74,10 @@ class FacturaController extends Component
                 $this->dejar_pendiente = false;
             }
         }
-        $info = DetFactura::all();
+        $info = Detfactura::all();
 
         if($info->count() == 0){
-            $info = DetFactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
+            $info = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
                     ->leftjoin('productos as p','p.id','detfacturas.producto_id')
                     ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
                     ->where('detfacturas.factura_id', $this->id_factura)
@@ -245,17 +245,17 @@ class FacturaController extends Component
                 }
 
                 $idFactura = Factura::where('estado', 'like', 'ABIERTA')->select('id')->get();
-                $existe = DetFactura::select('id')          //buscamos si el producto ya está cargado
+                $existe = Detfactura::select('id')          //buscamos si el producto ya está cargado
                                     ->where('factura_id', 'like', $idFactura[0]->id)
                                     ->where('producto_id', 'like', $this->producto)->get();
                 if ($existe->count() > 0){
-                    $edit_cantidad = DetFactura::find($existe[0]->id); 
+                    $edit_cantidad = Detfactura::find($existe[0]->id); 
                     $nueva_cantidad = $edit_cantidad->cantidad + $this->cantidad; 
                     $edit_cantidad->update([                //actualizamos solo la cantidad                                      
                         'cantidad' => $nueva_cantidad
                     ]);
                 }else{
-                    $add_item = DetFactura::create([         //creamos un nuevo detalle
+                    $add_item = Detfactura::create([         //creamos un nuevo detalle
                         'factura_id' => $idFactura[0]->id,
                         'producto_id' => $this->producto,
                         'cantidad' => $this->cantidad,
@@ -348,7 +348,7 @@ class FacturaController extends Component
     public function destroy($id) //eliminar / delete / remove
     {
         if($id) {
-            $record = DetFactura::where('id', $id);
+            $record = Detfactura::where('id', $id);
             $record->delete();
             $this->resetInput();
             $this->emit('msg-ok','Registro eliminado con éxito');
