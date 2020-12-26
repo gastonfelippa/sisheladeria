@@ -17,8 +17,13 @@ class ProductoController extends Component
 		$this->rubros = Rubro::all();
 
 		if($this->selected_id == null) {
-			$nuevo_codigo = Producto::select('id')->orderBy('id','desc')->first();
-			$this->codigo_sugerido = $nuevo_codigo->id + 1;
+			$nuevo_codigo = Producto::all();
+			if ($nuevo_codigo->count == 0){
+				$this->codigo_sugerido = 1;
+			}else{
+				$nuevo_codigo = Producto::select('id')->orderBy('id','desc')->first();
+				$this->codigo_sugerido = $nuevo_codigo->id + 1;
+			}
 		}else{
 			$this->codigo_sugerido = $this->selected_id;
 		}
