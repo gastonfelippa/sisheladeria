@@ -18,7 +18,7 @@ class ProductoController extends Component
 
 		if($this->selected_id == null) {
 			$nuevo_codigo = Producto::all();
-			if ($nuevo_codigo->count == 0){
+			if ($nuevo_codigo->count() == 0){
 				$this->codigo_sugerido = 1;
 			}else{
 				$nuevo_codigo = Producto::select('id')->orderBy('id','desc')->first();

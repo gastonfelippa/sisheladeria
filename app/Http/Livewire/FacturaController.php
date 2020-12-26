@@ -76,7 +76,7 @@ class FacturaController extends Component
         }
         $info = Detfactura::all();
 
-        if($info->count() == 0){
+        if($info->count() > 0){
             $info = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
                     ->leftjoin('productos as p','p.id','detfacturas.producto_id')
                     ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
