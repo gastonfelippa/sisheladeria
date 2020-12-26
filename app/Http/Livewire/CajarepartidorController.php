@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Factura;
 use App\Cliente;
 use App\Empleado;
-use App\DetFactura;
+use App\Detfactura;
 use App\Producto;
 use App\Gasto;
 use App\Cajarepartidor;
@@ -103,7 +103,7 @@ class CajarepartidorController extends Component
         $this->action = 2;
         $this->editarFactura = $id;
         $this->nombreCliente = $cliente;
-        $this->infoDetalle = DetFactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
+        $this->infoDetalle = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
             ->leftjoin('productos as p','p.id','detfacturas.producto_id')
             ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
             ->where('detfacturas.factura_id', $id)
@@ -124,7 +124,7 @@ class CajarepartidorController extends Component
 
     public function editDel($id)
     {
-        $record = DetFactura::find($id);
+        $record = Detfactura::find($id);
         $this->selected_id = $id;
         $this->cantidadEdit = $record->cantidad;
         $this->productoEdit = $record->producto_id;
@@ -162,7 +162,7 @@ class CajarepartidorController extends Component
         ]);
         //valida si se quiere modificar o grabar
         if($this->selected_id > 0) {
-            $record = DetFactura::find($this->selected_id);
+            $record = Detfactura::find($this->selected_id);
             $record->update([
                 'cantidad' => $this->cantidadEdit,
                 'producto_id' => $this->productoEdit,
@@ -171,7 +171,7 @@ class CajarepartidorController extends Component
         }else {            
             DB::begintransaction();         //iniciar transacción para grabar
             try{
-                $cajon = DetFactura::create([
+                $cajon = Detfactura::create([
                     'factura_id' => $this->editarFactura,
                     'cantidad' => $this->cantidadEdit,
                     'producto_id' => $this->productoEdit,
@@ -230,7 +230,7 @@ class CajarepartidorController extends Component
     public function destroyDel($id) //eliminar item
     {
         if($id) {
-            $record = DetFactura::where('id', $id);
+            $record = Detfactura::where('id', $id);
             $record->delete();
 
             $this->verDetalle($this->editarFactura, $this->nombreCliente);
