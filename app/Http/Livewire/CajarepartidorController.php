@@ -186,7 +186,7 @@ class CajarepartidorController extends Component
             }catch (\Exception $e){
                 DB::rollback();             //en caso de error, deshacemos para no generar inconsistencia de datos
                 $status = $e->getMessage();
-                session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
+                session()->flash('msg-error',$status);
             }
         }
         $this->verDetalle($this->editarFactura, $this->nombreCliente);
