@@ -18,7 +18,7 @@ class CreateCajarepartidorTable extends Migration
             $table->decimal('importe', 10,2)->default(0);
             $table->enum('tipo', ['Ingreso','Gasto'])->default('Ingreso');
             $table->enum('estado', ['Pendiente','Terminado'])->default('Pendiente');
-            $table->unsignedBigInteger('gasto_id');
+            $table->unsignedBigInteger('gasto_id')->default(null)->nullable();
             $table->foreign('gasto_id')->references('id')->on('gastos');
 
             $table->unsignedBigInteger('empleado_id');

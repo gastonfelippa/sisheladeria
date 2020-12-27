@@ -76,8 +76,13 @@ class UserSeeder extends Seeder
         $admin = Role::create(['name' => 'Admin']);
         $empleado = Role::create(['name' => 'Empleado']);
         $cliente = Role::create(['name' => 'Cliente']);      
-
+        
         $superadmin->givePermissionTo([
+            'Estadisticas_index',
+            'Abm_index',
+            'Config_index',
+            'Empresa_index',
+            'Permisos_index',
             'Productos_index',
             'Productos_create',
             'Productos_edit',
@@ -98,10 +103,6 @@ class UserSeeder extends Seeder
             'Gastos_create',
             'Gastos_edit',
             'Gastos_destroy',
-            'Usuarios_index',
-            'Usuarios_create',
-            'Usuarios_edit',
-            'Usuarios_destroy',
             'Facturas_index',
             'Facturas_create_producto',
             'Facturas_edit_item',
@@ -110,17 +111,38 @@ class UserSeeder extends Seeder
             'CorteDeCaja_index',
             'MovimientosDiarios_index',
             'CajaRepartidor_index',
-            'Estadisticas_index',
-            'Abm_index',
-            'Config_index',
             'Reportes_index',
             'VentasDiarias_index',
             'VentasPorFechas_index',
+            'Usuarios_index',
+            'Usuarios_create',
+            'Usuarios_edit',
+            'Usuarios_destroy',
             'Movimientos_index',
             'Movimientos_create',
             'Movimientos_edit',
             'Movimientos_destroy'
         ]);
+
+        // $user = new User();
+        // $user->nombre = 'Admin';
+        // $user->apellido = 'Admin';
+        // $user->email = 'admin@gmail.com';
+        // $user->password = bcrypt('secret');
+        // $user->telefono = 0;
+        // $user->movil = 0;
+        // $user->direccion = '';
+        // $user->save();
+        User::create([
+            'nombre' => 'Admin',
+            'apellido'=> 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('secret'),
+            'telefono' => '0',
+            'movil' => '0',
+            'direccion' => ''
+        ]);
+     
 
         $user = User::find(1);
         $user->assignRole('SuperAdmin');

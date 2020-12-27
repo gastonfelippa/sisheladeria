@@ -19,7 +19,7 @@
                 </div>
             </div>
       
-            <div class="table-responsive">
+            <div class="table-responsive scroll">
                 <table id="tblRoles" class="table table-bordered table-hover table-striped table-checkable table-higlight-head mb-4">
                     <thead>
                         <tr>
@@ -79,3 +79,12 @@
         </div>
     </div>
 </div>
+
+<style type="text/css" scoped>
+.scroll{
+    position: relative;
+    height: 250px;
+    margin-top: .5rem;
+    overflow: auto;
+}
+</style>

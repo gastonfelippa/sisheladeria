@@ -299,6 +299,9 @@ class CajarepartidorController extends Component
                 $status = $e->getMessage();
                 session()->flash('msg-error', $status );
             }
+            // Field 'gasto_id' doesn't have a default value (SQL: insert into `cajarepartidor` 
+            // (`importe`, `tipo`, `estado`, `empleado_id`, `updated_at`, `created_at`) 
+            // values (1000, Ingreso, Pendiente, 1, 2020-12-26 21:17:14, 2020-12-26 21:17:14))
         }
         $this->resetInput();
     }
