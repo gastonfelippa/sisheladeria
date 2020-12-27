@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Factura;
 use App\Cliente;
 use App\Producto;
-use App\DetFactura;
+use App\Detfactura;
 use PDF;
 use DB;
 
@@ -36,7 +36,7 @@ class PdfController extends Controller
         $clientes  = Cliente::all();
         $productos = Producto::all();
       
-        $infoDetalle = DetFactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
+        $infoDetalle = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
           ->leftjoin('productos as p','p.id','detfacturas.producto_id')
           ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
           ->where('detfacturas.factura_id', $id)
