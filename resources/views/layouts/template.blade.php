@@ -132,14 +132,14 @@
                 <!-- ABM -->
                 @can('Abm_index')
                     <li class="menu single-menu">
-                        <a href="#" >
+                        <a href="#abm" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layout"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                                 <span>ABM</span>
                             </div>  
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>                      
                         </a>
-                        <ul class="collapse submenu list-unstyled" id="components" data-parent="#topAccordion">
+                        <ul class="collapse submenu list-unstyled" id="abm" data-parent="#topAccordion">
                         @can('Productos_index')
                             <li>
                                 <a href="{{ url('productos') }}"> PRODUCTOS  </a>
