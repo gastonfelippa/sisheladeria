@@ -20,7 +20,7 @@
             </div>
       
             <div class="table-responsive scroll">
-                <table id="tblRoles" class="table table-bordered table-hover table-striped table-checkable table-higlight-head mb-4">
+                <table id="tblRoles" class="table table-hover table-checkable table-sm">
                     <thead>
                         <tr>
                             <th class="text-center">DESCRIPCIÓN</th>

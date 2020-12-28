@@ -133,11 +133,12 @@ class UserSeeder extends Seeder
         // $user->movil = 0;
         // $user->direccion = '';
         // $user->save();
+
         User::create([
             'nombre' => 'Admin',
             'apellido'=> 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => bcrypt('secret'),
+            'password' => bcrypt('admin'),
             'telefono' => '0',
             'movil' => '0',
             'direccion' => ''
