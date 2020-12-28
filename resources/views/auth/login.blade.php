@@ -1,7 +1,8 @@
 <div class="container-fluid">
     <div class="row justify-content-center" >
         <div class="col-md-4">
-                <h1 class="text-center mb-4" style="color:black"><b>{{config('app.name')}}</b></h1>
+                <h1 class="text-center mb-4" style="color:black"><b>SisGNF</b></h1>
+                <!-- <h1 class="text-center mb-4" style="color:black"><b>{{config('app.name')}}</b></h1> -->
             <div class="card">
                 <div class="card-header">{{('Login') }}</div>
                 <!-- <div class="card-header">Login</div> -->
