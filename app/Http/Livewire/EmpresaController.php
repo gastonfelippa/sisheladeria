@@ -72,13 +72,19 @@ class EmpresaController extends Component
             $image = $this->logo;   //decodificamos la data de la imagen en Base 64
             $fileName = time(). '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
            //  dd($fileName);
-           $fileName->store('images/logo/');
+           //$fileName->store('images/logo/');
             // $moved = \Image::make($image)->save('images/logo/'.$fileName);
             // if($moved)
             // {
                 $empresa->logo = $fileName;
                 $empresa->save();
             // }
+            $cloudinary = require('cloudinary');
+            $cloudinary.uploader.upload("1609216501.jpeg",
+                function($result) 
+                { 
+                    console.log($result); 
+                });
         }
 
         session()->flash('message', 'Información de Empresa registrada');
