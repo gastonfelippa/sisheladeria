@@ -73,12 +73,12 @@ class EmpresaController extends Component
             $fileName = time(). '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
            //  dd($fileName);
             
-            $moved = \Image::make($image)->save('images/logo/'.$fileName);
-            if($moved)
-            {
+            // $moved = \Image::make($image)->save('images/logo/'.$fileName);
+            // if($moved)
+            // {
                 $empresa->logo = $fileName;
                 $empresa->save();
-            }
+            // }
         }
 
         //$this->emit('msgok', 'Información de Empresa registrada');
