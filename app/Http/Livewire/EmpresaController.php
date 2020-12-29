@@ -80,7 +80,7 @@ class EmpresaController extends Component
         }
 
         //$this->emit('msgok', 'Información de Empresa registrada');
-        session()->flash('message', 'Información de Empresa registrada');
+        session()->flash('message', 'Información de Empresasasa registrada');
 
     }
 } 
