@@ -33,9 +33,11 @@ class EmpresaController extends Component
         'logoUpload' => 'logoUpload'
     ];
 
-    public function logoUpload($imageData)
+    public function logoUpload($imageData, $nombreLogo)
     {
-        $this->logo = $imageData;
+       // dd($nombreLogo);
+        // $this->logo = $imageData;
+        $this->logo = $nombreLogo;
         $this->event = true;
     }
     
@@ -69,23 +71,18 @@ class EmpresaController extends Component
         //programación para subir el logo        
         if($this->logo != null && $this->event)
         {
-            $image = $this->logo;   //decodificamos la data de la imagen en Base 64
-            //$fileName = '1609215517.jpeg';
-            $fileName = time(). '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
-           //  dd($fileName);
-           //$fileName->store('images/logo/');
+            // $image = $this->logo;   //decodificamos la data de la imagen en Base 64
+ 
+           //  dd($image);
+          //  $fileName = time(). '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
             // $moved = \Image::make($image)->save('images/logo/'.$fileName);
             // if($moved)
             // {
-                $empresa->logo = $fileName;
+                // $empresa->logo = $fileName;
+                $empresa->logo = $this->logo;
                 $empresa->save();
             // }
-            // $cloudinary = require('cloudinary');
-            // $cloudinary.uploader.upload("1609216501.jpeg",
-            //     function($result) 
-            //     { 
-            //         console.log($result); 
-            //     });
+        
         }
 
         session()->flash('message', 'Información de Empresa registrada');
