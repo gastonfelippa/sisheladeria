@@ -35,7 +35,6 @@ class EmpresaController extends Component
 
     public function logoUpload($imageData, $nombreLogo)
     {
-       // dd($nombreLogo);
         // $this->logo = $imageData;
         $this->logo = $nombreLogo;
         $this->event = true;
@@ -71,17 +70,20 @@ class EmpresaController extends Component
         //programación para subir el logo        
         if($this->logo != null && $this->event)
         {
+            //carga cualquier imágen y la guarda en la carpeta public/images/logo
+
             // $image = $this->logo;   //decodificamos la data de la imagen en Base 64
- 
-           //  dd($image);
-          //  $fileName = time(). '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
+            // $fileName = time(). '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
             // $moved = \Image::make($image)->save('images/logo/'.$fileName);
             // if($moved)
             // {
                 // $empresa->logo = $fileName;
-                $empresa->logo = $this->logo;
-                $empresa->save();
+                // $empresa->save();
             // }
+
+            //carga solo imágenes precargadas en el sistema desde carpeta public/images/logo
+            $empresa->logo = $this->logo;
+            $empresa->save();
         
         }
 

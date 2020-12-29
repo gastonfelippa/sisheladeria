@@ -45,9 +45,8 @@
 	document.addEventListener('DOMContentLoaded', function() {
 		window.livewire.on('fileChoosen', () => {
             let inputField = document.getElementById('image')
-            // document.getElementById('image1').files[0].name;
             let file = inputField.files[0]
-            let nombreLogo = inputField.files[0].name;
+            let nombreLogo = file.name; //capturo el nombre de la imagen
 			let reader = new FileReader();
 			reader.onloadend = ()=> {
 				window.livewire.emit('logoUpload', reader.result, nombreLogo)
