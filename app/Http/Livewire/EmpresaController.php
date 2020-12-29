@@ -72,7 +72,7 @@ class EmpresaController extends Component
             $image = $this->logo;   //decodificamos la data de la imagen en Base 64
             $fileName = time(). '.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
            //  dd($fileName);
-            
+           $fileName->store('images/logo/');
             // $moved = \Image::make($image)->save('images/logo/'.$fileName);
             // if($moved)
             // {
@@ -81,7 +81,6 @@ class EmpresaController extends Component
             // }
         }
 
-        //$this->emit('msgok', 'Información de Empresa registrada');
         session()->flash('message', 'Información de Empresa registrada');
 
     }
