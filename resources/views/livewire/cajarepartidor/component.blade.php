@@ -1,4 +1,4 @@
-<div class="row layout-top-spacing">	
+<div class="row layout-top-spacing justify-content-center">	
     <div class="col-sm-12 col-md-6 layout-spacing"> 		
 		<div class="widget-content-area br-4">
 			<div class="widget-one">
@@ -42,17 +42,21 @@
 							<tr>
 								<th class="text-center">CLIENTE</th>
 								<th class="text-center">IMPORTE</th>
+                                @can('Facturas_edit_item')
 								<th class="text-center">ACCIONES</th>
+                                @endcan
 							</tr>
 						</thead>
 						<tbody>
 							@foreach($info as $r)
 							<tr>
 								<td class="text-left">{{$r->nomcli}}</td>
-								<td class="text-right">{{number_format($r->importe,2)}}</td>
+								<td class="text-center">{{number_format($r->importe,2)}}</td>
+                                @can('Facturas_edit_item')
 								<td class="text-center">
 									@include('common.actionsfactura')
-                                </td>                                
+                                </td>  
+                                @endcan                              
 							</tr>
 							@endforeach
 						</tbody>

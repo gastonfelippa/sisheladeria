@@ -10,8 +10,8 @@
     			</div>
     		</div>
     		@include('common.search') <!-- búsqueda y botón para nuevos registros -->
-    		<div class="table-responsive">
-    			<table class="table table-bordered table-hover table-striped table-checkable table-highlight-head mb-4">
+    		<div class="table-responsive scroll">
+    			<table class="table table-hover table-checkable table-sm mb-4">
     				<thead>
     					<tr>                                                   
     						<th class="">NOMBRE</th>
@@ -49,6 +49,15 @@
     	@endif  
     </div>
 </div>
+
+<style type="text/css" scoped>
+.scroll{
+    position: relative;
+    height: 250px;
+    margin-top: .5rem;
+    overflow: auto;
+}
+</style>
 
 <script type="text/javascript">
     function Confirm(id)
