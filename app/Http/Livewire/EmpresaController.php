@@ -23,7 +23,7 @@ class EmpresaController extends Component
             $this->logo = $empresa[0]->logo;
         }
     }
-
+    
     public function render()
     {  
         return view('livewire.empresa.component');
