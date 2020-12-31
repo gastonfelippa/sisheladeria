@@ -17,7 +17,12 @@ Route::get('/', function () {
     // return view('welcome');
     return view('login-register');
 });
-
+Route::get('/registrarse', function () {
+    return view('auth.register');
+});
+Route::get('/loguearse', function () {
+    return view('auth.login');
+});
 Auth::routes();
             //url  -      controlador       -     vista
 Route::get('/home', 'HomeController@index')->name('home');

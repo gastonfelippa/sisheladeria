@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name') }}</title>
+    <title>SisGNF</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -22,20 +22,11 @@
     @livewireStyles
 
 </head>
-<body>
-    <div id="app" style="height: 1000px; background-color: #5CBD9D;">
-        <nav class="navbar navbar-expand-md navbar-dark py-3 bg-white shadow-sm">
-            <div class="container">
-                <!-- <h2>{{ config('app.name') }}</h2> -->
-            </div>
-        </nav>
+<body style="background-color: #5CBD9D;">
 
-        <main class="py-5">
-
-            @yield('content')
-        </main>
-
-    </div>
+    <main class="py-4">
+        @yield('content')
+    </main>
 
      @livewireScripts
 </body>
