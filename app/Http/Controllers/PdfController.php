@@ -14,6 +14,7 @@ use DB;
 
 class PdfController extends Controller
 {
+
     public function PDF(){
         $pdf = PDF::loadView('prueba');
         return $pdf->stream('prueba.pdf');
@@ -54,7 +55,12 @@ class PdfController extends Controller
             ->select('facturas.*', 'c.nombre as nomcli', 'c.direccion as dircli')
             ->where('facturas.id','like',$id)->get();
 
-        $pdf = PDF::loadView('livewire.pdf.pdfFactDel', compact(['infoDetalle','info']));
+        if($info[0]->nomcli == null) {
+            $delivery = false;
+        }else {              
+            $delivery = true;
+        }
+        $pdf = PDF::loadView('livewire.pdf.pdfFactDel', compact(['infoDetalle','info','delivery']));
         return $pdf->stream('fact.pdf');
     }
 }

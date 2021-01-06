@@ -78,7 +78,7 @@ class CortesController extends Component
     }
     
     protected $listeners = [
-        // 'infoToPrintCorte' => 'PrintCorte'
+         'infoToPrintCorte' => 'PrintCorte'
     ];
 
     public function PrintCorte($ventas, $entradas, $salidas, $balance)

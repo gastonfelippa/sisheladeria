@@ -14,7 +14,10 @@
                                 <b>Total de Ingresos:</b> $ {{number_format($sumaTotal,2)}}
                             </div>
                             <div class="col-sm-12 col-md-8 col-lg-8 text-right">
-                                <button class="btn btn-sm btn-dark mt-4">EXPORTAR</button>
+                                <button type="button" class="btn btn-sm btn-warning mt-4">
+                                <a href="{{url('pdfFacturas')}}">
+                                    IMPRIMIR </a>   
+                                </button>
                             </div>
                         </div>
                         <div class="row">

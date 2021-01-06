@@ -79,6 +79,10 @@
                         <button wire:click.prevent="$emit('infoToPrintCorte', 
                         {{$ventas}},{{$entradas}},{{$salidas}},{{$balance}} )" 
                         class="btn btn-outline-primary mt-5">Imprimir Corte</button>
+                        <!-- <button type="button" class="btn btn-outline-primary mt-5" enabled>
+                                <a href="{{url('pdfFactDel',array($id_factura))}}">
+                                Imprimir Corte</a>
+                            </button> -->
                         @endif
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,18 +18,15 @@ Route::get('/', function () {
     // return view('welcome');
     return view('login-register');
 });
-Route::get('/registrarse', function () {
-    return view('auth.register');
-});
-Route::get('/loguearse', function () {
-    return view('auth.login');
-});
-Auth::routes();
+
+Auth::routes(['verify' => true]);
             //url  -      controlador       -     vista
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
 //Route::get('/pdf', 'Livewire\PdfController@PDF')->name('descargarPDF');
-Route::get('/pdfFacturas', 'PdfController@PDFFacturas')->name('pdfFacturas');
-Route::get('/pdfFactDel/{id}', 'PdfController@PDFFactDel')->name('pdfFactDel');
+
+//rutas de impresion
+Route::get('/pdfFacturas', 'PdfController@PDFFacturas')->middleware('permission:Facturas_imp');
+Route::get('/pdfFactDel/{id}', 'PdfController@PDFFactDel')->middleware('permission:Fact_delivery_imp');
 
 Route::view('rubros', 'rubros')->middleware('permission:Rubros_index');
 Route::view('productos', 'productos')->middleware('permission:Productos_index');
@@ -51,3 +49,7 @@ Route::view('empresa', 'empresa')->middleware('permission:Empresa_index');
 //rutas de impresion
 Route::get('print/visita/{id}', 'PrinterController@ticketVisita');
 Route::get('print/pension/{id}', 'PrinterController@ticketPension');
+
+//rutas de emails
+Route::get('contactanos', 'EmailsController@index')->name('contactanos.index');
+Route::post('contactanos', 'EmailsController@store')->name('contactanos.store');

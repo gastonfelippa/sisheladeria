@@ -18,7 +18,7 @@ class FacturaController extends Component
     public $cliente="Elegir", $empleado="Elegir", $producto="Elegir", $barcode;
     public $clientes, $empleados, $productos, $dejar_pendiente;
     public $selected_id = null, $search, $id_factura;
-    public $facturas, $dirCliente, $total,$importe, $totalAgrabar;  
+    public $facturas, $dirCliente, $total, $importe, $totalAgrabar;  
     public $grabar_encabezado, $habilitar_grabar_encabezado =null, $habilitar_botones =null,$modificar, $codigo;
 	
 	public function render()

@@ -43,9 +43,9 @@
 </head>
 <body class="alt-menu sidebar-noneoverflow">
     <!-- BEGIN LOADER -->
-    <div id="load_screen"> <div class="loader"> <div class="loader-content">
+    <!-- <div id="load_screen"> <div class="loader"> <div class="loader-content">
         <div class="spinner-grow align-self-center"></div>
-    </div></div></div>
+    </div></div></div> -->
     <!--  END LOADER -->
 
     <!--  BEGIN NAVBAR  -->
@@ -73,7 +73,7 @@
                         <div class="media">
                             <img src="assets/img/90x90.jpg" class="img-fluid" alt="admin-profile">
                             <div class="media-body align-self-center">
-                                <h6>@guest Heladería @else {{Auth::user()->nombre }}  @endguest</h6>
+                                <h6>@guest SisGNF @else {{Auth::user()->nombre }}  @endguest</h6>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -99,14 +99,14 @@
 
     <!--  BEGIN MAIN CONTAINER  -->
     <div class="main-container" id="container">
-
+<!-- 
         <div class="overlay"></div>
-        <div class="search-overlay"></div>
+        <div class="search-overlay"></div> -->
 
         <!--  BEGIN TOPBAR  -->
         <div class="topbar-nav header navbar" role="banner">
             <nav id="topbar">
-                <ul class="navbar-nav theme-brand flex-row  text-center">
+                <!-- <ul class="navbar-nav theme-brand flex-row  text-center">
                     <li class="nav-item theme-logo">
                         <a href="index.html">
                             <img src="assets/img/90x90.jpg" class="navbar-logo" alt="logo">
@@ -115,7 +115,7 @@
                     <li class="nav-item theme-text">
                         <a href="{{ url('/') }}" class="nav-link"> SISHELADERIA </a>
                     </li>
-                </ul>
+                </ul> -->
                 
                 <ul class="list-unstyled menu-categories" id="topAccordion">
                 <!-- ESTADÍSTICAS -->
@@ -294,6 +294,22 @@
                         </ul>
                     </li>
                 @endcan
+                    <!-- EMAILS -->
+                    <li class="menu single-menu">
+                        <a href="#mails" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <div class="">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                <span>EMAILS</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </a>
+                        
+                        <ul class="collapse submenu list-unstyled" id="mails" data-parent="#topAccordion">
+                            <li>
+                                <a href="{{route('contactanos.index')}}">CONTACTANOS</a>
+                            </li>                   
+                        </ul>
+                    </li>
                 </ul>
             </nav>
         </div>

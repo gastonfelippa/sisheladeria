@@ -1,29 +1,29 @@
 <div class="row layout-top-spacing">	
-    <div class="col-sm-12 col-md-6 layout-spacing"> 		
+    <div class="col-md-12 col-lg-6 layout-spacing"> 		
 		<div class="widget-content-area br-4">
 			<div class="widget-one">
                 <div class="row">
-                    <div class="col-sm-12 col-md-5">
+                    <div class="col-md-6">
                         <h3>Factura N°: {{$id_factura}}</h3>
                     </div>
-                    <div class="col-sm-12 col-md-7 text-center">
+                    <div class="col-md-6 text-center">
                         <h3 class="bg-danger">Total : $ {{number_format($total,2)}}</h3> 
                     </div>
                 </div>  
                 <div class="row">
-                    <div class="col-sm-6 col-md-4">
+                    <div class="col-md-4">
                         <h6>Fecha {{\Carbon\Carbon::now()->format('d-m-Y')}} </h6>
                     </div>                    
-                    <div class="col-sm-6 col-md-8 text-right">
+                    <div class="col-md-8 text-right">
                         @if($dejar_pendiente)
                             <button id="pendiente" type="button" wire:click="dejar_pendiente()" onclick="setfocus('barcode')" 
                                 class="btn btn-dark" enabled>
-                                Dejar Pendiente   
+                                Delivery   
                             </button>
                         @else
                             <button id="pendiente" type="button" wire:click="dejar_pendiente()" onclick="setfocus('barcode')" 
                                 class="btn btn-dark" disabled>
-                                Dejar Pendiente   
+                                Delivery   
                             </button>
                         @endif 
                         @if($total == 0)                       
@@ -41,6 +41,7 @@
                             </button>
                             <button type="button" class="btn btn-success" enabled>
                                 <a href="{{url('pdfFactDel',array($id_factura))}}">
+                                <!-- <a href="{{url('pdfFacturas')}}"> -->
                                 Imprimir</a>
                             </button>
                         @endif
@@ -131,7 +132,7 @@
 			</div>			
 		</div>
 	</div>
-    <div class="row col-sm-12 col-md-6 layout-spacing ml-0">
+    <div class="col-md-12 col-lg-6 layout-spacing">
         <div class="widget-content-area">
             <div class="widget-one">
                 <h5>

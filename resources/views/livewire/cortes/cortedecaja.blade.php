@@ -3,12 +3,8 @@
 @section('content') 
 	<div>
 		<div>
-			
-		@if($delivery)
 			<b>Cliente:</b>  {{$info[0]->nomcli}}<br>                       
-			<b>Dirección:</b>  {{$info[0]->dircli}}<br> 
-		@endif	
-			
+			<b>Dirección:</b>  {{$info[0]->dircli}}<br>                      
 			<b>Fecha:</b>  {{\Carbon\Carbon::parse($info[0]->created_at)->format('d-m-Y')}}
 			<br><br>
 		</div>
@@ -16,19 +12,19 @@
 			<table class="table table-sm">
 				<thead style="font-size:14px">
 					<tr>
-						<th class="text-center">Cant</th>
-						<th class="text-left">Descripción</th>
-						<th class="text-center">P Unit</th>
-						<th class="text-center">Importe</th>
+						<th class="text-center">VENTAS</th>
+						<th class="text-left">ENTRADAS</th>
+						<th class="text-center">SALIDAS</th>
+						<th class="text-center">BALANCE</th>
 					</tr>
 				</thead>
 				<tbody style="font-size:12px">
-					@foreach($infoDetalle as $r)
+					@foreach($info as $r)
 					<tr>
-						<td class="text-center">{{number_format($r->cantidad,2)}}</td>
-						<td class="text-left">{{$r->producto}}</td>
-						<td class="text-right mr-2">{{$r->precio}}</td>
-						<td class="text-right mr-2">{{number_format($r->importe,2)}}</td>
+						<td class="text-center">{{number_format($r->ventas,0)}}</td>
+						<td class="text-left">{{number_format($r->entradas,0)}}</td>
+						<td class="text-right mr-2">{{$number_format($r->salidas,0)}}</td>
+						<td class="text-right mr-2">{{number_format($r->balance,0)}}</td>
 					</tr>
 					@endforeach
 				</tbody>
@@ -37,9 +33,9 @@
 		<div class="text-right mr-2">
 			<b>TOTAL: $  {{number_format($info[0]->importe,2)}}</b>
 		</div>
-		<br>
+		<!-- <br>
 		<div class="text-center font-italic" style="font-size:14px">
         	<p>¡¡¡Muchas gracias por elegirnos!!! </p>
-    	</div>
+    	</div> -->
 	</div>
 @endsection

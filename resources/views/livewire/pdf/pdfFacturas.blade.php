@@ -2,11 +2,12 @@
 
 @section('content')
 <div >
+	<h3 class="text-center">Ventas delivery</h3>
 	<table class="table table-hover table-checkable table-sm mb-4">
 		<thead>
 			<tr>
-				<th class="text-center">CLIENTE</th>
-				<th class="text-center">IMPORTE</th>
+				<th class="text-center">Cliente</th>
+				<th class="text-center">Importe</th>
 			</tr>
 		</thead>
 		<tbody>

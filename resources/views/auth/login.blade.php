@@ -61,9 +61,9 @@
                                 @endif
                             </div>
                             <div class="col-md-12 text-right">
-                                Eres nuevo en SisGNF?
+                                Sos nuevo en SisGNF?
                                 <a class="btn btn-link" href="#" wire:model="vista" wire:click="doAction(2)">
-                                {{('Regístrate!') }}
+                                {{('Registrate!') }}
                                 </a>
                             </div>
                         </div>

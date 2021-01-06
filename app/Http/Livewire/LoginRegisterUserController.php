@@ -26,14 +26,11 @@ class LoginRegisterUserController extends Component
     }
     public function CambiarVista()
     {
-      //  dd($vista);
         $this->vista = '2';
     }
     public function doAction($action)
 	{
-
         $this->vista = $action;
-       // dd($this->vista);
     }
 
 }
