@@ -24,6 +24,9 @@ class CreateDetfacturasTable extends Migration
 
             $table->decimal('cantidad',10,2);
             $table->decimal('precio',10,2);
+            
+            $table->unsignedBigInteger('comercio_id');
+            $table->foreign('comercio_id')->references('id')->on('comercios');
 
             $table->timestamps();
         });

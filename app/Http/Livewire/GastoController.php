@@ -9,13 +9,18 @@ class GastoController extends Component
 {
     //public properties
 	public  $descripcion;            //campos de la tabla gastos
-	public  $selected_id, $search;   //para búsquedas y fila seleccionada
+    public  $selected_id, $search;   //para búsquedas y fila seleccionada
+    public $comercioId;
 
     public function render()
     {
+          //busca el comercio que está en sesión
+          $this->comercioId = session('idComercio');
+
         if(strlen($this->search) > 0)
         {
             $info = Gasto::where('descripcion', 'like', '%' .  $this->search . '%')
+                    ->where('comercio_id', $this->comercioId)
                     ->orderby('descripcion','desc')->get();
             return view('livewire.gastos.component', [
                 'info' =>$info
@@ -23,7 +28,8 @@ class GastoController extends Component
         }
         else {
            return view('livewire.gastos.component', [
-            'info' => Gasto::orderBy('descripcion', 'asc')->get()
+            'info' => Gasto::orderBy('descripcion', 'asc')
+                            ->where('comercio_id', $this->comercioId)->get()
         ]);
        }
     }
@@ -60,6 +66,7 @@ class GastoController extends Component
         if($this->selected_id > 0) {
             $existe = Gasto::where('descripcion', $this->descripcion)
             ->where('id', '<>', $this->selected_id)
+            ->where('comercio_id', $this->comercioId)
             ->select('descripcion')
             ->get();
 
@@ -73,6 +80,7 @@ class GastoController extends Component
         {
             //valida si existe otro cajón con el mismo nombre (nuevos registros)
             $existe = Gasto::where('descripcion', $this->descripcion)
+            ->where('comercio_id', $this->comercioId)
             ->select('descripcion')
             ->get();
 
@@ -86,7 +94,8 @@ class GastoController extends Component
             //dd($this->descripcion,$this->margen);
             //creamos el registro
             $category =  Gasto::create([
-                'descripcion' => strtoupper($this->descripcion)
+                'descripcion' => strtoupper($this->descripcion),
+                'comercio_id' => $this->comercioId
             ]);
         }
         else 

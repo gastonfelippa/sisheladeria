@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\User;
 
 
-class LoginRegisterUserController extends Component
+class LoginRegisterUserController extends Component 
 {
     public $vista='1';
     

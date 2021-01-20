@@ -23,6 +23,10 @@ class CreateProductosTable extends Migration
 
             $table->unsignedBigInteger('rubro_id');
             $table->foreign('rubro_id')->references('id')->on('rubros');
+
+            $table->unsignedBigInteger('comercio_id');
+            $table->foreign('comercio_id')->references('id')->on('comercios');
+            
             $table->timestamps();
         });
     }

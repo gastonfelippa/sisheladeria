@@ -4,19 +4,15 @@
         <div class="row">
             <div class="form-group col-md-4 col-sm-12">
                 <label>Nombre</label>
-                <input type="text" wire:model.lazy="nombre" class="form-control" placeholder="nombre">
+                <input type="text" wire:model.lazy="name" class="form-control" placeholder="nombre">
             </div>
             <div class="form-group col-md-4 col-sm-12">
                 <label>Apellido</label>
                 <input type="text" wire:model.lazy="apellido" class="form-control" placeholder="apellido">
             </div>
             <div class="form-group col-md-4 col-sm-12">
-                <label>Teléfono Fijo</label>
-                <input type="text" wire:model.lazy="telefono" class="form-control" placeholder="teléfono fijo" maxlength="10">
-            </div>
-            <div class="form-group col-md-4 col-sm-12">
-                <label>Celular</label>
-                <input type="text" wire:model.lazy="movil" class="form-control" placeholder="celular" maxlength="10">
+                <label>Teléfono</label>
+                <input type="text" wire:model.lazy="telefono" class="form-control" placeholder="teléfono" maxlength="10">
             </div>
             <div class="form-group col-md-4 col-sm-12">
                 <label>Dirección</label>

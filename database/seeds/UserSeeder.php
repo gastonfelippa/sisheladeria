@@ -4,6 +4,8 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\User;
+use App\TipoComercio;
+use App\Comercio;
 
 class UserSeeder extends Seeder
 {
@@ -65,17 +67,34 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'Usuarios_create']);
         Permission::create(['name' => 'Usuarios_edit']);
         Permission::create(['name' => 'Usuarios_destroy']);
-
+        
         Permission::create(['name' => 'Movimientos_index']);
         Permission::create(['name' => 'Movimientos_create']);
         Permission::create(['name' => 'Movimientos_edit']);
         Permission::create(['name' => 'Movimientos_destroy']);
+        
+        //creamos tipos de comercio
+        TipoComercio::create(['descripcion' => 'Tipo Abonado']);
+        TipoComercio::create(['descripcion' => 'Bar/Pub/Restó']);
+        TipoComercio::create(['descripcion' => 'Restaurante']);
+        TipoComercio::create(['descripcion' => 'Pizzería']);
+        TipoComercio::create(['descripcion' => 'Cervecería']);
+        TipoComercio::create(['descripcion' => 'Heladería']);
+        TipoComercio::create(['descripcion' => 'Cafetería']);
+        TipoComercio::create(['descripcion' => 'Rotisería']);
+        TipoComercio::create(['descripcion' => 'Panadería']);
+        TipoComercio::create(['descripcion' => 'Otro comercio gastronómico']);
+        TipoComercio::create(['descripcion' => 'Otro comercio no gastronómico']);
+        
 
-        //lista de roles
-        $superadmin = Role::create(['name' => 'SuperAdmin']);      
-        $admin = Role::create(['name' => 'Admin']);
-        $empleado = Role::create(['name' => 'Empleado']);
-        $cliente = Role::create(['name' => 'Cliente']);      
+        //creamos un comercio ficticio para poder crear el rol SuperAdmin
+        $comercio = Comercio::create(['nombre' => 'ABONADO', 'tipo_id' => '1']);
+        // //lista de roles        
+        $superadmin = Role::create(['name' => 'SuperAdmin', 'comercio_id' => '1']); 
+             
+        // $admin = Role::create(['name' => 'Admin']);
+        // $empleado = Role::create(['name' => 'Empleado']);
+        // $cliente = Role::create(['name' => 'Cliente']);      
         
         $superadmin->givePermissionTo([
             'Estadisticas_index',
@@ -121,31 +140,24 @@ class UserSeeder extends Seeder
             'Movimientos_index',
             'Movimientos_create',
             'Movimientos_edit',
-            'Movimientos_destroy'
+            'Movimientos_destroy',
+            'Facturas_imp',
+            'Fact_delivery_imp'
         ]);
+        
 
-        // $user = new User();
-        // $user->nombre = 'Admin';
-        // $user->apellido = 'Admin';
-        // $user->email = 'admin@gmail.com';
-        // $user->password = bcrypt('secret');
-        // $user->telefono = 0;
-        // $user->movil = 0;
-        // $user->direccion = '';
-        // $user->save();
-
-        User::create([
-            'nombre' => 'Admin',
-            'apellido'=> 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('admin'),
-            'telefono' => '0',
-            'movil' => '0',
-            'direccion' => ''
-        ]);
+        // User::create([
+        //     'name' => 'Admin',
+        //     'apellido'=> 'Admin',
+        //     'email' => 'admin@gmail.com',
+        //     'password' => bcrypt('admin'),
+        //     'telefono' => '0',
+        //     'movil' => '0',
+        //     'direccion' => ''
+        // ]);
      
 
-        $user = User::find(1);
-        $user->assignRole('SuperAdmin');
+        // $user = User::find(1);
+        // $user->assignRole('SuperAdmin');
     }
 }

@@ -17,7 +17,6 @@
     						<th class="">NOMBRE</th>
     						<th class="">APELLIDO</th>
     						<th class="">TELÉFONO</th>
-    						<th class="">CELULAR</th>
     						<th class="">DIRECCIÓN</th>
     						<th class="">EMAIL</th>
     						<!-- <th class="">TIPO</th> -->
@@ -27,10 +26,9 @@
     				<tbody>
     					@foreach($info as $r) <!-- iteración para llenar la tabla-->
     					<tr>
-    						<td><p class="mb-0">{{$r->nombre}}</p></td>
+    						<td><p class="mb-0">{{$r->name}}</p></td>
     						<td>{{$r->apellido}}</td>
     						<td>{{$r->telefono}}</td>
-    						<td>{{$r->movil}}</td>
     						<td>{{$r->direccion}}</td>
     						<td>{{$r->email}}</td>
     						<!-- <td>{{$r->tipo}}</td> -->

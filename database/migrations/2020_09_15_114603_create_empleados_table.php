@@ -21,6 +21,10 @@ class CreateEmpleadosTable extends Migration
             $table->string('ocupacion',100)->nullable();
             $table->datetime('fecha_ingreso');
             $table->datetime('fecha_nac');
+
+            $table->unsignedBigInteger('comercio_id');
+            $table->foreign('comercio_id')->references('id')->on('comercios');
+            
             $table->timestamps();
         });
     }

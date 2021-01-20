@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {   
+    {        
         view()->composer('layouts.template', function($view){
            $tipo = \App\Tipo::count();
            $view->with(['tipos'=> $tipo ]);     

@@ -14,8 +14,9 @@ class CreateFacturasTable extends Migration
     public function up()
     {
         Schema::create('facturas', function (Blueprint $table) {
-            $table->id();
-            
+            $table->id();            
+            $table->unsignedBigInteger('numero');
+
             $table->unsignedBigInteger('cliente_id')->nullable();
             $table->foreign('cliente_id')->references('id')->on('clientes');
 
@@ -27,6 +28,9 @@ class CreateFacturasTable extends Migration
          
             $table->decimal('importe',10,2);
             $table->enum('estado', ['ABIERTA','PAGADA', 'PENDIENTE', 'CTACTE', 'ANULADA'])->default('ABIERTA');
+
+            $table->unsignedBigInteger('comercio_id');
+            $table->foreign('comercio_id')->references('id')->on('comercios');
 
             $table->timestamps();
         });

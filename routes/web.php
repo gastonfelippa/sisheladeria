@@ -16,17 +16,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     // return view('welcome');
-    return view('login-register');
+    return view('auth.login');
 });
 
+//Auth::routes();
 Auth::routes(['verify' => true]);
             //url  -      controlador       -     vista
 Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
+
 //Route::get('/pdf', 'Livewire\PdfController@PDF')->name('descargarPDF');
 
 //rutas de impresion
 Route::get('/pdfFacturas', 'PdfController@PDFFacturas')->middleware('permission:Facturas_imp');
-Route::get('/pdfFactDel/{id}', 'PdfController@PDFFactDel')->middleware('permission:Fact_delivery_imp');
+Route::get('/pdfFactDel/{id}', 'PdfController@PDFFactDel');
 
 Route::view('rubros', 'rubros')->middleware('permission:Rubros_index');
 Route::view('productos', 'productos')->middleware('permission:Productos_index');
@@ -53,3 +55,7 @@ Route::get('print/pension/{id}', 'PrinterController@ticketPension');
 //rutas de emails
 Route::get('contactanos', 'EmailsController@index')->name('contactanos.index');
 Route::post('contactanos', 'EmailsController@store')->name('contactanos.store');
+
+Route::get('registrarse', 'RegisterController@index')->name('registrarse.index');
+Route::post('registrarse', 'RegisterController@store')->name('registrarse.store');
+

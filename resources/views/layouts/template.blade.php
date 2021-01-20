@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
     
-    <title>SisGNF</title>
+    <title>Floki</title>
 
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon.ico') }}"/>
     <link href="{{ asset('assets/css/loader.css') }}" rel="stylesheet" type="text/css" />
@@ -73,7 +73,7 @@
                         <div class="media">
                             <img src="assets/img/90x90.jpg" class="img-fluid" alt="admin-profile">
                             <div class="media-body align-self-center">
-                                <h6>@guest SisGNF @else {{Auth::user()->nombre }}  @endguest</h6>
+                                <h6>@guest FlokI @else {{Auth::user()->name }}  @endguest</h6>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -307,7 +307,10 @@
                         <ul class="collapse submenu list-unstyled" id="mails" data-parent="#topAccordion">
                             <li>
                                 <a href="{{route('contactanos.index')}}">CONTACTANOS</a>
-                            </li>                   
+                            </li>  
+                            <li>
+                                <a href="{{route('registrarse.index')}}">REGISTRARSE</a>
+                            </li>                  
                         </ul>
                     </li>
                 </ul>

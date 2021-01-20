@@ -14,6 +14,7 @@ use DB;
 
 class PdfController extends Controller
 {
+    public $comercioId;
 
     public function PDF(){
         $pdf = PDF::loadView('prueba');
@@ -34,14 +35,26 @@ class PdfController extends Controller
     }
 
     public function PDFFactDel($id){
-        $clientes  = Cliente::all();
-        $productos = Producto::all();
+
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio');
+
+        $clientes  = Cliente::select()->where('comercio_id', $this->comercioId)->get();
+        $productos = Producto::select()->where('comercio_id', $this->comercioId)->get();
       
         $infoDetalle = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
           ->leftjoin('productos as p','p.id','detfacturas.producto_id')
           ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
           ->where('detfacturas.factura_id', $id)
+          ->where('detfacturas.comercio_id', $this->comercioId)
           ->orderBy('detfacturas.id', 'asc')->get(); 
+        //   $info = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
+        //   ->leftjoin('productos as p','p.id','detfacturas.producto_id')
+        //   ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
+        //   ->where('detfacturas.factura_id', $this->factura_id)
+        //   ->where('detfacturas.comercio_id', $this->comercioId)
+        //   ->where('f.estado', 'like', 'ABIERTA')
+        //   ->orderBy('detfacturas.id', 'asc')->get();
 
       $this->importeFactura = 0;  
 

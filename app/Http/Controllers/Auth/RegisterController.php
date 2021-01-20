@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
+use App\Comercio;
+use App\UsuarioComercio;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -31,6 +33,7 @@ class RegisterController extends Controller
      */
     protected $redirectTo = RouteServiceProvider::HOME;
 
+
     /**
      * Create a new controller instance.
      *
@@ -51,6 +54,9 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
+            'apellido' => ['required', 'string', 'max:255'],
+            'nombreComercio' => ['required', 'string', 'max:255'],
+            'telefono' => ['required', 'numeric', 'min:100000000' , 'max:999999999999999'], 
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -64,14 +70,30 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'nombre' => $data['name'],
-            'apellido'=> $data['apellido'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'telefono' => '0',
-            'movil' => '0',
-            'direccion'=> ''
+        //dd($data);
+        $comercio = Comercio::create([
+            'nombre' => strtoupper($data['nombreComercio']),            
+            'tipo_id' => $data['tipo']            
         ]);
+
+        $user = User::create([
+            
+            'name' => ucwords($data['name']),
+            'apellido' => ucwords($data['apellido']),
+            'telefono' => $data['telefono'],
+            'email' => strtolower($data['email']),
+            'password' => Hash::make($data['password']),
+            'abonado' => 'Si'
+        ]);
+
+        $user->assignRole('SuperAdmin');
+
+        UsuarioComercio::create([
+            'usuario_id' => $user->id,            
+            'comercio_id' => $comercio->id            
+        ]);
+
+        return $user;
+
     }
 }

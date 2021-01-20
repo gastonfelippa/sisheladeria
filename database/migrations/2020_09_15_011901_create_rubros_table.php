@@ -17,6 +17,10 @@ class CreateRubrosTable extends Migration
             $table->id();
             $table->string('descripcion');
             $table->string('margen');
+
+            $table->unsignedBigInteger('comercio_id');
+            $table->foreign('comercio_id')->references('id')->on('comercios');
+
             $table->timestamps();
         });
     }

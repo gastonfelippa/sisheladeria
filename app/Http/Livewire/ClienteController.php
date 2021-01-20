@@ -9,15 +9,22 @@ class ClienteController extends Component
 {
 	//public properties
 	public  $nombre, $direccion, $telefono;            //campos de la tabla clientes
-	public  $selected_id = null, $search;   //para búsquedas y fila seleccionada
+    public  $selected_id = null, $search;   //para búsquedas y fila seleccionada
+    public $comercioId;
 
     public function render()
     {
+
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio');
+
         //si la propiedad buscar tiene al menos un caracter, devolvemos el componente y le inyectamos los registros de una búsqueda con like y paginado a  5 
         if(strlen($this->search) > 0)
         {
             $info = Cliente::where('nombre', 'like', '%' .  $this->search . '%')
+                ->where('comercio_id', $this->comercioId)
                 ->orWhere('direccion', 'like', '%' .  $this->search . '%')
+                ->where('comercio_id', $this->comercioId)
                 ->orderBy('nombre', 'asc')->get();
             return view('livewire.clientes.component', [
                 'info' =>$info
@@ -25,7 +32,8 @@ class ClienteController extends Component
         }
         else {
            return view('livewire.clientes.component', [
-            'info' => Cliente::orderBy('nombre', 'asc')->get()
+            'info' => Cliente::orderBy('nombre', 'asc')
+                        ->where('comercio_id', $this->comercioId)->get()
         ]);
        }
    }
@@ -67,10 +75,11 @@ class ClienteController extends Component
             'direccion' => 'required'
         ]);
 
-        //valida si existe otro cajón con el mismo nombre (edicion de familias)
+        //valida si existe otro cliente con el mismo nombre
         if($this->selected_id > 0) {
             $existe = Cliente::where('nombre', $this->nombre)
             ->where('id', '<>', $this->selected_id)
+            ->where('comercio_id', $this->comercioId)
             ->select('nombre')
             ->get();
 
@@ -82,8 +91,9 @@ class ClienteController extends Component
         }        
         else 
         {
-            //valida si existe otro cajón con el mismo nombre (nuevos registros)
+            //valida si existe otro cliente con el mismo nombre (nuevos registros)
             $existe = Cliente::where('nombre', $this->nombre)
+            ->where('comercio_id', $this->comercioId)
             ->select('nombre')
             ->get();
 
@@ -99,7 +109,8 @@ class ClienteController extends Component
             $category =  Cliente::create([
                 'nombre' => strtoupper($this->nombre),            
                 'direccion' => ucwords($this->direccion),            
-                'telefono' => $this->telefono            
+                'telefono' => $this->telefono,
+                'comercio_id' => $this->comercioId            
             ]);
         }
         else 

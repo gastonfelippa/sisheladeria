@@ -10,15 +10,20 @@ class EmpleadoController extends Component
 {
 	//public properties
 	public  $nombre, $direccion, $telefono, $ocupacion, $fecha_ingreso, $fecha_nac; //campos de la tabla empleados
-	public  $selected_id = null, $search;   //para búsquedas y fila seleccionada
+    public  $selected_id = null, $search;   //para búsquedas y fila seleccionada
+    public $comercioId;
 
     //método que se ejecuta después de mount al inciar el componente
     public function render()
     {
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio');
+        
         //si la propiedad buscar tiene al menos un caracter, devolvemos el componente y le inyectamos los registros de una búsqueda con like y paginado a  5 
         if(strlen($this->search) > 0)
         {
             $info = Empleado::where('nombre', 'like', '%' .  $this->search . '%')
+                ->where('comercio_id', $this->comercioId)
                 ->orderBy('nombre', 'asc')->get();
             return view('livewire.empleados.component', [
                 'info' =>$info
@@ -26,7 +31,8 @@ class EmpleadoController extends Component
         }
         else {
             return view('livewire.empleados.component', [
-                'info' => Empleado::orderBy('nombre', 'asc')->get()
+                'info' => Empleado::where('comercio_id', $this->comercioId)
+                                    ->orderBy('nombre', 'asc')->get()
             ]);
         }
     }
@@ -79,6 +85,7 @@ class EmpleadoController extends Component
         //valida si existe otro empleado con el mismo nombre (edicion de empleados)
         if($this->selected_id > 0) {
             $existe = Empleado::where('nombre', $this->nombre)
+            ->where('comercio_id', $this->comercioId)
             ->where('id', '<>', $this->selected_id)
             ->select('nombre')
             ->get();
@@ -93,6 +100,7 @@ class EmpleadoController extends Component
         {
             //valida si existe otro empleado con el mismo nombre (nuevos registros)
             $existe = Empleado::where('nombre', $this->nombre)
+            ->where('comercio_id', $this->comercioId)
             ->select('nombre')
             ->get();
 
@@ -111,7 +119,8 @@ class EmpleadoController extends Component
                 'telefono' => $this->telefono,            
                 'ocupacion' => $this->ocupacion,            
                 'fecha_ingreso' => Carbon::parse($this->fecha_ingreso)->format('Y,m,d h:i:s'),             
-                'fecha_nac' => Carbon::parse($this->fecha_nac)->format('Y,m,d h:i:s')            
+                'fecha_nac' => Carbon::parse($this->fecha_nac)->format('Y,m,d h:i:s'),
+                'comercio_id' => $this->comercioId            
             ]);
         }
         else 

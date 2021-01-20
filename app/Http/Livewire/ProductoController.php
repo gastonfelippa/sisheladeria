@@ -11,17 +11,23 @@ class ProductoController extends Component
 {
 	public $rubro ='Elegir', $descripcion, $estado='DISPONIBLE', $precio_costo=null, $precio_venta;
 	public $codigo, $codigo_sugerido, $selected_id = null, $search, $rubros;
+	public $comercioId;
 	
 	public function render()
 	{
-		$this->rubros = Rubro::all();
+		//busca el comercio que está en sesión
+		$this->comercioId = session('idComercio');
+		
+		$this->rubros = Rubro::select('*')->where('comercio_id', $this->comercioId)->get();
 
 		if($this->selected_id == null) {
-			$nuevo_codigo = Producto::all();
+			$nuevo_codigo = Producto::select('*')->where('comercio_id', $this->comercioId)->get();
 			if ($nuevo_codigo->count() == 0){
 				$this->codigo_sugerido = 1;
 			}else{
-				$nuevo_codigo = Producto::select('id')->orderBy('id','desc')->first();
+				$nuevo_codigo = Producto::select('id')
+                ->where('comercio_id', $this->comercioId)
+				->orderBy('id','desc')->first();
 				$this->codigo_sugerido = $nuevo_codigo->id + 1;
 			}
 		}else{
@@ -33,8 +39,11 @@ class ProductoController extends Component
 			$info = Producto::leftjoin('rubros as r','r.id','productos.rubro_id')
 			->select('productos.*', 'r.descripcion as rubro')
 			->where('productos.descripcion', 'like', '%' . $this->search .'%')
+			->where('productos.comercio_id', $this->comercioId)
 			->orWhere('productos.estado', 'like', '%' . $this->search .'%')
+			->where('productos.comercio_id', $this->comercioId)
 			->orWhere('r.descripcion', 'like', '%' . $this->search .'%')
+			->where('productos.comercio_id', $this->comercioId)
 			->orderBy('productos.descripcion', 'asc')
 			->get();
 
@@ -46,6 +55,7 @@ class ProductoController extends Component
 		{
 			$info = Producto::leftjoin('rubros as r','r.id','productos.rubro_id')
 			->select('productos.*', 'r.descripcion as rubro')
+			->where('productos.comercio_id', $this->comercioId)
 			->orderBy('productos.descripcion', 'asc')
 			->get();
 		
@@ -92,7 +102,7 @@ class ProductoController extends Component
 		
 		$this->validate([
 			'rubro' => 'required',
-			'codigo' => 'required',
+			'codigo' => 'required|integer',
 			'descripcion' => 'required',
 			'precio_venta' => 'required',
 			'estado' => 'required'
@@ -102,7 +112,8 @@ class ProductoController extends Component
         //valida si existe otro producto con el mismo nombre (edicion de productos)
         if($this->selected_id > 0) {
             $existe = Producto::where('descripcion', $this->descripcion)
-                ->where('id', '<>', $this->selected_id)
+				->where('id', '<>', $this->selected_id)
+                ->where('comercio_id', $this->comercioId)				
                 ->get();
         
             if( $existe->count() > 0) {
@@ -113,6 +124,7 @@ class ProductoController extends Component
 			//valida si existe otro producto con el mismo código (edicion de productos)
 			$existe = Producto::where('codigo', $this->codigo)
 				->where('id', '<>', $this->selected_id)
+				->where('comercio_id', $this->comercioId)
 				->get();
 	
 			if( $existe->count() > 0) {
@@ -122,7 +134,8 @@ class ProductoController extends Component
 		}
         }else{
             //valida si existe otro producto con el mismo nombre (nuevos registros)
-			$existe = Producto::where('descripcion', $this->descripcion)->get();
+			$existe = Producto::where('descripcion', $this->descripcion)
+								->where('comercio_id', $this->comercioId)->get();
         
             if($existe->count() > 0 ) {
                 session()->flash('msg-error', 'Ya existe el Producto');
@@ -130,7 +143,8 @@ class ProductoController extends Component
                 return;
 			}
 			//valida si existe otro producto con el mismo código de barras (nuevos registros)
-			$existe = Producto::where('codigo', $this->codigo)->get();
+			$existe = Producto::where('codigo', $this->codigo)
+								->where('comercio_id', $this->comercioId)->get();
         
             if($existe->count() > 0 ) {
                 session()->flash('msg-error', 'Ya existe el Código');
@@ -147,7 +161,8 @@ class ProductoController extends Component
 				'precio_costo' => $this->precio_costo,
 				'precio_venta' => $this->precio_venta,
 				'rubro_id' => $this->rubro,
-				'estado' => $this->estado
+				'estado' => $this->estado,
+				'comercio_id' => $this->comercioId
 			]);
 		}
 		else {

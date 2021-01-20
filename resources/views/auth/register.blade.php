@@ -1,7 +1,10 @@
+@extends('layouts.app')
+
+@section('content')
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-4">
-            <h1 class="text-center mb-4" style="color:black"><b>SisGNF</b></h1>
+        <div class="col-sm-6 col-lg-4">
+            <h1 class="text-center mb-2" style="color:black"><b>Floki</b></h1>
             <div class="card">
                 <div class="card-header">{{ __('Register') }}</div>
                 <div class="card-body px-4">
@@ -19,7 +22,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="name" type="text" class="form-control text-capitalize @error('apellido') is-invalid @enderror" name="apellido" value="{{ old('apellido') }}" required autocomplete="apellido" autofocus placeholder="APELLIDO">
+                                <input id="apellido" type="text" class="form-control text-capitalize @error('apellido') is-invalid @enderror" name="apellido" value="{{ old('apellido') }}" required autocomplete="apellido" autofocus placeholder="APELLIDO">
                                 @error('apellido')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -29,7 +32,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="name" type="text" class="form-control text-uppercase @error('nombreComercio') is-invalid @enderror" name="nombreComercio" value="{{ old('nombreComercio') }}" required autocomplete="nombreComercio" autofocus placeholder="NOMBRE DEL COMERCIO">
+                                <input id="nombreComercio" type="text" class="form-control text-uppercase @error('nombreComercio') is-invalid @enderror" name="nombreComercio" value="{{ old('nombreComercio') }}" required autocomplete="nombreComercio" autofocus placeholder="NOMBRE DEL COMERCIO">
                                 @error('nombreComercio')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -39,14 +42,33 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @enderror" name="telefono" value="{{ old('telefono') }}" required autocomplete="telefono" placeholder="TELEFONO">
+                                <select name="tipo" class="form-control text-center">
+                                    <option value="2">Bar/Pub/Restó</option>
+                                    <option value="3">Restaurante</option>
+                                    <option value="4">Pizzería</option>
+                                    <option value="5">Cervecería</option>
+                                    <option value="6">Heladería</option>
+                                    <option value="7">Cafetería</option>
+                                    <option value="8">Rotisería</option>
+                                    <option value="9">Panadería</option>
+                                    <option value="10">Otro comercio gastronómico</option>
+                                    <option value="11">Otro comercio no gastronómico</option>
+                                </select>
+                            </div>
+                        </div>
+
+                     
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @enderror" name="telefono" value="{{ old('telefono') }}" required autocomplete="telefono" placeholder="TELEFONO (solo números, sin 0 ni 15)">
                                 @error('telefono')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
                             </div>
-                        </div>
+                        </div>                      
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="EMAIL">
@@ -57,16 +79,31 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class=" mt-4 text-left">
-                            <button type="submit" class="btn btn-primary">
+                        <div class="form-group row">
+                                <div class="col-md-12">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="PASSWORD">
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password" placeholder="CONFIRMAR PASSWORD">
+                            </div>
+                        </div>
+                        <div class=" mt-4 text-left ">
+                            <button type="submit" class="btn btn-block btn-primary">
                             {{ ('REGISTRARSE') }}
                             </button>
                         </div>
                         <div class="col-md-12 text-right">
                             Ya estás registrado? 
-                            <a class="btn btn-link" href="#" wire:model="vista" wire:click="doAction(1)">
+                            <a class="btn btn-link" href="{{ route('login') }}">
                             {{ ('Hacé click acá') }}
-                            </a>                            
+                            </a>    
                         </div>
                     </form>
                 </div>
@@ -74,4 +111,4 @@
         </div>
     </div>
 </div>
-
+@endsection

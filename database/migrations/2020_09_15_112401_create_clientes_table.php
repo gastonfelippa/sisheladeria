@@ -17,7 +17,11 @@ class CreateClientesTable extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('direccion');
-            $table->string('telefono',10)->nullable();
+            $table->string('telefono',15)->nullable();
+            
+            $table->unsignedBigInteger('comercio_id');
+            $table->foreign('comercio_id')->references('id')->on('comercios');
+
             $table->timestamps();
         });
     }

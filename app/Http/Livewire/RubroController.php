@@ -9,13 +9,18 @@ class RubroController extends Component
 {
     //public properties
 	public  $descripcion, $margen;            //campos de la tabla tipos
-	public  $selected_id, $search;   //para búsquedas y fila seleccionada
+    public  $selected_id, $search;   //para búsquedas y fila seleccionada
+    public $comercioId;
 
     public function render()
     {
+         //busca el comercio que está en sesión
+         $this->comercioId = session('idComercio');
+
         if(strlen($this->search) > 0)
         {
             $info = Rubro::where('descripcion', 'like', '%' .  $this->search . '%')
+                    ->where('comercio_id', $this->comercioId) 
                     ->orderby('descripcion','desc')->get();
             return view('livewire.rubros.component', [
                 'info' =>$info
@@ -23,7 +28,8 @@ class RubroController extends Component
         }
         else {
            return view('livewire.rubros.component', [
-            'info' => Rubro::orderBy('descripcion', 'asc')->get()
+            'info' => Rubro::orderBy('descripcion', 'asc')
+                        ->where('comercio_id', $this->comercioId)->get()
         ]);
        }
     }
@@ -63,6 +69,7 @@ class RubroController extends Component
         if($this->selected_id > 0) {
             $existe = Rubro::where('descripcion', $this->descripcion)
             ->where('id', '<>', $this->selected_id)
+            ->where('comercio_id', $this->comercioId)
             ->select('descripcion')
             ->get();
 
@@ -76,6 +83,7 @@ class RubroController extends Component
         {
             //valida si existe otro cajón con el mismo nombre (nuevos registros)
             $existe = Rubro::where('descripcion', $this->descripcion)
+            ->where('comercio_id', $this->comercioId)
             ->select('descripcion')
             ->get();
 
@@ -90,7 +98,8 @@ class RubroController extends Component
             //creamos el registro
             $category =  Rubro::create([
                 'descripcion' => strtoupper($this->descripcion),            
-                'margen' => $this->margen            
+                'margen' => $this->margen,
+                'comercio_id' => $this->comercioId            
             ]);
         }
         else 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>SisGNF</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -18,16 +18,15 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    
+
     @livewireStyles
-
 </head>
-<body style="background-color: #5CBD9D;">
-
-    <main class="py-4">
+<body style="background-color:#d8da8d">
+    
+    <main class="py-3">
         @yield('content')
     </main>
 
-     @livewireScripts
+    @livewireScripts
 </body>
 </html>

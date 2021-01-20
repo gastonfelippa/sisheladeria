@@ -6,18 +6,14 @@
 
 @endsection
 
-@section('title', 'Home')
-
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12 mt-2">
-            <div class="card">                
-                <div class="card-body">
-                    <h1> ¡¡¡Hola {{ Auth::user()->nombre }}!!!</h1>
-                </div>
+    <div class="widget-content-area mt-3">
+        <div class="widget-one">
+            <div class="row">
+                <h1>Bienvenido <strong>{{Auth::user()->name}}!!!</strong></h1>
             </div>
         </div>
     </div>
 </div>
-@endsection 
+@endsection

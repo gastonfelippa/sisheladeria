@@ -4,7 +4,7 @@
 			<div class="widget-one">
                 <div class="row">
                     <div class="col-md-6">
-                        <h3>Factura N°: {{$id_factura}}</h3>
+                        <h3>Factura N°:{{$numFactura}}</h3>
                     </div>
                     <div class="col-md-6 text-center">
                         <h3 class="bg-danger">Total : $ {{number_format($total,2)}}</h3> 
@@ -27,7 +27,7 @@
                             </button>
                         @endif 
                         @if($total == 0)                       
-                            <button type="button" wire:click="terminar_factura()" onclick="setfocus('barcode')" 
+                            <button type="button" wire:click="cobrar_factura()" onclick="setfocus('barcode')" 
                                 class="btn btn-primary" disabled>
                                 Cobrar   
                             </button>
@@ -35,13 +35,12 @@
                                 Imprimir
                             </button>
                         @else
-                            <button type="button" wire:click="terminar_factura()" onclick="setfocus('barcode')" 
+                            <button type="button" wire:click="cobrar_factura()" onclick="setfocus('barcode')" 
                                 class="btn btn-primary" enabled>
                                 Cobrar   
                             </button>
                             <button type="button" class="btn btn-success" enabled>
-                                <a href="{{url('pdfFactDel',array($id_factura))}}">
-                                <!-- <a href="{{url('pdfFacturas')}}"> -->
+                                <a href="{{url('pdfFactDel',array($factura_id))}}">
                                 Imprimir</a>
                             </button>
                         @endif

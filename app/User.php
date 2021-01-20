@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+use App\Notifications\ResetPasswordNotification;
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
@@ -18,7 +20,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'nombre', 'apellido', 'email', 'password', 'telefono', 'movil','direccion' //, 'tipo'
+        'name', 'apellido', 'email', 'password', 'telefono','direccion','abonado'  //, 'comercio_id'
     ];
 
     /**
@@ -38,4 +40,21 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+        /**
+         * Send the password reset notification.
+         * 
+         * @param string token
+         * @return void
+         */
+
+    public function sendPasswordResetNotification($token)
+    {   
+        $this->notify(new ResetPasswordNotification($token));
+    }
+
+    protected static function booted(){
+        static::updated(function($user){
+        });
+    }
 }

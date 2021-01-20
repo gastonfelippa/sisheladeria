@@ -12,10 +12,18 @@ class PermisosController extends Component
 {
     public $permisoTitle = "Crear", $roleTitle = "Crear", $userSelected;
     public $tab = 'roles', $roleSelected;
+    public $comercioId;
 
     public function render()
     {
-        $roles = Role::select('*', DB::RAW("0 as checked"))->get();
+         //busca el comercio que está en sesión
+        $userComercio = UsuarioComercio::select('comercio_id')
+            ->where('usuario_id', Auth()->user()->id)->get();
+        $this->comercioId = $userComercio[0]->comercio_id;
+
+        $roles = Role::select('*', DB::RAW("0 as checked"))
+        ->where('comercio_id', $userComercio[0]->comercio_id)->get();
+
         $permisos = Permission::select('*', DB::RAW("0 as checked"))->get();
 
         if($this->userSelected != '' && $this->userSelected != 'Seleccionar')
@@ -78,14 +86,13 @@ class PermisosController extends Component
         $role = Role::where('name', $roleName)->first();
         if($role){
             session()->flash('msg-ops', 'El role que intentas registrar ya existe en sistema');
-            // $this->emit('msg-error', 'El role que intentas registrar ya existe en sistema');
             return;
         }
         Role::create([
-            'name' => $roleName
+            'name' => $roleName,
+            'comercio_id' => $this->comercioId
         ]);
         session()->flash('msg-ok', 'El role se registró correctamente');
-        // $this->emit('msg-ok', 'El role se registró correctamente');
         $this->resetInput();
     }
 
@@ -94,7 +101,6 @@ class PermisosController extends Component
         $role = Role::where('name', $roleName)->where('id', '<>', $roleId)->first();
         if($role){
             session()->flash('msg-ops', 'El role que intentas registrar ya existe en sistema');
-            // $this->emit('msg-error', 'El role que intentas registrar ya existe en sistema');
             return;
         }
 

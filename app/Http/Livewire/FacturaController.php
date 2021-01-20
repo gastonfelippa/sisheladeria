@@ -17,52 +17,61 @@ class FacturaController extends Component
     public $cantidad = 1, $precio, $estado='ABIERTO';
     public $cliente="Elegir", $empleado="Elegir", $producto="Elegir", $barcode;
     public $clientes, $empleados, $productos, $dejar_pendiente;
-    public $selected_id = null, $search, $id_factura;
+    public $selected_id = null, $search, $numFactura;
     public $facturas, $dirCliente, $total, $importe, $totalAgrabar;  
     public $grabar_encabezado, $habilitar_grabar_encabezado =null, $habilitar_botones =null,$modificar, $codigo;
+    public $comercioId, $factura_id;
 	
 	public function render()
 	{
-       // $this->facturaAfip();
-
-        $this->productos = Producto::select()->orderBy('descripcion', 'asc')->get();
-        $this->clientes = Cliente::select()->orderBy('nombre', 'asc')->get();
-        $this->empleados = Empleado::select()->orderBy('nombre', 'asc')->get();
-
+        // $this->facturaAfip();
+        
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio');
+                
+        $this->productos = Producto::select()->where('comercio_id', $this->comercioId)->orderBy('descripcion', 'asc')->get();
+        $this->clientes = Cliente::select()->where('comercio_id', $this->comercioId)->orderBy('nombre', 'asc')->get();
+        $this->empleados = Empleado::select()->where('comercio_id', $this->comercioId)->orderBy('nombre', 'asc')->get();
+        
         if(strlen($this->barcode) > 0){ //strlen valida si está vacío o no
             $this->buscarProducto($this->barcode); 
         }
         else{
             $this->precio = '';
         }
-
+        
         $dCliente = Cliente::find($this->cliente);
-            if($dCliente != null) {$this->dirCliente = $dCliente->direccion;}
-      
+        if($dCliente != null) {$this->dirCliente = $dCliente->direccion;}
+        
         $dProducto = Producto::find($this->producto);
-            if($dProducto != null) {$this->precio = $dProducto->precio_venta;}else {$this->precio = '';}     
-
-        $encabezado = Factura::all();
-
+        if($dProducto != null) {$this->precio = $dProducto->precio_venta;}else {$this->precio = '';}     
+        
+        $encabezado = Factura::select('*')->where('comercio_id', $this->comercioId)->get();                        // ->where('estado','like','ABIERTA')->get();
+        
         if($encabezado->count() == 0){
-            $this->id_factura = 1;
+            $this->numFactura = 1;
             $this->grabar_encabezado = true;
         }else{
             $encabezado = Factura::leftjoin('clientes as c','c.id','facturas.cliente_id')
             ->leftjoin('empleados as r','r.id','facturas.repartidor_id')
             ->where('facturas.estado','like','ABIERTA')
+            ->where('facturas.comercio_id', $this->comercioId)
             ->select('facturas.*', 'c.nombre as nomCli','c.direccion', 'r.nombre as nomRep')->get();
-
-           if($encabezado->count() > 0){
-                $this->id_factura = $encabezado[0]->id;
+                        
+            if($encabezado->count() > 0){
+                $this->numFactura = $encabezado[0]->numero;
+                //toma el id de la factura abierta
+                $this->factura_id = $encabezado[0]->id;
+                
                 if($this->habilitar_grabar_encabezado)  
                     $this->grabar_encabezado = true;
                 else   
                     $this->grabar_encabezado = false;                             
             }else{
-                $encabezado = Factura::select('facturas.id')
-                            ->orderBy('facturas.id', 'desc')->get();                             
-                $this->id_factura = $encabezado[0]->id + 1;
+                $encabezado = Factura::select('facturas.numero')
+                            ->where('comercio_id', $this->comercioId)
+                            ->orderBy('facturas.numero', 'desc')->get();                             
+                $this->numFactura = $encabezado[0]->numero + 1;
                 $this->grabar_encabezado = true;
             }
         }
@@ -74,13 +83,16 @@ class FacturaController extends Component
                 $this->dejar_pendiente = false;
             }
         }
-        $info = Detfactura::all();
+
+        $info = Detfactura::select('*')->where('comercio_id', $this->comercioId)->get();
 
         if($info->count() > 0){
             $info = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
                     ->leftjoin('productos as p','p.id','detfacturas.producto_id')
                     ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
-                    ->where('detfacturas.factura_id', $this->id_factura)
+                    ->where('detfacturas.factura_id', $this->factura_id)
+                    ->where('detfacturas.comercio_id', $this->comercioId)
+                    ->where('f.estado', 'like', 'ABIERTA')
                     ->orderBy('detfacturas.id', 'asc')->get();  
         }    
         $this->total = 0;
@@ -96,7 +108,7 @@ class FacturaController extends Component
             'encabezado' => $encabezado
 		]);
     }
-    
+
     public function facturaAfip()
     {
         include './../resources/src/Afip.php';
@@ -147,9 +159,8 @@ class FacturaController extends Component
     
     public function buscarProducto($id)
     {
-        //dd($id);
-        $pvta = Producto::select()->where('codigo', $id)->get();
-        //dd($pvta);
+        $pvta = Producto::select()->where('comercio_id', $this->comercioId)->where('codigo', $id)->get();
+        
         if ($pvta->count() > 0){
             $this->producto = $pvta[0]->id;
         }else{
@@ -235,18 +246,23 @@ class FacturaController extends Component
                 }  
                 if($this->grabar_encabezado == true)
                 {
-                    $cajon = Factura::create([
+                    $factura = Factura::create([
+                        'numero' => $this->numFactura,
                         'cliente_id' => $this->cliente,
                         'importe' => $this->totalAgrabar,
                         'estado' => 'ABIERTA',
                         'repartidor_id' => $this->empleado,
-                        'user_id' => auth()->user()->id
+                        'user_id' => auth()->user()->id,
+                        'comercio_id' => $this->comercioId
                     ]);
                 }
+                
+                $idFactura = Factura::where('estado', 'like', 'ABIERTA')->where('comercio_id', $this->comercioId)->select('id')->get();
+                $this->factura_id = $idFactura[0]->id;
 
-                $idFactura = Factura::where('estado', 'like', 'ABIERTA')->select('id')->get();
                 $existe = Detfactura::select('id')          //buscamos si el producto ya está cargado
                                     ->where('factura_id', 'like', $idFactura[0]->id)
+                                    ->where('comercio_id', $this->comercioId)
                                     ->where('producto_id', 'like', $this->producto)->get();
                 if ($existe->count() > 0){
                     $edit_cantidad = Detfactura::find($existe[0]->id); 
@@ -256,10 +272,11 @@ class FacturaController extends Component
                     ]);
                 }else{
                     $add_item = Detfactura::create([         //creamos un nuevo detalle
-                        'factura_id' => $idFactura[0]->id,
+                        'factura_id' => $this->factura_id,
                         'producto_id' => $this->producto,
                         'cantidad' => $this->cantidad,
-                        'precio' => $this->precio
+                        'precio' => $this->precio,
+                        'comercio_id' => $this->comercioId
                     ]);	
                 }
 
@@ -288,10 +305,10 @@ class FacturaController extends Component
         $this->habilitar_grabar_encabezado = false;
     }
     
-    public function terminar_factura()
+    public function cobrar_factura()
     {
         if($this->total != 0){
-            $record = Factura::find($this->id_factura);
+            $record = Factura::find($this->factura_id);
             $record->update([
                 'estado' => 'PAGADA',
                 'importe' => $this->total
@@ -308,7 +325,7 @@ class FacturaController extends Component
         if($this->total == 0){
             session()->flash('msg-error', 'Factura vacía...'); 
         }else{
-            $record = Factura::find($this->id_factura);
+            $record = Factura::find($this->factura_id);
             $record->update([
                 'estado' => 'PENDIENTE',
                 'importe' => $this->total

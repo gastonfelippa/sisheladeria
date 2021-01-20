@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Detfactura extends Model
 {
     protected $table = 'detfacturas';
-    protected $fillable = ['id', 'factura_id', 'producto_id', 'cantidad', 'precio'];
+    protected $fillable = ['id', 'factura_id', 'producto_id', 'cantidad', 'precio', 'comercio_id'];
 }

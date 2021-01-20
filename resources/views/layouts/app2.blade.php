@@ -22,20 +22,11 @@
     @livewireStyles
 
 </head>
-<body>
-    <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <h2>{{ config('app.name', 'Laravel') }}</h2>
-            </div>
-        </nav>
+<body style="background-color:#d8da8d">  
 
-        <main class="py-4">
-
-            @yield('content')
-        </main>
-
-    </div>
+    <main class="py-4">
+        @yield('content')
+    </main>
 
      @livewireScripts
 </body>
