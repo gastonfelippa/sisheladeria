@@ -6,6 +6,8 @@ use Spatie\Permission\Models\Permission;
 use App\User;
 use App\TipoComercio;
 use App\Comercio;
+use App\Plan;
+use App\Proceso;
 
 class UserSeeder extends Seeder
 {
@@ -72,8 +74,16 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'Movimientos_create']);
         Permission::create(['name' => 'Movimientos_edit']);
         Permission::create(['name' => 'Movimientos_destroy']);
+
+        Permission::create(['name' => 'Facturas_imp']);
+        Permission::create(['name' => 'Fact_delivery_imp']);
+
+        Permission::create(['name' => 'Planes_index']);
+        Permission::create(['name' => 'Abonados_index']);
+        Permission::create(['name' => 'Procedimientos_index']);
         
         //creamos tipos de comercio
+        TipoComercio::create(['descripcion' => 'Tipo SuperAdmin']);
         TipoComercio::create(['descripcion' => 'Tipo Abonado']);
         TipoComercio::create(['descripcion' => 'Bar/Pub/Restó']);
         TipoComercio::create(['descripcion' => 'Restaurante']);
@@ -85,79 +95,93 @@ class UserSeeder extends Seeder
         TipoComercio::create(['descripcion' => 'Panadería']);
         TipoComercio::create(['descripcion' => 'Otro comercio gastronómico']);
         TipoComercio::create(['descripcion' => 'Otro comercio no gastronómico']);
-        
 
-        //creamos un comercio ficticio para poder crear el rol SuperAdmin
-        $comercio = Comercio::create(['nombre' => 'ABONADO', 'tipo_id' => '1']);
-        // //lista de roles        
-        $superadmin = Role::create(['name' => 'SuperAdmin', 'comercio_id' => '1']); 
-             
-        // $admin = Role::create(['name' => 'Admin']);
-        // $empleado = Role::create(['name' => 'Empleado']);
-        // $cliente = Role::create(['name' => 'Cliente']);      
-        
-        $superadmin->givePermissionTo([
-            'Estadisticas_index',
-            'Abm_index',
-            'Config_index',
-            'Empresa_index',
-            'Permisos_index',
-            'Productos_index',
-            'Productos_create',
-            'Productos_edit',
-            'Productos_destroy',
-            'Rubros_index',
-            'Rubros_create',
-            'Rubros_edit',
-            'Rubros_destroy',
-            'Empleados_index',
-            'Empleados_create',
-            'Empleados_edit',
-            'Empleados_destroy',
-            'Clientes_index',
-            'Clientes_create',
-            'Clientes_edit',
-            'Clientes_destroy',
-            'Gastos_index',
-            'Gastos_create',
-            'Gastos_edit',
-            'Gastos_destroy',
-            'Facturas_index',
-            'Facturas_create_producto',
-            'Facturas_edit_item',
-            'Facturas_destroy_item',
-            'Caja_index',
-            'CorteDeCaja_index',
-            'MovimientosDiarios_index',
-            'CajaRepartidor_index',
-            'Reportes_index',
-            'VentasDiarias_index',
-            'VentasPorFechas_index',
-            'Usuarios_index',
-            'Usuarios_create',
-            'Usuarios_edit',
-            'Usuarios_destroy',
-            'Movimientos_index',
-            'Movimientos_create',
-            'Movimientos_edit',
-            'Movimientos_destroy',
-            'Facturas_imp',
-            'Fact_delivery_imp'
+        Plan::create([
+            'descripcion' => 'PRUEBA', 
+            'precio'      => '0',
+            'duracion'    => '30',
+            'estado'      => 'activo'
         ]);
         
+ 
+        //creamos un comercio ficticio para poder crear el rol SuperAdmin
+        $comercio = Comercio::create(['nombre' => 'SUPERADMIN', 'tipo_id' => '1']);
+        $comercio = Comercio::create(['nombre' => 'ABONADO', 'tipo_id' => '2']);
 
-        // User::create([
-        //     'name' => 'Admin',
-        //     'apellido'=> 'Admin',
-        //     'email' => 'admin@gmail.com',
-        //     'password' => bcrypt('admin'),
-        //     'telefono' => '0',
-        //     'movil' => '0',
-        //     'direccion' => ''
-        // ]);
-     
+        // //lista de roles        
+        $superadmin = Role::create(['name' => 'SuperAdmin', 'comercio_id' => '1']); 
+        //$admin = Role::create(['name' => 'Admin', 'comercio_id' => '2']); 
+        
+        //asignación de permisos a roles
+        $superadmin->givePermissionTo([   
+            'Planes_index',  
+            'Abonados_index',
+            'Procedimientos_index'
+        ]);  
+        
+        // $admin->givePermissionTo([
+        //     'Estadisticas_index',
+        //     'Abm_index',
+        //     'Config_index',
+        //     'Empresa_index',
+        //     'Permisos_index',
+        //     'Productos_index',
+        //     'Productos_create',
+        //     'Productos_edit',
+        //     'Productos_destroy',
+        //     'Rubros_index',
+        //     'Rubros_create',
+        //     'Rubros_edit',
+        //     'Rubros_destroy',
+        //     'Empleados_index',
+        //     'Empleados_create',
+        //     'Empleados_edit',
+        //     'Empleados_destroy',
+        //     'Clientes_index',
+        //     'Clientes_create',
+        //     'Clientes_edit',
+        //     'Clientes_destroy',
+        //     'Gastos_index',
+        //     'Gastos_create',
+        //     'Gastos_edit',
+        //     'Gastos_destroy',
+        //     'Facturas_index',
+        //     'Facturas_create_producto',
+        //     'Facturas_edit_item',
+        //     'Facturas_destroy_item',
+        //     'Caja_index',
+        //     'CorteDeCaja_index',
+        //     'MovimientosDiarios_index',
+        //     'CajaRepartidor_index',
+        //     'Reportes_index',
+        //     'VentasDiarias_index',
+        //     'VentasPorFechas_index',
+        //     'Usuarios_index',
+        //     'Usuarios_create',
+        //     'Usuarios_edit',
+        //     'Usuarios_destroy',
+        //     'Movimientos_index',
+        //     'Movimientos_create',
+        //     'Movimientos_edit',
+        //     'Movimientos_destroy',
+        //     'Facturas_imp',
+        //     'Fact_delivery_imp'           
+        // ]);        
 
-        // $user = User::find(1);
-        // $user->assignRole('SuperAdmin');
+        User::create([
+            'name' => 'Gastón',
+            'apellido'=> 'Felippa',
+            'email' => 'admin@gmail',
+            'password' => bcrypt('12345678'),
+            'abonado' => 'Admin'
+        ]);     
+
+        $user = User::find(1);
+        $user->assignRole('SuperAdmin');
+
+        Proceso::create(['descripcion' => 'Renovación Automática De Planes', 'dia_ejecucion'=> '1']);
+        Proceso::create(['descripcion' => 'Plan De Prueba Finalizado', 'dia_ejecucion'=> '1']);
+        Proceso::create(['descripcion' => 'Plan Activo En Mora', 'dia_ejecucion'=> '11']);
+        Proceso::create(['descripcion' => 'Plan Activo Impago', 'dia_ejecucion'=> '16']);
     }
 }

@@ -1,9 +1,7 @@
 @extends('layouts.template')
 
-@section('logo')
-     
+@section('logo')     
   @livewire('logo-controller')
-
 @endsection
 
 @section('content')

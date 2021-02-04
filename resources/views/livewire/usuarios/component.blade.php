@@ -8,8 +8,11 @@
     					<h5><b>Usuarios de Sistema</b></h5>
     				</div> 
     			</div>
-    		</div>
-    		@include('common.search') <!-- búsqueda y botón para nuevos registros -->
+			</div>
+			
+			<button type="button" onclick="openModal('{{$empleados}},{{$roles}}')" class="btn btn-dark"></button>
+			
+			@include('common.search') 
     		<div class="table-responsive scroll">
     			<table class="table table-hover table-checkable table-sm mb-4">
     				<thead>
@@ -19,7 +22,6 @@
     						<th class="">TELÉFONO</th>
     						<th class="">DIRECCIÓN</th>
     						<th class="">EMAIL</th>
-    						<!-- <th class="">TIPO</th> -->
     						<th class="text-center">ACCIONES</th>
     					</tr>
     				</thead>
@@ -31,7 +33,6 @@
     						<td>{{$r->telefono}}</td>
     						<td>{{$r->direccion}}</td>
     						<td>{{$r->email}}</td>
-    						<!-- <td>{{$r->tipo}}</td> -->
     						<td class="text-center">
     							@include('common.actions', ['edit' => 'Usuarios_edit', 'destroy' => 'Usuarios_destroy']) <!-- botons editar y eliminar -->
     						</td>
@@ -41,7 +42,8 @@
     			</table>
     			{{$info->links()}} <!--paginado de tabla -->
     		</div>
-    	</div>   
+		</div> 
+		@include('livewire.usuarios.modal')  
     	@elseif($action == 2)
     	@include('livewire.usuarios.form')		
     	@endif  
@@ -56,7 +58,7 @@
     overflow: auto;
 }
 </style>
-
+<script src="{{ asset('assets/js/sweetAlert.js') }}"></script>
 <script type="text/javascript">
     function Confirm(id)
     {
@@ -73,10 +75,70 @@
     		closeOnConfirm: false
     	},
     	function() {
-    		console.log('ID', id);
     		window.livewire.emit('deleteRow', id)    //emitimos evento deleteRow
     		toastr.success('info', 'Registro eliminado con éxito') //mostramos mensaje de confirmación 
     		swal.close()   //cerramos la modal
     	})
     }
+	function Agregar()
+	{
+		Swal.fire({
+			title: 'El nuevo Usuario es Empleado?',
+			showDenyButton: true,
+			showCancelButton: true,
+			confirmButtonText: `Si`,
+			denyButtonText: `No`,
+			}).then((result) => {
+			/* Read more about isConfirmed, isDenied below */
+			if (result.isConfirmed) {
+				Swal.fire({
+					input: 'select',
+					inputPlaceHolder: 'Empleado',
+					inputValue: '@foreach($empleados as $e)
+						{{$e->nombre}}@endforeach',
+					inputOptions:'',
+
+				})
+			} else if (result.isDenied) {
+				Swal.fire('Changes are not saved', '', 'info')
+			}
+		})
+	}
+	function openModal(empleados,roles)
+    {
+        $('#empleado').val('Elegir')
+        $('#rol').val('Elegir')
+        $('#empleados').val(empleados)
+        $('#roles').val(roles)
+        $('#modalRolUsuario').modal('show')
+	}
+	function save()
+    {
+        if($('#empleado option:selected').val() == 'Elegir')
+        {
+            toastr.error('Elige una opción válida para el Empleado')
+            return;
+        }
+        if($('#rol option:selected').val() == 'Elegir')
+        {
+            toastr.error('Elige una opción válida para el Rol')
+            return;
+        }
+
+        var data = JSON.stringify({
+            'empleado_id': $('#empleado option:selected').val(),
+            'rol_id'  : $('#rol option:selected').val()
+        });
+
+        window.livewire.emit('createFromModal', data)
+    }           
+
+    document.addEventListener('DOMContentLoaded', function(){
+        window.livewire.on('msgok', dataMsg => {
+            $('#modalRolUsuario').modal('hide')
+        })
+        window.livewire.on('msgerror', dataMsg => {
+            $('#modalRolUsuario').modal('hide')
+        })
+    });
 </script>

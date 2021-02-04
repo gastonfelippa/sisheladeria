@@ -56,13 +56,10 @@
                                 </select>
                             </div>
                         </div>
-
-                     
-
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="telefono" type="text" class="form-control @error('telefono') is-invalid @enderror" name="telefono" value="{{ old('telefono') }}" required autocomplete="telefono" placeholder="TELEFONO (solo números, sin 0 ni 15)">
-                                @error('telefono')
+                                <input id="telefono1" type="text" class="form-control @error('telefono1') is-invalid @enderror" name="telefono1" value="{{ old('telefono1') }}" required autocomplete="telefono1" placeholder="TELEFONO 1(solo números, sin 0 ni 15)">
+                                @error('telefono1')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

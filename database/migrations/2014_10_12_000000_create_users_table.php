@@ -17,12 +17,13 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('apellido');
-            $table->string('telefono',15)->nullable();
+            $table->string('telefono1',15)->nullable();
+            $table->string('telefono2',15)->nullable();
             $table->string('direccion')->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('abonado', ['Si', 'No'])->default('No');
+            $table->enum('abonado', ['Si', 'No', 'Admin'])->default('No');
 
             // $table->unsignedBigInteger('comercio_id');
             // $table->foreign('comercio_id')->references('id')->on('comercios');

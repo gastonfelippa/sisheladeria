@@ -26,6 +26,10 @@
     <main class="py-3">
         @yield('content')
     </main>
+    
+    <!-- <div class="ml-3 mr-3">
+        @include('footer.footer')
+    </div> -->
 
     @livewireScripts
 </body>

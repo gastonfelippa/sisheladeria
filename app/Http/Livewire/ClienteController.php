@@ -71,7 +71,7 @@ class ClienteController extends Component
     {     
             //validación campos requeridos
         $this->validate([
-            'nombre' => 'required', //validamos que descripción no sea vacío o nullo y que tenga al menos 4 caracteres
+            'nombre' => 'required', //validamos que descripción no sea vacío o null
             'direccion' => 'required'
         ]);
 

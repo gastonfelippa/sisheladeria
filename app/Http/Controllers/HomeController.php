@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\UsuarioComercio;
+use App\UsuarioComercioPlanes;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -27,12 +29,51 @@ class HomeController extends Controller
      */
     public function index()
     {
-        //inicializa la variable de session idComercio con el comercio asignado al usuario actual
-        $userComercio = UsuarioComercio::select('comercio_id')
-                      ->where('usuario_id', Auth()->user()->id)->get();
-  
-        session(['idComercio' => $userComercio[0]->comercio_id]);
+        if(Auth()->user()->id !=1)
+        {
+            //inicializa la variable de session idComercio con el comercio asignado al usuario actual
+            $userComercio = UsuarioComercio::select('id','comercio_id')
+            ->where('usuario_id', Auth()->user()->id)->get();
+            session(['idComercio' => $userComercio[0]->comercio_id]);             
+             
+            //verificaciones de planes
+            $fecha_actual = Carbon::now();      
+            $estado = UsuarioComercioPlanes::select('*')
+                ->where('usuariocomercio_planes.usuariocomercio_id', $userComercio[0]->id)
+                ->orderBy('id', 'desc')->first();
+            
+            if($estado->estado_plan == 'completado' && $estado->plan_id == 1)
+            {
+                return view('livewire.admin.mensajes.prueba_completada');
+            } 
 
+            if($estado->estado_plan == 'completado' && $estado->estado_pago == 'pagado')
+            {
+                return view('livewire.admin.mensajes.plan_completado');
+            } 
+
+            if($estado->estado_plan == 'activo' && $estado->estado_pago == 'en mora')
+            {
+                return view('livewire.admin.mensajes.plan_en_mora');
+            }   
+
+            if($estado->estado_plan == 'activo')
+            {
+                return view('home');
+            }              
+            
+            if($estado->estado_plan == 'suspendido')
+            {
+                return view('livewire.admin.mensajes.plan_suspendido');
+            }
+        }        
+        else
+        {                
+            return view('abonados');
+        }  
+    }
+    public function notificado()
+    {
         return view('home');
     }
 }

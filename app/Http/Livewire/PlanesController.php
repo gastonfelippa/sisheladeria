@@ -3,35 +3,30 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use\App\Rubro;
+use App\Plan;
 
-class RubroController extends Component
+class PlanesController extends Component
 {
     //public properties
-	public  $descripcion, $margen;            //campos de la tabla tipos
-    public  $selected_id, $search;   //para búsquedas y fila seleccionada
-    public $comercioId;
+	public  $descripcion, $precio, $duracion, $estado = 'activo';  //campos de la tabla planes
+    public  $selected_id, $search;                  //para búsquedas y fila seleccionada
 
     public function render()
     {
-         //busca el comercio que está en sesión
-         $this->comercioId = session('idComercio');
-
         if(strlen($this->search) > 0)
         {
-            $info = Rubro::where('descripcion', 'like', '%' .  $this->search . '%')
-                    ->where('comercio_id', $this->comercioId) 
-                    ->orderby('descripcion','desc')->get();
-            return view('livewire.rubros.component', [
+            $info = Plan::where('descripcion', 'like', '%' .  $this->search . '%')
+                    ->orderby('id','asc')->get();
+            return view('livewire.admin.planes', [
                 'info' =>$info
             ]);
         }
         else {
-           return view('livewire.rubros.component', [
-            'info' => Rubro::orderBy('descripcion', 'asc')
-                        ->where('comercio_id', $this->comercioId)->get()
+           return view('livewire.admin.planes', [
+            'info' => plan::orderBy('id', 'asc')->get()
         ]);
        }
+
     }
 
     public function doAction($action)
@@ -42,81 +37,87 @@ class RubroController extends Component
     private function resetInput()
     {
         $this->descripcion = '';
-        $this->margen = '';
+        $this->precio = '';
+        $this->duracion = '';
+        $this->estado = 'activo';
         $this->selected_id = null;    
         $this->search = '';
     }
 
     public function edit($id)
     {
-        $record = Rubro::findOrFail($id);
+        $record = Plan::findOrFail($id);
         $this->selected_id = $id;
         $this->descripcion = $record->descripcion;
-        $this->margen = $record->margen;
-    }
-
-
-//método para registrar y/o actualizar info
+        $this->precio = $record->precio;
+        $this->duracion = $record->duracion;
+        $this->estado = $record->estado;
+    }    
+    
+    //método para registrar y/o actualizar info
     public function StoreOrUpdate()
     { 
-                //validación campos requeridos
+            //validación campos requeridos
         $this->validate([
             'descripcion' => 'required', //validamos que descripción no sea vacío o nullo y que tenga al menos 4 caracteres
-            'margen' => 'required'
+            'precio' => 'required',
+            'duracion' => 'required',
+            'estado' => 'required'
         ]);
 
-        //valida si existe otro cajón con el mismo nombre (edicion de tipos)
+        //valida si existe otro plan con el mismo nombre (edicion de planes)
         if($this->selected_id > 0) {
-            $existe = Rubro::where('descripcion', $this->descripcion)
+            $existe = Plan::where('descripcion', $this->descripcion)
             ->where('id', '<>', $this->selected_id)
-            ->where('comercio_id', $this->comercioId)
             ->select('descripcion')
             ->get();
 
             if( $existe->count() > 0) {
-            session()->flash('msg-error', 'Ya existe el Rubro');
+            session()->flash('msg-error', 'Ya existe el Plan');
             $this->resetInput();
             return;
             }
         }        
         else 
         {
-            //valida si existe otro cajón con el mismo nombre (nuevos registros)
-            $existe = Rubro::where('descripcion', $this->descripcion)
-            ->where('comercio_id', $this->comercioId)
+            //valida si existe otro plan con el mismo nombre (nuevos registros)
+            $existe = Plan::where('descripcion', $this->descripcion)
             ->select('descripcion')
             ->get();
 
             if($existe->count() > 0 ) {
-            session()->flash('msg-error', 'Ya existe el Rubro');
+            session()->flash('msg-error', 'Ya existe el Plan');
             $this->resetInput();
             return;
             }
         }
         if($this->selected_id <= 0) {
             //creamos el registro
-            $category =  Rubro::create([
+            $plan = Plan::create([
                 'descripcion' => strtoupper($this->descripcion),            
-                'margen' => $this->margen,
-                'comercio_id' => $this->comercioId            
+                'precio' => $this->precio,
+                'duracion' => $this->duracion,           
+                'estado' => $this->estado         
             ]);
         }
         else 
         {   
-            //buscamos el tipo
-            $record = Rubro::find($this->selected_id);
+            //buscamos el plan
+            $record = Plan::find($this->selected_id);
             //actualizamos el registro
             $record->update([
             'descripcion' => strtoupper($this->descripcion),
-            'margen' => $this->margen
+            'precio' => $this->precio,
+            'duracion' => $this->duracion,           
+            'estado' => $this->estado
             ]);              
         }
             //enviamos feedback al usuario
         if($this->selected_id) {
-            session()->flash('message', 'Rubro Actualizado');            
+            session()->flash('message', 'Plan Actualizado');            
         }
         else {
-            session()->flash('message', 'Rubro Creado');            
+            session()->flash('message', 'Plan Creado');            
         }
         //limpiamos las propiedades
         $this->resetInput();
@@ -129,7 +130,7 @@ class RubroController extends Component
     public function destroy($id)
     {
         if ($id) { //si es un id válido
-            $record = Rubro::where('id', $id); //buscamos el registro
+            $record = Plan::where('id', $id); //buscamos el registro
             $record->delete(); //eliminamos el registro
             $this->resetInput(); //limpiamos las propiedades
         }

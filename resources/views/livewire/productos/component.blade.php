@@ -80,20 +80,11 @@
                     <div class="row mt-4 mb-3">
                         <div class="form-group col-sm-5">
                             <label >Código Sugerido:</label><span class="ml-2">{{$codigo_sugerido}}</span>
-                            <input id="codigo" wire:model.lazy="codigo" type="text" class="form-control" placeholder= "código">
+                            <input id="codigo" wire:model.lazy="codigo" type="text" class="form-control text-center" placeholder= "código">
                         </div>
                         <div class="form-group col-sm-7">
                             <label >Nombre del Producto</label>
                             <input id="nombre" wire:model.lazy="descripcion" type="text" class="form-control text-capitalize"  placeholder="nombre">
-                        </div>
-
-                        <div class="form-group col-md-6 col-sm-12">
-                            <label >Precio de Costo</label>
-                            <input wire:model.lazy="precio_costo" type="text" class="form-control"  placeholder="precio de costo">
-                        </div>
-                        <div class="form-group col-md-6 col-sm-12">
-                            <label >Precio de Venta</label>
-                            <input wire:model.lazy="precio_venta" type="text" class="form-control"  placeholder="precio de venta">
                         </div>
 
                         <div class="form-group col-md-6 col-sm-12">
@@ -116,6 +107,15 @@
                                 <option value="SIN STOCK">SIN STOCK</option>
                             </select>
                         </div>	
+
+                        <div class="form-group col-md-6 col-sm-12">
+                            <label >Precio de Costo</label>
+                            <input wire:model.lazy="precio_costo" onblur="calcularPrecioVenta()" type="text" class="form-control"  placeholder="precio de costo">
+                        </div>
+                        <div class="form-group col-md-6 col-sm-12">
+                            <label >Precio de Venta</label>
+                            <input wire:model.lazy="precio_venta" type="text" class="form-control"  placeholder="precio de venta">
+                        </div>                        
                     </div>
                 </form>
                 @include('common.btnCancelarGuardar')
@@ -161,4 +161,8 @@
     function setfocus($id) {
         document.getElementById($id).focus();
     }
+    function calcularPrecioVenta() {
+        window.livewire.emit('calcular_precio');
+    }
+    
 </script>

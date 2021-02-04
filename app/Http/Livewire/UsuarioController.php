@@ -7,6 +7,9 @@ use Livewire\WithPagination;
 use App\User;
 use App\TipoComercio;
 use App\UsuarioComercio;
+use App\Empleado;
+use App\ModelHasRole;
+use App\Role;
 
 
 class UsuarioController extends Component
@@ -17,16 +20,23 @@ class UsuarioController extends Component
     public $selected_id, $search, $login = 0;
     public $action = 1, $pagination = 5;
     public $comercioId;
+    public $empleado, $rol;
+    public $empleados, $roles;
 
     public function render()
     {
          //busca el comercio que está en sesión
         $this->comercioId = session('idComercio');
 
+        $this->empleados = Empleado::select('*')->where('comercio_id', $this->comercioId)->get();
+        $this->roles = Role::select('*')->where('id', '<>', '1')->where('comercio_id', $this->comercioId)->get();
+
         if(strlen($this->search) > 0)
             {
                 $info = User::where('name', 'like', '%'. $this->search . '%')
+                ->where('uc.comercio_id', $this->comercioId)
                 ->orwhere('telefono', 'like', '%'. $this->search . '%')
+                ->where('uc.comercio_id', $this->comercioId)
                 ->paginate($this->pagination);
                 
                 return view('livewire.usuarios.component', ['info' => $info]);
@@ -40,7 +50,9 @@ class UsuarioController extends Component
                 // $info = User::orderBy('id', 'desc')
                 // ->paginate($this->pagination);
                 
-                return view('livewire.usuarios.component', ['info' => $info]);
+                return view('livewire.usuarios.component', [
+                    'info' => $info
+                    ]);
             }        
     }
     
@@ -69,8 +81,27 @@ class UsuarioController extends Component
     }
     
     public $listeners = [
-        'deleteRow' => 'destroy'
-    ];
+        'deleteRow' => 'destroy',
+        'createFromModal' => 'createFromModal'        
+	];
+
+	// es diferente porque se usan ventanas modales
+	public function createFromModal($info)
+	{
+		$data = json_decode($info);
+		$this->empleado = $data->empleado_id;
+		$this->rol = $data->rol_id;
+
+		$this->AsignarRoles();
+    }
+    public function AsignarRoles()
+    {
+        $user_rol = ModelHasRole::create([
+            'role_id' => $this->rol,
+            'model_type' => 'App\User',
+            'model_id' => $this->empleado
+        ]);
+    }
     
     public function edit($id)
     {

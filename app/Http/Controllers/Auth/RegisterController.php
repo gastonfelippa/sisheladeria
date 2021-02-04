@@ -4,12 +4,19 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use Spatie\Permission\Models\Role;
 use App\User;
 use App\Comercio;
 use App\UsuarioComercio;
+use App\UsuarioComercioPlanes;
+use App\Plan;
+// use App\Role;
+use App\ModelHasRole;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use DB;
 
 class RegisterController extends Controller
 {
@@ -56,11 +63,12 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'apellido' => ['required', 'string', 'max:255'],
             'nombreComercio' => ['required', 'string', 'max:255'],
-            'telefono' => ['required', 'numeric', 'min:100000000' , 'max:999999999999999'], 
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'telefono1' => ['required', 'numeric', 'min:100000000' , 'max:999999999999999'], 
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
+            ]);
+        }
+        // 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
 
     /**
      * Create a new user instance after a valid registration.
@@ -70,30 +78,88 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        //dd($data);
-        $comercio = Comercio::create([
-            'nombre' => strtoupper($data['nombreComercio']),            
-            'tipo_id' => $data['tipo']            
-        ]);
+        DB::begintransaction();                 //iniciar transacción para grabar
+        try{ 
+            $comercio = Comercio::create([
+                'nombre' => strtoupper($data['nombreComercio']),            
+                'tipo_id' => $data['tipo']            
+            ]);
 
-        $user = User::create([
+            $user = User::create([            
+                'name' => ucwords($data['name']),
+                'apellido' => ucwords($data['apellido']),
+                'telefono1' => $data['telefono1'],
+                'email' => strtolower($data['email']),
+                'password' => Hash::make($data['password']),
+                'abonado' => 'Si'
+            ]);
+
+            UsuarioComercio::create([
+                'usuario_id' => $user->id,            
+                'comercio_id' => $comercio->id            
+            ]);
+
+            $role = Role::create([
+                'name' => 'Admin'. $comercio->id,
+                'comercio_id' => $comercio->id         
+            ]);
+
+            ModelHasRole::create([
+                'role_id' => $role->id,
+                'model_type' => 'App\User',           
+                'model_id' => $user->id           
+            ]);
+
+            $role->givePermissionTo([
+                'Estadisticas_index','Abm_index','Config_index','Empresa_index','Permisos_index','Productos_index',
+                'Productos_create','Productos_edit','Productos_destroy','Rubros_index','Rubros_create','Rubros_edit',
+                'Rubros_destroy','Empleados_index','Empleados_create','Empleados_edit','Empleados_destroy',
+                'Clientes_index','Clientes_create','Clientes_edit','Clientes_destroy','Gastos_index','Gastos_create',
+                'Gastos_edit','Gastos_destroy','Facturas_index','Facturas_create_producto','Facturas_edit_item',
+                'Facturas_destroy_item','Caja_index','CorteDeCaja_index','MovimientosDiarios_index','CajaRepartidor_index',
+                'Reportes_index','VentasDiarias_index','VentasPorFechas_index','Usuarios_index','Usuarios_create',
+                'Usuarios_edit','Usuarios_destroy','Movimientos_index','Movimientos_create','Movimientos_edit',
+                'Movimientos_destroy','Facturas_imp','Fact_delivery_imp'           
+            ]);
+
+            // $user->assignRole('Admin');
+
+
+            $usercomercio = UsuarioComercio::select('id')->orderBy('id', 'desc')->get();
+            $plan = Plan::select('*')->where('id', '1')->get(); 
             
-            'name' => ucwords($data['name']),
-            'apellido' => ucwords($data['apellido']),
-            'telefono' => $data['telefono'],
-            'email' => strtolower($data['email']),
-            'password' => Hash::make($data['password']),
-            'abonado' => 'Si'
-        ]);
+            $fecha_inicio = Carbon::now()->locale('en');      //inicializo fecha_inicio con la fecha en que se suscribe al sistema
+            $mes = $fecha_inicio->monthName;                  //recupero el mes
+            Carbon::setTestNow($fecha_inicio);                //habilito a Carbon para que actúe sobre fecha_inicio
+            $fecha_fin = new Carbon('last day of ' . $mes);   //inicializo fecha_fin con el último día del mes en curso
+            $diferencia = $fecha_inicio->diffInDays($fecha_fin); //efectúo la diferencia entre fechas para saber los días que las separan
+    
+            if($diferencia < 15)                                 //si son menos de 15 días
+            {                                  
+                $fecha_fin = Carbon::now()->addMonthsNoOverflow(1)->locale('en'); //agrego un mes a fecha_fin a partir del corriente mes
+                $mes = $fecha_fin->monthName;                         //recupero el mes
+                Carbon::setTestNow($fecha_fin);                       //habilito a Carbon para que actúe sobre fecha_fin
+                $fecha_fin = new Carbon('last day of ' . $mes);       //modifico fecha_fin con el último día del mes siguiente
+            }
+            Carbon::setTestNow();               //IMPORTANTE: resetea la fecha actual para grabarla en create_at y update_at
 
-        $user->assignRole('SuperAdmin');
-
-        UsuarioComercio::create([
-            'usuario_id' => $user->id,            
-            'comercio_id' => $comercio->id            
-        ]);
-
-        return $user;
-
+            UsuarioComercioPlanes::create([
+                'usuariocomercio_id'   => $usercomercio[0]->id,
+                'plan_id'              => $plan[0]->id,
+                'estado_plan'          => 'activo',
+                'importe'              => $plan[0]->precio,
+                'estado_pago'          => 'no corresponde',
+                'fecha_inicio_periodo' => Carbon::parse($fecha_inicio)->format('Y,m,d') . ' 00:00:00',
+                'fecha_fin'            => Carbon::parse($fecha_fin)->format('Y,m,d') . ' 23:59:59',
+                'fecha_vto'            => Carbon::parse($fecha_fin)->format('Y,m,d') . ' 23:59:59',
+                'comentarios'          => 'Inicio plan de prueba'
+            ]);
+            
+            DB::commit();
+            return $user;
+        }catch (Exception $e){
+            DB::rollback();    //en caso de error, deshacemos para no generar inconsistencia de datos  
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
+        }
     }
 }

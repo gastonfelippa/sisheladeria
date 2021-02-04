@@ -34,6 +34,8 @@ class ProductoController extends Component
 			$this->codigo_sugerido = $this->selected_id;
 		}
 
+		$this->codigo = $this->codigo_sugerido;
+
 		if(strlen($this->search) > 0) 
 		{
 			$info = Producto::leftjoin('rubros as r','r.id','productos.rubro_id')
@@ -80,6 +82,16 @@ class ProductoController extends Component
 		$this->estado = 'DISPONIBLE';
 		$this->selected_id = null;
 		$this->search ='';
+	}
+
+	public function calcular_precio()
+	{
+		if($this->precio_costo <> '' && $this->rubro <> 'Elegir')
+		{
+			$porcentaje = Rubro::where('id', $this->rubro)->select('margen')->get();
+			$this->precio_venta = $this->precio_costo + ($this->precio_costo * $porcentaje[0]->margen / 100);
+
+		}
 	}
 
 	public function edit($id)
@@ -129,7 +141,6 @@ class ProductoController extends Component
 	
 			if( $existe->count() > 0) {
 				session()->flash('msg-error', 'Ya existe el Código');
-				$this->resetInput();
 				return;
 		}
         }else{
@@ -148,14 +159,13 @@ class ProductoController extends Component
         
             if($existe->count() > 0 ) {
                 session()->flash('msg-error', 'Ya existe el Código');
-                $this->resetInput();
                 return;
             }
         }
 
 		if($this->selected_id <=0)
 		{
-			$cajon = Producto::create([
+			$producto = Producto::create([
 				'codigo' => $this->codigo,
 				'descripcion' => ucwords($this->descripcion),
 				'precio_costo' => $this->precio_costo,
@@ -166,7 +176,7 @@ class ProductoController extends Component
 			]);
 		}
 		else {
-		//	dd($this->precio_costo);
+			
 			$record = Producto::find($this->selected_id);
 				if ($this->precio_costo == '') $this->precio_costo = 0.00;
 			$record->update([
@@ -199,6 +209,7 @@ class ProductoController extends Component
 	}
 	
 	protected $listeners = [
-		'deleteRow' => 'destroy'        
+		'deleteRow' => 'destroy',
+		'calcular_precio' => 'calcular_precio'    
 	];  
 }

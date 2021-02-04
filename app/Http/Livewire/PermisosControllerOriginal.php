@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Role;
 use App\User;
 use DB;
 
-class PermisosController extends Component
+class PermisosControllerOriginal extends Component
 {
     public $permisoTitle = "Crear", $roleTitle = "Crear", $userSelected;
     public $tab = 'roles', $roleSelected;

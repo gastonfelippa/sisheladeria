@@ -48,13 +48,6 @@ class PdfController extends Controller
           ->where('detfacturas.factura_id', $id)
           ->where('detfacturas.comercio_id', $this->comercioId)
           ->orderBy('detfacturas.id', 'asc')->get(); 
-        //   $info = Detfactura::leftjoin('facturas as f','f.id','detfacturas.factura_id')
-        //   ->leftjoin('productos as p','p.id','detfacturas.producto_id')
-        //   ->select('detfacturas.*', 'p.descripcion as producto', DB::RAW("'' as importe"))
-        //   ->where('detfacturas.factura_id', $this->factura_id)
-        //   ->where('detfacturas.comercio_id', $this->comercioId)
-        //   ->where('f.estado', 'like', 'ABIERTA')
-        //   ->orderBy('detfacturas.id', 'asc')->get();
 
       $this->importeFactura = 0;  
 

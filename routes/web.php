@@ -23,12 +23,13 @@ Route::get('/', function () {
 Auth::routes(['verify' => true]);
             //url  -      controlador       -     vista
 Route::get('/home', 'HomeController@index')->name('home')->middleware('verified');
+Route::get('/notify', 'HomeController@notificado')->name('notify')->middleware('verified');
 
 //Route::get('/pdf', 'Livewire\PdfController@PDF')->name('descargarPDF');
 
 //rutas de impresion
 Route::get('/pdfFacturas', 'PdfController@PDFFacturas')->middleware('permission:Facturas_imp');
-Route::get('/pdfFactDel/{id}', 'PdfController@PDFFactDel');
+Route::get('/pdfFactDel/{id}', 'PdfController@PDFFactDel')->middleware('permission:Fact_delivery_imp');
 
 Route::view('rubros', 'rubros')->middleware('permission:Rubros_index');
 Route::view('productos', 'productos')->middleware('permission:Productos_index');
@@ -47,6 +48,10 @@ Route::view('usuarios', 'usuarios')->middleware('permission:Usuarios_index');
 Route::view('permisos', 'permisos')->middleware('permission:Usuarios_index');
 Route::view('empresa', 'empresa')->middleware('permission:Empresa_index');
 
+//rutas ADMIN
+Route::view('planes', 'planes')->middleware('permission:Planes_index');
+Route::view('abonados', 'abonados')->middleware('permission:Abonados_index');
+Route::view('procedimientos', 'procedimientos-admin')->middleware('permission:Procedimientos_index');
 
 //rutas de impresion
 Route::get('print/visita/{id}', 'PrinterController@ticketVisita');
