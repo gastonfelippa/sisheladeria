@@ -42,6 +42,7 @@
 
 </head>
 <body class="alt-menu sidebar-noneoverflow">
+    
     <!-- BEGIN LOADER -->
     <!-- <div id="load_screen"> <div class="loader"> <div class="loader-content">
         <div class="spinner-grow align-self-center"></div>
@@ -130,7 +131,6 @@
                     </li>
                 @endcan                
                 <!-- ABM -->
-                @can('Abm_index')
                     <li class="menu single-menu">
                         <a href="#abm" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -170,7 +170,6 @@
                             </li> -->
                         </ul>                         
                     </li>
-                @endcan
                 <!-- CONFIG --> 
                 @can('Config_index')   
                     <li class="menu single-menu">
@@ -207,7 +206,6 @@
                     </li>
                 @endcan
                 <!-- CAJA -->
-                @can('Caja_index')
                     <li class="menu single-menu">
                         <a href="#tables" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -234,7 +232,6 @@
                         @endcan
                         </ul>
                     </li>
-                @endcan
                 <!-- COTIZACIONES -->
                 @can('Cotizaciones_index')
                     <li class="menu single-menu">

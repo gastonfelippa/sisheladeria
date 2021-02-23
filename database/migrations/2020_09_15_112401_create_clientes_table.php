@@ -16,7 +16,13 @@ class CreateClientesTable extends Migration
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('direccion');
+            $table->string('apellido');
+            $table->string('calle');
+            $table->string('numero');
+
+            $table->unsignedBigInteger('localidad_id');
+            $table->foreign('localidad_id')->references('id')->on('localidades');
+            
             $table->string('telefono',15)->nullable();
             
             $table->unsignedBigInteger('comercio_id');

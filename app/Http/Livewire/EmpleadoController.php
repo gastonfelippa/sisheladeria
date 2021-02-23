@@ -5,12 +5,13 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Empleado;
 use App\Localidad;
+use App\Provincia;
 use Carbon\Carbon;
 
 class EmpleadoController extends Component
 {
 	//public properties
-    public $nombre, $apellido, $documento, $calle, $numero, $localidad = 'Elegir';
+    public $nombre, $apellido, $documento, $calle, $numero, $localidad = 'Elegir', $provincia = 'Elegir';
     public $telefono, $fecha_ingreso, $fecha_nac, $comercioId; 
     public $selected_id = null, $search; 
 
@@ -21,6 +22,7 @@ class EmpleadoController extends Component
         $this->comercioId = session('idComercio');
 
         $localidades = Localidad::all();
+        $provincias = Provincia::all();
         
         //si la propiedad buscar tiene al menos un caracter, devolvemos el componente y le inyectamos los registros de una búsqueda con like y paginado a  5 
         if(strlen($this->search) > 0)
@@ -29,7 +31,7 @@ class EmpleadoController extends Component
                 ->where('comercio_id', $this->comercioId)
                 ->orWhere('apellido', 'like', '%' .  $this->search . '%')
                 ->where('comercio_id', $this->comercioId)
-                ->orderBy('nombre', 'asc')->get();
+                ->orderBy('apellido', 'asc')->get();
             return view('livewire.empleados.component', [
                 'info' =>$info,
                 'localidades' => $localidades
@@ -38,8 +40,9 @@ class EmpleadoController extends Component
         else {
             return view('livewire.empleados.component', [
                 'info' => Empleado::where('comercio_id', $this->comercioId)
-                                    ->orderBy('nombre', 'asc')->get(),
-                'localidades' => $localidades
+                                    ->orderBy('apellido', 'asc')->get(),
+                'localidades' => $localidades,
+                'provincias' => $provincias
             ]);
         }
     }
@@ -133,7 +136,7 @@ class EmpleadoController extends Component
 
         if($this->selected_id <= 0) {
             //creamos el registro
-            $category =  Empleado::create([
+            Empleado::create([
                 'nombre' => strtoupper($this->nombre),            
                 'apellido' => strtoupper($this->apellido),            
                 'documento' => $this->documento,            
@@ -177,8 +180,20 @@ class EmpleadoController extends Component
     }
         //escuchar eventos y ejecutar acción solicitada
     protected $listeners = [
-        'deleteRow'=>'destroy'        
-    ];  
+        'deleteRow'=>'destroy',
+        'createFromModal' => 'createFromModal'         
+    ];
+    
+    public function createFromModal($info)
+	{
+		$data = json_decode($info);
+        
+        Localidad::create([
+            'descripcion' => ucwords($data->localidad),
+            'provincia_id' => $data->provincia_id
+        ]);
+        session()->flash('message', 'Localidad creada exitosamente!!!');  
+    }
 
 //método para eliminar un registro dado
     public function destroy($id)

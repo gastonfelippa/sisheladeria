@@ -1,5 +1,15 @@
-<h2>Bienvenido {{ $user->name }}!</h2>
+@component('mail::message')
+# Hola {{$user->name}}!!<br>
+# {{$comercio}} te da la bienvenida a su equipo de trabajo!
 
-<p>Esperemos que nuestra aplicación te sea de gran utilidad!</p>
+Estas son tus credenciales para que puedas ingresar al sistema:<br><br>
+**USUARIO:** {{$user->username}}<br>
+**CONTRASEÑA:** {{$user->pass}}<br><br>
+Luego de ingresar podrás modificar tu contraseña.<br>
+¡Esperamos que lo disfrutes tanto como nosotros!
 
-Enviado automáticamente desde <a href={{ url('/') }} title="NombreDeAplicación">NombreDeAplicación</a>
+PD: si no creaste ninguna cuenta, podés ignorar o eliminar este email.
+
+Saludos,<br>
+{{ $admin }}
+@endcomponent

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 
 /*
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     // return view('welcome');
     return view('auth.login');
+});
+Route::get('email', function() {
+    return new \App\Mail\WelcomeUser('Carina');
 });
 
 //Auth::routes();
@@ -63,4 +67,5 @@ Route::post('contactanos', 'EmailsController@store')->name('contactanos.store');
 
 Route::get('registrarse', 'RegisterController@index')->name('registrarse.index');
 Route::post('registrarse', 'RegisterController@store')->name('registrarse.store');
+
 

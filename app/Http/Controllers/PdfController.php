@@ -15,29 +15,35 @@ use DB;
 class PdfController extends Controller
 {
     public $comercioId;
-
-    public function PDF(){
+    
+    public function PDF() {
         $pdf = PDF::loadView('prueba');
         return $pdf->stream('prueba.pdf');
     }
-    public function PDFFacturas(){
+
+    public function PDFFacturas() {
+
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio'); 
+
         $clientes  = Cliente::all();
    
         $info = Factura::leftjoin('clientes as c','c.id','facturas.cliente_id')
             ->leftjoin('empleados as r','r.id','facturas.repartidor_id')
-            ->select('facturas.*', 'c.nombre as nomcli', 'r.nombre as nomrep', DB::RAW("'' as total"))
+            ->select('facturas.*', 'c.nombre as nomCli', 'c.apellido as apeCli',
+                     'r.nombre as nomRep', 'r.apellido as apeRep',DB::RAW("'' as total"))
             ->where('facturas.estado','like','PAGADA')
-            ->where('facturas.repartidor_id', 'like', '1')
+            ->where('facturas.comercio_id', $this->comercioId)
             ->orderBy('facturas.id', 'asc')->get(); 
 
         $pdf = PDF::loadView('livewire.pdf.pdfFacturas', compact('info'));
         return $pdf->stream('facturas.pdf');
     }
 
-    public function PDFFactDel($id){
+    public function PDFFactDel($id) {
 
         //busca el comercio que está en sesión
-        $this->comercioId = session('idComercio');
+        $this->comercioId = session('idComercio'); 
 
         $clientes  = Cliente::select()->where('comercio_id', $this->comercioId)->get();
         $productos = Producto::select()->where('comercio_id', $this->comercioId)->get();
@@ -58,10 +64,11 @@ class PdfController extends Controller
       }
         $info = Factura::leftjoin('clientes as c','c.id','facturas.cliente_id')
             ->leftjoin('empleados as r','r.id','facturas.repartidor_id')
-            ->select('facturas.*', 'c.nombre as nomcli', 'c.direccion as dircli')
+            ->select('facturas.*', 'facturas.id as id', 'c.nombre as nomCli', 'c.apellido as apeCli', 
+                     'c.calle as calleCli', 'c.numero as numCli')
             ->where('facturas.id','like',$id)->get();
 
-        if($info[0]->nomcli == null) {
+        if($info[0]->nomCli == null) {
             $delivery = false;
         }else {              
             $delivery = true;

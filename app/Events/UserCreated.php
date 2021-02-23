@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 use App\User;
 
-class UserRegistered
+class UserCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

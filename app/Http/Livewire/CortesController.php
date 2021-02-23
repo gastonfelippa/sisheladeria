@@ -17,6 +17,7 @@ class CortesController extends Component
 {
     
     public $fecha, $user, $ventas, $entradas, $salidas, $balance;
+    public $comercioId;
 
     public function mount()
     {
@@ -28,7 +29,12 @@ class CortesController extends Component
 
     public function render()
     {
-        $users = User::select('nombre', 'id')->get();   
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio');
+
+        $users = User::join('usuario_comercio as uc', 'uc.usuario_id', 'users.id')
+                    ->select('users.id', 'users.name')
+                    ->where('comercio_id', $this->comercioId)->get();   
        
         return view('livewire.cortes.component',[
             'users' => $users
@@ -37,19 +43,29 @@ class CortesController extends Component
 
     public function Balance()
     {
-        //dd($this->user);
         if($this->user == 0)
         {
-            $this->ventas   = Factura::whereDate('created_at', Carbon::today())->sum('importe');
-            $this->entradas = Caja::whereDate('created_at', Carbon::today())->where('tipo', 'Ingreso')->sum('monto');
-            $this->salidas  = Caja::whereDate('created_at', Carbon::today())->where('tipo', '<>', 'Ingreso')->sum('monto');
+            $this->ventas   = Factura::whereDate('created_at', Carbon::today())
+                                ->where('comercio_id', $this->comercioId)->sum('importe');
+            $this->entradas = Caja::whereDate('created_at', Carbon::today())
+                                ->where('tipo', 'Ingreso')
+                                ->where('comercio_id', $this->comercioId)->sum('monto');
+            $this->salidas  = Caja::whereDate('created_at', Carbon::today())
+                                ->where('tipo', '<>', 'Ingreso')
+                                ->where('comercio_id', $this->comercioId)->sum('monto');
         }
         else{
-            $this->ventas   = Factura::where('user_id', $this->user)->whereDate('created_at', Carbon::today())->sum('importe');
-            $this->entradas = Caja::where('user_id', $this->user)->whereDate('created_at', Carbon::today())
-            ->where('tipo', 'Ingreso')->sum('monto');
-            $this->salidas  = Caja::where('user_id', $this->user)->whereDate('created_at', Carbon::today())
-            ->where('tipo', '<>', 'Ingreso')->sum('monto');
+            $this->ventas   = Factura::where('user_id', $this->user)
+                                ->where('comercio_id', $this->comercioId)
+                                ->whereDate('created_at', Carbon::today())->sum('importe');
+            $this->entradas = Caja::where('user_id', $this->user)
+                                ->where('comercio_id', $this->comercioId)
+                                ->whereDate('created_at', Carbon::today())
+                                ->where('tipo', 'Ingreso')->sum('monto');
+            $this->salidas  = Caja::where('user_id', $this->user)
+                                ->where('comercio_id', $this->comercioId)
+                                ->whereDate('created_at', Carbon::today())
+                                ->where('tipo', '<>', 'Ingreso')->sum('monto');
         }
         $this->balance = ($this->ventas + $this->entradas) - $this->salidas;
     }
@@ -62,17 +78,25 @@ class CortesController extends Component
 
         if($this->user == 0)
         {
-            $this->ventas = Factura::whereBetween('created_at',[$fi, $ff])->sum('importe');
-            $this->entradas = Caja::whereBetween('created_at',[$fi, $ff])->where('tipo', 'Ingreso')->sum('monto');
-            $this->salidas = Caja::whereBetween('created_at',[$fi, $ff])->where('tipo', '<>', 'Ingreso')->sum('monto');
+            $this->ventas = Factura::whereBetween('created_at',[$fi, $ff])
+                                ->where('comercio_id', $this->comercioId)->sum('importe');
+            $this->entradas = Caja::whereBetween('created_at',[$fi, $ff])
+                                ->where('comercio_id', $this->comercioId)->where('tipo', 'Ingreso')->sum('monto');
+            $this->salidas = Caja::whereBetween('created_at',[$fi, $ff])
+                                ->where('comercio_id', $this->comercioId)->where('tipo', '<>', 'Ingreso')->sum('monto');
         }
         else{
-            $this->ventas = Factura::where('user_id', $this->user)->whereBetween('created_at',[$fi, $ff])
-            ->sum('importe');
-            $this->entradas = Caja::where('user_id', $this->user)->whereBetween('created_at',[$fi, $ff])
-            ->where('tipo', 'Ingreso')->sum('monto');
-            $this->salidas = Caja::where('user_id', $this->user)->whereBetween('created_at',[$fi, $ff])
-            ->where('tipo', '<>', 'Ingreso')->sum('monto');
+            $this->ventas = Factura::where('user_id', $this->user)
+                                ->whereBetween('created_at',[$fi, $ff])
+                                ->where('comercio_id', $this->comercioId)->sum('importe');
+            $this->entradas = Caja::where('user_id', $this->user)
+                                ->whereBetween('created_at',[$fi, $ff])
+                                ->where('comercio_id', $this->comercioId)
+                                ->where('tipo', 'Ingreso')->sum('monto');
+            $this->salidas = Caja::where('user_id', $this->user)
+                                ->whereBetween('created_at',[$fi, $ff])
+                                ->where('comercio_id', $this->comercioId)
+                                ->where('tipo', '<>', 'Ingreso')->sum('monto');
         }
         $this->balance = ($this->ventas + $this->entradas) - $this->salidas;
     }

@@ -16,23 +16,29 @@ class CajaController extends Component
 	//properties
 	public $tipo ='Elegir', $concepto, $monto;
 	public $selected_id, $search;
-	public $action = 1, $pagination = 5;
+	public $action = 1, $pagination = 5, $comercioId;
 
 
 	public function render()
 	{
+		//busca el comercio que está en sesión
+		$this->comercioId = session('idComercio');
+
 		if(strlen($this->search) > 0)
 		{
 			return view('livewire.movimientos.component', [
 				'info' => Caja::where('tipo', 'like', '%'. $this->search . '%')
+				->where('comercio_id', $this->comercioId)
 				->orWhere('concepto', 'like', '%'. $this->search . '%')
+				->where('comercio_id', $this->comercioId)
 				->paginate($this->pagination),
 			]);
 		}
 		else {
 			$caja = Caja::leftjoin('users as u','u.id', 'cajas.user_id')
-			->select('cajas.*', 'u.nombre')
-			->orderBy('id','desc')
+			->where('comercio_id', $this->comercioId)
+			->select('cajas.*', 'u.name')
+			->orderBy('cajas.id','desc')
 			->paginate($this->pagination);
 
 			return view('livewire.movimientos.component', [
@@ -70,7 +76,7 @@ class CajaController extends Component
 		$this->tipo = $record->tipo;
 		$this->concepto = $record->concepto;
 		$this->monto = $record->monto;
-		$this->action = 3;
+		$this->action = 2;
 	}
 
 	public function StoreOrUpdate() 
@@ -91,7 +97,8 @@ class CajaController extends Component
 				'monto' => $this->monto,
 				'tipo' => $this->tipo,
 				'concepto' => $this->concepto,
-				'user_id' => Auth::user()->id // auth()->user()->id
+				'user_id' => Auth::user()->id,
+				'comercio_id' => $this->comercioId
 			]);
 		}
 		else{

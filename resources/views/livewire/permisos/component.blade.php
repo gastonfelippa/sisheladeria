@@ -37,7 +37,7 @@
     function showRole(role)
     {
         var data = JSON.parse(role)
-        $('#roleName').val(data['name'])
+        $('#roleName').val(data['alias'])
         $('#roleId').val(data['id'])
     }
 

@@ -8,6 +8,8 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 use App\Notifications\ResetPasswordNotification;
+use App\Notifications\VerifyEmail;
+use App\Events\UserRegistered;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -20,7 +22,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'apellido', 'email', 'password', 'telefono1', 'telefono2','direccion','abonado'
+        'name', 'apellido', 'username', 'email', 'password', 'pass', 'sexo', 'telefono1', 
+        'telefono2','direccion','abonado'
     ];
 
     /**
@@ -53,8 +56,24 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new ResetPasswordNotification($token));
     }
 
+        /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmail);
+    }
+
     protected static function booted(){
         static::updated(function($user){
         });
     }
+    // protected static function booted(){
+    //     //parent::boot();
+    //     static::created(function($user){
+    //         event(new UserRegistered($user));
+    //     });
+    // }
 }

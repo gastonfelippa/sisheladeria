@@ -1,22 +1,30 @@
 <div class="widget-content-area">
     <div class="widget-one">
-        @include('common.messages')
+    @include('common.messages')
         <div class="row">
             <div class="form-group col-md-4 col-sm-12">
                 <label>Nombre</label>
-                <input type="text" wire:model.lazy="name" class="form-control" placeholder="nombre">
+                <input type="text" wire:model.lazy="name" class="form-control text-capitalize" placeholder="nombre" autofocus>
             </div>
             <div class="form-group col-md-4 col-sm-12">
                 <label>Apellido</label>
-                <input type="text" wire:model.lazy="apellido" class="form-control" placeholder="apellido">
+                <input type="text" wire:model.lazy="apellido" class="form-control text-capitalize" placeholder="apellido">
             </div>
             <div class="form-group col-md-4 col-sm-12">
                 <label>Teléfono</label>
-                <input type="text" wire:model.lazy="telefono" class="form-control" placeholder="teléfono" maxlength="10">
+                <input type="text" wire:model.lazy="telefono1" class="form-control" placeholder="teléfono" maxlength="10">
+            </div>
+            <div class="form-group col-md-4 col-sm-12">
+                <label>Sexo</label>
+                <select wire:model="sexo" class="form-control text-center">
+                    <option value="0">Sexo</option>
+                    <option value="1">Femenino</option>
+                    <option value="2">Masculino</option>                                
+                </select>
             </div>
             <div class="form-group col-md-4 col-sm-12">
                 <label>Dirección</label>
-                <input type="text" wire:model.lazy="direccion" class="form-control" placeholder="dirección">
+                <input type="text" wire:model.lazy="direccion" class="form-control text-capitalize" placeholder="dirección">
             </div>
             <!-- <div class="form-group col-md-4 col-sm-12">
                 <label>Tipo</label>
@@ -31,10 +39,10 @@
                 <label>Email</label>
                 <input type="text" wire:model.lazy="email" class="form-control" placeholder="correo@gmail.com">
             </div>
-            <div class="form-group col-md-4 col-sm-12">
+            <!-- <div class="form-group col-md-4 col-sm-12">
                 <label>Password</label>
                 <input type="password" wire:model.lazy="password" class="form-control" placeholder="contraseña">
-            </div>
+            </div> -->
         </div>
         <div class="row">
             <div class="col-lg-5 mt-2 text-left">

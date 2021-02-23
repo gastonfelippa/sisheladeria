@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 use App\User;
 use DB;
 
@@ -16,15 +17,80 @@ class PermisosController extends Component
 
     public function render()
     {
-         //busca el comercio que está en sesión
-        $userComercio = UsuarioComercio::select('comercio_id')
-            ->where('usuario_id', Auth()->user()->id)->get();
-        $this->comercioId = $userComercio[0]->comercio_id;
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio');   
+        
+        $usuarios = User::join('usuario_comercio as uc', 'uc.usuario_id', 'users.id')
+        ->where('uc.comercio_id', $this->comercioId)
+        ->select('users.*')->get();
 
         $roles = Role::select('*', DB::RAW("0 as checked"))
-        ->where('comercio_id', $userComercio[0]->comercio_id)->get();
+        ->where('comercio_id', $this->comercioId)->get();
 
-        $permisos = Permission::select('*', DB::RAW("0 as checked"))->get();
+        // $permisos = Permission::select('*', DB::RAW("0 as checked"))->get();
+        $pProductos = Permission::where('name', 'Productos_index')
+        ->orWhere('name', 'Productos_create')
+        ->orWhere('name', 'Productos_edit')
+        ->orWhere('name', 'Productos_destroy')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pClientes = Permission::where('name', 'Clientes_index')
+        ->orWhere('name', 'Clientes_create')
+        ->orWhere('name', 'Clientes_edit')
+        ->orWhere('name', 'Clientes_destroy')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pEmpleados = Permission::where('name', 'Empleados_index')
+        ->orWhere('name', 'Empleados_create')
+        ->orWhere('name', 'Empleados_edit')
+        ->orWhere('name', 'Empleados_destroy')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pFacturas = Permission::where('name', 'Facturas_index')
+        ->orWhere('name', 'Facturas_edit_item')
+        ->orWhere('name', 'Facturas_destroy_item')
+        ->orWhere('name', 'Facturas_create_producto')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pRubros = Permission::where('name', 'Rubros_index')
+        ->orWhere('name', 'Rubros_create')
+        ->orWhere('name', 'Rubros_edit')
+        ->orWhere('name', 'Rubros_destroy')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pGastos = Permission::where('name', 'Gastos_index')
+        ->orWhere('name', 'Gastos_create')
+        ->orWhere('name', 'Gastos_edit')
+        ->orWhere('name', 'Gastos_destroy')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pUsuarios = Permission::where('name', 'Usuarios_index')
+        ->orWhere('name', 'Usuarios_create')
+        ->orWhere('name', 'Usuarios_edit')
+        ->orWhere('name', 'Usuarios_destroy')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pCaja = Permission::where('name', 'Caja_index')
+        ->orWhere('name', 'CorteDeCaja_index')
+        ->orWhere('name', 'MovimientosDiarios_index')
+        ->orWhere('name', 'CajaRepartidor_index')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pReportes = Permission::where('name', 'Reportes_index')
+        ->orWhere('name', 'VentasDiarias_index')
+        ->orWhere('name', 'VentasPorFechas_index')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pConfiguraciones = Permission::where('name', 'Config_index')
+        ->orWhere('name', 'Empresa_index')
+        ->orWhere('name', 'Permisos_index')
+        ->select('*', DB::RAW("0 as checked"))->get();
+
+        $pMovDeCaja = Permission::where('name', 'Movimientos_index')
+        ->orWhere('name', 'Movimientos_create')
+        ->orWhere('name', 'Movimientos_edit')
+        ->orWhere('name', 'Movimientos_destroy')
+        ->select('*', DB::RAW("0 as checked"))->get();
 
         if($this->userSelected != '' && $this->userSelected != 'Seleccionar')
         {
@@ -39,7 +105,77 @@ class PermisosController extends Component
 
         if($this->roleSelected != '' && $this->roleSelected != 'Seleccionar')
         {
-            foreach($permisos as $p){
+            foreach($pProductos as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pClientes as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pEmpleados as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pFacturas as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pRubros as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pGastos as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pUsuarios as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pCaja as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pReportes as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pConfiguraciones as $p){
+                $role = Role::find($this->roleSelected);
+                $tienePermiso = $role->hasPermissionTo($p->name);
+                if($tienePermiso){
+                        $p->checked = 1;
+                }
+            }
+            foreach($pMovDeCaja as $p){
                 $role = Role::find($this->roleSelected);
                 $tienePermiso = $role->hasPermissionTo($p->name);
                 if($tienePermiso){
@@ -50,9 +186,20 @@ class PermisosController extends Component
 
         return view('livewire.permisos.component',[
             'roles' => $roles,
-            'permisos' => $permisos,
-            'usuarios' => User::select('id', 'nombre')->get()
+            'pProductos' => $pProductos,
+            'pClientes' => $pClientes,
+            'pEmpleados' => $pEmpleados,
+            'pFacturas' => $pFacturas,
+            'pRubros' => $pRubros,
+            'pGastos' => $pGastos,
+            'pUsuarios' => $pUsuarios,
+            'pCaja' => $pCaja,
+            'pReportes' => $pReportes,
+            'pConfiguraciones' => $pConfiguraciones,
+            'pMovDeCaja' => $pMovDeCaja,
+            'usuarios' => $usuarios
             ]);
+            // 'usuarios' => User::select('id', 'nombre')->get()
         
     }    
         //sección de roles
@@ -83,32 +230,36 @@ class PermisosController extends Component
 
     public function SaveRole($roleName)
     {
-        $role = Role::where('name', $roleName)->first();
+        $role = Role::where('name', $roleName . $this->comercioId)
+            ->where('comercio_id', $this->comercioId)->first();
         if($role){
-            session()->flash('msg-ops', 'El role que intentas registrar ya existe en sistema');
+            session()->flash('msg-ops', 'El rol que intentas registrar ya existe en el sistema');
             return;
         }
         Role::create([
-            'name' => $roleName,
-            'comercio_id' => $this->comercioId
+            'name' => ucwords($roleName . $this->comercioId),
+            'comercio_id' => $this->comercioId,
+            'alias' => ucwords($roleName)
         ]);
-        session()->flash('msg-ok', 'El role se registró correctamente');
+        session()->flash('msg-ok', 'El rol se registró correctamente');
         $this->resetInput();
     }
 
     public function UpdateRole($roleName, $roleId)
     {
-        $role = Role::where('name', $roleName)->where('id', '<>', $roleId)->first();
+        $role = Role::where('name', $roleName . $this->comercioId)
+            ->where('id', '<>', $roleId)->first();
         if($role){
-            session()->flash('msg-ops', 'El role que intentas registrar ya existe en sistema');
+            session()->flash('msg-ops', 'El rol que intentas registrar ya existe en el sistema!!!');
             return;
         }
 
         $role = Role::find($roleId);
-        $role->name = $roleName;
+        $role->name = $roleName . $this->comercioId;
+        $role->alias = $roleName;
         $role->save();
 
-        session()->flash('msg-ok', 'Role actualizado correctamente');
+        session()->flash('msg-ok', 'Rol actualizado correctamente');
         $this->resetInput();
     }
 
@@ -116,7 +267,7 @@ class PermisosController extends Component
     {
         Role::find($roleId)->delete();
 
-        session()->flash('msg-ok', 'Se eliminó el role correctamente');
+        session()->flash('msg-ok', 'Se eliminó el rol correctamente');
     }
 
     public function AsignarRoles($rolesList)
@@ -146,7 +297,7 @@ class PermisosController extends Component
     {
         $permiso = Permission::where('name', $permisoName)->first();
         if($permiso){
-            session()->flash('msg-ops', 'El permiso que intentas registrar ya existe en sistema');
+            session()->flash('msg-ops', 'El permiso que intentas registrar ya existe en el sistema');
             return;
         }
 
@@ -161,7 +312,7 @@ class PermisosController extends Component
     {
         $permiso = Permission::where('name', $permisoName)->where('id', '<>', $permisoId)->first();
         if($permiso){
-            session()->flash('msg-ops', 'El permiso que intentas registrar ya existe en sistema');
+            session()->flash('msg-ops', 'El permiso que intentas registrar ya existe en el sistema');
             return;
         }
 

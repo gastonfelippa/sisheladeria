@@ -30,8 +30,8 @@ class FacturaController extends Component
         $this->comercioId = session('idComercio');
                 
         $this->productos = Producto::select()->where('comercio_id', $this->comercioId)->orderBy('descripcion', 'asc')->get();
-        $this->clientes = Cliente::select()->where('comercio_id', $this->comercioId)->orderBy('nombre', 'asc')->get();
-        $this->empleados = Empleado::select()->where('comercio_id', $this->comercioId)->orderBy('nombre', 'asc')->get();
+        $this->clientes = Cliente::select()->where('comercio_id', $this->comercioId)->orderBy('apellido', 'asc')->get();
+        $this->empleados = Empleado::select()->where('comercio_id', $this->comercioId)->orderBy('apellido', 'asc')->get();
         
         if(strlen($this->barcode) > 0){ //strlen valida si está vacío o no
             $this->buscarProducto($this->barcode); 
@@ -41,7 +41,7 @@ class FacturaController extends Component
         }
         
         $dCliente = Cliente::find($this->cliente);
-        if($dCliente != null) {$this->dirCliente = $dCliente->direccion;}
+        if($dCliente != null) {$this->dirCliente = $dCliente->calle . ' ' . $dCliente->numero;}
         
         $dProducto = Producto::find($this->producto);
         if($dProducto != null) {$this->precio = $dProducto->precio_venta;}else {$this->precio = '';}     
@@ -56,10 +56,11 @@ class FacturaController extends Component
             ->leftjoin('empleados as r','r.id','facturas.repartidor_id')
             ->where('facturas.estado','like','ABIERTA')
             ->where('facturas.comercio_id', $this->comercioId)
-            ->select('facturas.*', 'c.nombre as nomCli','c.direccion', 'r.nombre as nomRep')->get();
+            ->select('facturas.*', 'facturas.numero as nroFact','c.nombre as nomCli', 'c.apellido as apeCli','c.calle',
+                     'c.numero', 'r.nombre as nomRep', 'r.apellido as apeRep')->get();
                         
             if($encabezado->count() > 0){
-                $this->numFactura = $encabezado[0]->numero;
+                $this->numFactura = $encabezado[0]->nroFact;
                 //toma el id de la factura abierta
                 $this->factura_id = $encabezado[0]->id;
                 
@@ -227,7 +228,7 @@ class FacturaController extends Component
             'precio' => 'required'
         ]);
         $this->totalAgrabar = $this->total + ($this->cantidad * $this->precio);
-       
+       //dd($this->totalAgrabar, $this->total, $this->cantidad, $this->precio);
         DB::begintransaction();                         //iniciar transacción para grabar
         try{  
             if($this->selected_id > 0) {                //valida si se quiere modificar o crear
@@ -237,7 +238,7 @@ class FacturaController extends Component
                     'cantidad' => $this->cantidad,
                     'precio' => $this->precio
                 ]); 
-            }else{
+            }else {
                 if($this->cliente == 'Elegir'){
                     $this->cliente = null;
                 }
@@ -283,9 +284,9 @@ class FacturaController extends Component
                 $record = Factura::find($idFactura[0]->id);  //actualizamos el encabezado
                 $record->update([
                     'importe' => $this->totalAgrabar,
-                    'cliente_id' => $this->cliente,
-                    'repartidor_id' => $this->empleado,
-                    'user_id' => auth()->user()->id
+                    // 'cliente_id' => $this->cliente,
+                    // 'repartidor_id' => $this->empleado,
+                    // 'user_id' => auth()->user()->id
                 ]); 
             }
                 //confirmar la transaccion

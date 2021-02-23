@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 class EmailConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
-    public $user;
+    public $demo;
 
     /**
      * Create a new message instance.
@@ -18,9 +18,10 @@ class EmailConfirmation extends Mailable
      * @return void
      */
 
-    public function __construct(User $user)
+    public function __construct($demo)
     {
-        $this->user = $user;
+        //$this->demo = $demo;
+        $this->demo = $demo;
     }
 
     /**
@@ -30,6 +31,19 @@ class EmailConfirmation extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.users.confirmation')->subject('Por favor confirma tu correo');
+        // ->text('emails.demo_plain')
+        return $this->from('floki@gmail.com', config('app.name'))
+        ->subject('Bienvenido/a a FlokI!')
+        ->view('emails.demo')
+        ->with(
+          [
+                'testVarOne' => '1',
+                'testVarTwo' => '2',
+          ])
+          ->attach(public_path('/images').'/coche.jpg', [
+                  'as' => 'coche.jpg',
+                  'mime' => 'image/jpeg',
+          ]);
+        //return $this->markdown('emails.users.confirmation')->subject('Por favor confirma tu correo');
     }
 }

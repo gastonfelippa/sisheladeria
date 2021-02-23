@@ -8,7 +8,8 @@
         </div>
     </div>
     <div class="col-2 mt-2 mb-2 text-right mr-2">
-     	<button type="button" onclick="Agregar()" class="btn btn-dark">
+     	<!-- <button type="button" onclick="Agregar()" class="btn btn-dark"> -->
+     	<button type="button" wire:click.prevent="doAction(2)" class="btn btn-dark">
      	 	Agregar
         </button>
     </div>

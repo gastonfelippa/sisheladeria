@@ -15,7 +15,7 @@
                             </div>
                             <div class="col-sm-12 col-md-8 col-lg-8 text-right">
                                 <button type="button" class="btn btn-sm btn-warning mt-4">
-                                <a href="{{url('pdfFacturas')}}">
+                                <a href="{{url('pdfFacturas')}}" target="_blank">
                                     IMPRIMIR </a>   
                                 </button>
                             </div>
@@ -36,16 +36,17 @@
                                     <tbody>
                                         @foreach($info as $r)
                                             <tr>
-                                                <td class="text-center">{{$r->id}}</td>
+                                                <td class="text-center">{{$r->numero}}</td>
                                                 <td class="text-center">{{$r->created_at->format('d-m-Y')}}</td>
-                                                <td class="text-left">{{$r->cliente}}</td>
+                                                <td class="text-left">{{$r->apeCli}} {{$r->nomCli}}</td>
                                                 <td class="text-center">{{number_format($r->importe,2)}}</td>
-                                                <td class="text-left">{{$r->repartidor}}</td>
+                                                <td class="text-left">{{$r->apeRep}} {{$r->apeRep}}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
-                                <!--      <tfoot>
-                                        <tr>             //// colspan ocupa una cant determinada de columnas 
+                                     <!-- <tfoot>
+                                        <tr>
+                                                            colspan ocupa una cant determinada de columnas
                                             <th class="text-right" colspan="10">SUMA IMPORTES:</th>
                                             <th class="text-center" colspan="2">$ {{number_format($sumaTotal,2)}}</th>
                                         </tr>

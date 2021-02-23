@@ -8,6 +8,7 @@ use App\TipoComercio;
 use App\Comercio;
 use App\Plan;
 use App\Proceso;
+use App\Provincia;
 
 class UserSeeder extends Seeder
 {
@@ -19,68 +20,68 @@ class UserSeeder extends Seeder
     public function run()
     {
         //lista de permisos
-        Permission::create(['name' => 'Estadisticas_index']);
-        Permission::create(['name' => 'Abm_index']);
+        Permission::create(['name' => 'Estadisticas_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Abm_index', 'alias' => 'Ver']);
         
-        Permission::create(['name' => 'Config_index']);
-        Permission::create(['name' => 'Empresa_index']);
-        Permission::create(['name' => 'Permisos_index']);
+        Permission::create(['name' => 'Config_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Empresa_index', 'alias' => 'Ver Empresa']);
+        Permission::create(['name' => 'Permisos_index', 'alias' => 'Ver Permisos']);
 
-        Permission::create(['name' => 'Productos_index']);
-        Permission::create(['name' => 'Productos_create']);
-        Permission::create(['name' => 'Productos_edit']);
-        Permission::create(['name' => 'Productos_destroy']);
+        Permission::create(['name' => 'Productos_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Productos_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Productos_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Productos_destroy', 'alias' => 'Eliminar']);
 
-        Permission::create(['name' => 'Rubros_index']);
-        Permission::create(['name' => 'Rubros_create']);
-        Permission::create(['name' => 'Rubros_edit']);
-        Permission::create(['name' => 'Rubros_destroy']);
+        Permission::create(['name' => 'Rubros_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Rubros_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Rubros_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Rubros_destroy', 'alias' => 'Eliminar']);
 
-        Permission::create(['name' => 'Empleados_index']);
-        Permission::create(['name' => 'Empleados_create']);
-        Permission::create(['name' => 'Empleados_edit']);
-        Permission::create(['name' => 'Empleados_destroy']);
+        Permission::create(['name' => 'Empleados_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Empleados_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Empleados_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Empleados_destroy', 'alias' => 'Eliminar']);
 
-        Permission::create(['name' => 'Clientes_index']);
-        Permission::create(['name' => 'Clientes_create']);
-        Permission::create(['name' => 'Clientes_edit']);
-        Permission::create(['name' => 'Clientes_destroy']);
+        Permission::create(['name' => 'Clientes_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Clientes_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Clientes_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Clientes_destroy', 'alias' => 'Eliminar']);
 
-        Permission::create(['name' => 'Gastos_index']);
-        Permission::create(['name' => 'Gastos_create']);
-        Permission::create(['name' => 'Gastos_edit']);
-        Permission::create(['name' => 'Gastos_destroy']);
+        Permission::create(['name' => 'Gastos_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Gastos_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Gastos_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Gastos_destroy', 'alias' => 'Eliminar']);
 
-        Permission::create(['name' => 'Facturas_index']);
-        Permission::create(['name' => 'Facturas_create_producto']);
-        Permission::create(['name' => 'Facturas_edit_item']);
-        Permission::create(['name' => 'Facturas_destroy_item']);
+        Permission::create(['name' => 'Facturas_index', 'alias' => 'Crear']);
+        Permission::create(['name' => 'Facturas_edit_item', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Facturas_destroy_item', 'alias' => 'Eliminar']);
+        Permission::create(['name' => 'Facturas_create_producto', 'alias' => 'Agregar Producto']);
 
-        Permission::create(['name' => 'Caja_index']);
-        Permission::create(['name' => 'CorteDeCaja_index']);
-        Permission::create(['name' => 'MovimientosDiarios_index']);
-        Permission::create(['name' => 'CajaRepartidor_index']);
+        Permission::create(['name' => 'Caja_index', 'alias' => 'Ver Caja']);
+        Permission::create(['name' => 'CorteDeCaja_index', 'alias' => 'Ver Corte De Caja']);
+        Permission::create(['name' => 'MovimientosDiarios_index', 'alias' => 'Ver Movimientos Diarios']);
+        Permission::create(['name' => 'CajaRepartidor_index', 'alias' => 'Ver Caja Repartidor']);
 
-        Permission::create(['name' => 'Reportes_index']);
-        Permission::create(['name' => 'VentasDiarias_index']);
-        Permission::create(['name' => 'VentasPorFechas_index']);
+        Permission::create(['name' => 'Reportes_index', 'alias' => 'Ver Reportes']);
+        Permission::create(['name' => 'VentasDiarias_index', 'alias' => 'Ver Ventas Diarias']);
+        Permission::create(['name' => 'VentasPorFechas_index', 'alias' => 'Ver Ventas Por Fecha']);
 
-        Permission::create(['name' => 'Usuarios_index']);
-        Permission::create(['name' => 'Usuarios_create']);
-        Permission::create(['name' => 'Usuarios_edit']);
-        Permission::create(['name' => 'Usuarios_destroy']);
+        Permission::create(['name' => 'Usuarios_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Usuarios_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Usuarios_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Usuarios_destroy', 'alias' => 'Eliminar']);
         
-        Permission::create(['name' => 'Movimientos_index']);
-        Permission::create(['name' => 'Movimientos_create']);
-        Permission::create(['name' => 'Movimientos_edit']);
-        Permission::create(['name' => 'Movimientos_destroy']);
+        Permission::create(['name' => 'Movimientos_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Movimientos_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Movimientos_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Movimientos_destroy', 'alias' => 'Eliminar']);
 
-        Permission::create(['name' => 'Facturas_imp']);
-        Permission::create(['name' => 'Fact_delivery_imp']);
+        Permission::create(['name' => 'Facturas_imp', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Fact_delivery_imp', 'alias' => 'Ver']);
 
-        Permission::create(['name' => 'Planes_index']);
-        Permission::create(['name' => 'Abonados_index']);
-        Permission::create(['name' => 'Procedimientos_index']);
+        Permission::create(['name' => 'Planes_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Abonados_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Procedimientos_index', 'alias' => 'Ver']);
         
         //creamos tipos de comercio
         TipoComercio::create(['descripcion' => 'Tipo SuperAdmin']);
@@ -109,8 +110,7 @@ class UserSeeder extends Seeder
         $comercio = Comercio::create(['nombre' => 'ABONADO', 'tipo_id' => '2']);
 
         // //lista de roles        
-        $superadmin = Role::create(['name' => 'SuperAdmin', 'comercio_id' => '1']); 
-        //$admin = Role::create(['name' => 'Admin', 'comercio_id' => '2']); 
+        $superadmin = Role::create(['name' => 'SuperAdmin', 'alias' => 'SuperAdmin','comercio_id' => '1']); 
         
         //asignación de permisos a roles
         $superadmin->givePermissionTo([   
@@ -119,60 +119,38 @@ class UserSeeder extends Seeder
             'Procedimientos_index'
         ]);  
         
-        // $admin->givePermissionTo([
-        //     'Estadisticas_index',
-        //     'Abm_index',
-        //     'Config_index',
-        //     'Empresa_index',
-        //     'Permisos_index',
-        //     'Productos_index',
-        //     'Productos_create',
-        //     'Productos_edit',
-        //     'Productos_destroy',
-        //     'Rubros_index',
-        //     'Rubros_create',
-        //     'Rubros_edit',
-        //     'Rubros_destroy',
-        //     'Empleados_index',
-        //     'Empleados_create',
-        //     'Empleados_edit',
-        //     'Empleados_destroy',
-        //     'Clientes_index',
-        //     'Clientes_create',
-        //     'Clientes_edit',
-        //     'Clientes_destroy',
-        //     'Gastos_index',
-        //     'Gastos_create',
-        //     'Gastos_edit',
-        //     'Gastos_destroy',
-        //     'Facturas_index',
-        //     'Facturas_create_producto',
-        //     'Facturas_edit_item',
-        //     'Facturas_destroy_item',
-        //     'Caja_index',
-        //     'CorteDeCaja_index',
-        //     'MovimientosDiarios_index',
-        //     'CajaRepartidor_index',
-        //     'Reportes_index',
-        //     'VentasDiarias_index',
-        //     'VentasPorFechas_index',
-        //     'Usuarios_index',
-        //     'Usuarios_create',
-        //     'Usuarios_edit',
-        //     'Usuarios_destroy',
-        //     'Movimientos_index',
-        //     'Movimientos_create',
-        //     'Movimientos_edit',
-        //     'Movimientos_destroy',
-        //     'Facturas_imp',
-        //     'Fact_delivery_imp'           
-        // ]);        
+        Provincia::create(['descripcion' => 'Buenos Aires']);
+        Provincia::create(['descripcion' => 'Catamarca']);
+        Provincia::create(['descripcion' => 'Chaco']);
+        Provincia::create(['descripcion' => 'Chubut']);
+        Provincia::create(['descripcion' => 'Córdoba']);
+        Provincia::create(['descripcion' => 'Corrientes']);
+        Provincia::create(['descripcion' => 'Entre Ríos']);
+        Provincia::create(['descripcion' => 'Formosa']);
+        Provincia::create(['descripcion' => 'Jujuy']);
+        Provincia::create(['descripcion' => 'La Pampa']);
+        Provincia::create(['descripcion' => 'La Rioja']);
+        Provincia::create(['descripcion' => 'Mendoza']);
+        Provincia::create(['descripcion' => 'Misiones']);
+        Provincia::create(['descripcion' => 'Neuquén']);
+        Provincia::create(['descripcion' => 'Río Negro']);
+        Provincia::create(['descripcion' => 'Salta']);
+        Provincia::create(['descripcion' => 'San Juan']);
+        Provincia::create(['descripcion' => 'San Luis']);
+        Provincia::create(['descripcion' => 'Santa Cruz']);
+        Provincia::create(['descripcion' => 'Santa Fe']);
+        Provincia::create(['descripcion' => 'Santiago del Estero']);
+        Provincia::create(['descripcion' => 'Tierra del Fuego']);
+        Provincia::create(['descripcion' => 'Tucumán']); 
 
         User::create([
             'name' => 'Gastón',
-            'apellido'=> 'Felippa',
+            'apellido'=> 'Felippa', 
+            'sexo' => '2',
+            'username' => 'admin@floki',
             'email' => 'admin@gmail',
             'password' => bcrypt('12345678'),
+            'pass' => '12345678',
             'abonado' => 'Admin'
         ]);     
 

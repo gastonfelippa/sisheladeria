@@ -9,7 +9,7 @@
                         <i class="la la-remove la-lg"></i>
                     </span>
                 </div>
-                <input type="text" id="roleName" class="form-control" autocomplete="off">
+                <input type="text" id="roleName" class="form-control  text-capitalize" autocomplete="off">
                 <input type="hidden" id="roleId">
                 <div class="input-group-prepend">
                     <span class="input-group-text" 
@@ -32,7 +32,7 @@
                     <tbody>
                         @foreach($roles as $r)
                         <tr>
-                            <td>{{$r->name}}</td>
+                            <td>{{$r->alias}}</td>
                             <td class="text-center">{{\App\User::role($r->name)->count()}}</td>
                             <td class="text-center">
                                 <span style="cursor:pointer"
@@ -71,7 +71,7 @@
                 <select wire:model="userSelected" id="userId" class="form-control">
                     <option value="Seleccionar">Seleccionar</option>
                     @foreach($usuarios as $u)
-                    <option value="{{$u->id}}">{{$u->nombre}}</option>
+                    <option value="{{$u->id}}">{{$u->apellido}}, {{$u->name}}</option>
                     @endforeach
                 </select>
             </div>   

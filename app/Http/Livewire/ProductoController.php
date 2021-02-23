@@ -25,10 +25,10 @@ class ProductoController extends Component
 			if ($nuevo_codigo->count() == 0){
 				$this->codigo_sugerido = 1;
 			}else{
-				$nuevo_codigo = Producto::select('id')
+				$nuevo_codigo = Producto::select()
                 ->where('comercio_id', $this->comercioId)
 				->orderBy('id','desc')->first();
-				$this->codigo_sugerido = $nuevo_codigo->id + 1;
+				$this->codigo_sugerido = $nuevo_codigo->codigo + 1;
 			}
 		}else{
 			$this->codigo_sugerido = $this->selected_id;

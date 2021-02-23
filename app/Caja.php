@@ -8,5 +8,5 @@ class Caja extends Model
 {
     protected $table ='cajas';
 
-    protected $fillable = ['monto','concepto','tipo','user_id'];
+    protected $fillable = ['monto', 'concepto', 'tipo', 'user_id', 'comercio_id'];
 }

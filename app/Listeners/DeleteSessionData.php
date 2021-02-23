@@ -27,5 +27,8 @@ class DeleteSessionData
     public function handle(Logout $event)
     {
         session()->forget('idComercio');
+        session()->forget('pass');
+        session()->forget('pass_empleado');
+        session()->forget('empleado');
     }
 }

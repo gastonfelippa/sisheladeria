@@ -34,14 +34,17 @@ class HomeController extends Controller
             //inicializa la variable de session idComercio con el comercio asignado al usuario actual
             $userComercio = UsuarioComercio::select('id','comercio_id')
             ->where('usuario_id', Auth()->user()->id)->get();
-            session(['idComercio' => $userComercio[0]->comercio_id]);             
+            session(['idComercio' => $userComercio[0]->comercio_id]);  
+            
+            $userComercio = UsuarioComercio::select('*')
+            ->where('comercio_id', session('idComercio'))->orderBy('created_at', 'asc')->first();
              
             //verificaciones de planes
             $fecha_actual = Carbon::now();      
             $estado = UsuarioComercioPlanes::select('*')
-                ->where('usuariocomercio_planes.usuariocomercio_id', $userComercio[0]->id)
+                ->where('usuariocomercio_planes.usuariocomercio_id', $userComercio->id)
                 ->orderBy('id', 'desc')->first();
-            
+
             if($estado->estado_plan == 'completado' && $estado->plan_id == 1)
             {
                 return view('livewire.admin.mensajes.prueba_completada');

@@ -4,9 +4,10 @@
 	<div>
 		<div>
 			
+			<b>N° Control:</b>  {{$info[0]->id}}<br>                       
 		@if($delivery)
-			<b>Cliente:</b>  {{$info[0]->nomcli}}<br>                       
-			<b>Dirección:</b>  {{$info[0]->dircli}}<br> 
+			<b>Cliente:</b>  {{$info[0]->apeCli}} {{$info[0]->nomCli}}<br>                       
+			<b>Dirección:</b>  {{$info[0]->calleCli}} {{$info[0]->numCli}}<br> 
 		@endif	
 			
 			<b>Fecha:</b>  {{\Carbon\Carbon::parse($info[0]->created_at)->format('d-m-Y')}}

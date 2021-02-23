@@ -7,6 +7,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 
 use App\Mail\Contact;
+use App\Events\UserRegistered;
 
 class EnviarContraseña
 {
@@ -26,18 +27,17 @@ class EnviarContraseña
      * @param  object  $event
      * @return void
      */
-    public function handle($event)
+    public function handle(UserRegistered $event)
     {
-       // var_dump('Su contraseña es '. $event->contraseña . ' Sr '. $event->user);
-
-        Mail::to('nuestroEmail@gmail.com')->queue(
-            new Contact($event->user, $event->contraseña, $event->salutation));
-        
-        return redirect()->route('contactanos.index')->with('info','Correo enviado...\nPronto recibirás una respuesta!!!');
-
-        // Mail::send('emails.contact', $event, function ($message) {
-        //     $message->from('tucorreo@gmail.com','Registro con exito');
-        //     $message->to('usuario@gmail.com')->subject('Hay un nuevo registro');
-        // });
+        $data = array('name' => $event->user->name, 'email' => $event->user->email, 'body' => 'Bienvenido a mi sitio personal en donde comparto artículos de desarrollo web.',
+                       'username' => $event->user->username,'pass' => $event->user->pass);
+        //dd($data);
+        Mail::send('emails.mail', $data, function($message) use ($data) {
+            $message->to($data['email'])
+                    ->subject('Bienvenido a Gabriel Chávez');
+            $message->from('contacto@gabrielchavez.me');
+            // $message->line('Usuario: ' . $data['username']);
+            // $message->line('Usuario: ' . $data['pass']);
+        });
     }
 }

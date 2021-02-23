@@ -11,7 +11,7 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-12">
                                 <input id="name" type="text" class="form-control text-capitalize @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus placeholder="NOMBRE">
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
@@ -21,7 +21,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-12">
                                 <input id="apellido" type="text" class="form-control text-capitalize @error('apellido') is-invalid @enderror" name="apellido" value="{{ old('apellido') }}" required autocomplete="apellido" autofocus placeholder="APELLIDO">
                                 @error('apellido')
                                     <span class="invalid-feedback" role="alert">
@@ -29,9 +29,23 @@
                                     </span>
                                 @enderror
                             </div>
+                        </div> 
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <select name="sexo" class="form-control text-center @error('sexo') is-invalid @enderror">
+                                    <option value="0">Sexo</option>
+                                    <option value="1">Femenino</option>
+                                    <option value="2">Masculino</option>                                
+                                </select>
+                                @error('sexo')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-12">
                                 <input id="nombreComercio" type="text" class="form-control text-uppercase @error('nombreComercio') is-invalid @enderror" name="nombreComercio" value="{{ old('nombreComercio') }}" required autocomplete="nombreComercio" autofocus placeholder="NOMBRE DEL COMERCIO">
                                 @error('nombreComercio')
                                     <span class="invalid-feedback" role="alert">
@@ -41,7 +55,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-12">
                                 <select name="tipo" class="form-control text-center">
                                     <option value="2">Bar/Pub/Restó</option>
                                     <option value="3">Restaurante</option>
@@ -57,38 +71,13 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-md-12">
-                                <input id="telefono1" type="text" class="form-control @error('telefono1') is-invalid @enderror" name="telefono1" value="{{ old('telefono1') }}" required autocomplete="telefono1" placeholder="TELEFONO 1(solo números, sin 0 ni 15)">
-                                @error('telefono1')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>                      
-                        <div class="form-group row">
-                            <div class="col-md-12">
+                            <div class="col-12">
                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="EMAIL">
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                                <div class="col-md-12">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="PASSWORD">
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-12">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password" placeholder="CONFIRMAR PASSWORD">
                             </div>
                         </div>
                         <div class=" mt-4 text-left ">

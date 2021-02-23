@@ -40,7 +40,7 @@
                                 Cobrar   
                             </button>
                             <button type="button" class="btn btn-success" enabled>
-                                <a href="{{url('pdfFactDel',array($factura_id))}}">
+                                <a href="{{url('pdfFactDel',array($factura_id))}}" target="_blank">
                                 Imprimir</a>
                             </button>
                         @endif
@@ -54,7 +54,7 @@
                                 Cliente
                                 @if($habilitar_botones)
                                     <span class="badge badge-primary ml-4" 
-                                    wire:click.prevent="grabarModEncabezado({{$id_factura}})">Grabar</span>
+                                    wire:click.prevent="grabarModEncabezado({{$factura_id}})">Grabar</span>
                                     <span class="badge badge-dark" 
                                     wire:click.prevent="cancelarModEncabezado()">Cancelar</span>
                                 @else                               
@@ -66,7 +66,7 @@
                                 <option value="Elegir">Elegir</option>
                                 @foreach($clientes as $t)
                                     <option value="{{ $t->id }}">
-                                        {{$t->nombre}}                         
+                                    {{$t->apellido}} {{$t->nombre}}                         
                                     </option> 
                                 @endforeach                               
                             </select>                      		               
@@ -81,7 +81,7 @@
                                 <option value="Elegir" onclick="setfocus('cantidad)">Elegir</option>
                                  @foreach($empleados as $t)
                                     <option value="{{ $t->id }}" onclick="setfocus('cantidad')">
-                                        {{$t->nombre}}                         
+                                    {{$t->apellido}}, {{$t->nombre}}                         
                                     </option> 
                                 @endforeach                               
                             </select>                   
@@ -91,9 +91,9 @@
             @else
                 <div class="row mt-2">
                     <div class="col-sm-7">
-                        <h6>Cliente:  {{$encabezado[0]->nomCli}}</h6>
-                        <h6>Dirección:  {{$encabezado[0]->direccion}}</h6>
-                        <h6>Repartidor:  {{$encabezado[0]->nomRep}}</h6>
+                        <h6>Cliente:  {{$encabezado[0]->apeCli}} {{$encabezado[0]->nomCli}}</h6>
+                        <h6>Dirección:  {{$encabezado[0]->calle}} {{$encabezado[0]->numero}}</h6>
+                        <h6>Repartidor:  {{$encabezado[0]->apeRep}} {{$encabezado[0]->nomRep}}</h6>
                     </div>
                     <div class="col-sm-5 mt-4">
                         <span class="badge badge-primary ml-4"
@@ -151,7 +151,7 @@
                                 onclick.keydown.enter="setfocus('guardar')" class="form-control form-control-sm">
                         </div>
                         <div class="form-group col-sm-12 col-md-4">
-                            <label>Productos</label>
+                            <label>Producto</label>
                             @can('Facturas_create_producto')
                             <span class="badge badge-primary ml-4" >
                                     <a href="{{ url('productos') }}" style="color: white">Agregar</a></span>                            
@@ -167,7 +167,7 @@
                             </select>			               
                         </div>            
                         <div class="form-group col-sm-12 col-md-3">
-                            <label >Precio Unitario</label>
+                            <label>Precio Unitario</label>
                             <input wire:model.lazy="precio" type="text" class="form-control form-control-sm" disabled>
                         </div>
                     </div>

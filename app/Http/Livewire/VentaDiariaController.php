@@ -17,7 +17,8 @@ class VentaDiariaController extends Component
     {
         $cantVentas = Factura::leftjoin('clientes as c', 'c.id', 'facturas.cliente_id')
             ->leftjoin('empleados as e', 'e.id', 'facturas.repartidor_id')
-            ->select('facturas.*', 'c.nombre as cliente', 'e.nombre as repartidor')
+            ->select('facturas.*', 'c.nombre as nomCli', 'c.apellido as apeCli', 
+                     'e.nombre as nomRep', 'e.apellido as apeRep')
             ->whereDate('facturas.created_at', Carbon::today())
             ->where('facturas.estado', 'PAGADA')
             ->orderBy('id', 'desc');
@@ -25,7 +26,8 @@ class VentaDiariaController extends Component
         
         $ventas = Factura::leftjoin('clientes as c', 'c.id', 'facturas.cliente_id')
                 ->leftjoin('empleados as e', 'e.id', 'facturas.repartidor_id')
-                ->select('facturas.*', 'c.nombre as cliente', 'e.nombre as repartidor')
+                ->select('facturas.*', 'c.nombre as nomCli', 'c.apellido as apeCli', 
+                     'e.nombre as nomRep', 'e.apellido as apeRep')
                 ->whereDate('facturas.created_at', Carbon::today())
                 ->where('facturas.estado', 'PAGADA')
                 ->orderBy('id', 'desc')

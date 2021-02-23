@@ -51,7 +51,6 @@ class ResetPasswordNotification extends Notification
     {
         $count = config('auth.passwords.' . config('auth.defaults.passwords') . '.expire');
         return (new MailMessage)
-
             ->subject('Solicitud de restablecimiento de contraseña')
             ->greeting('Hola ' . $notifiable->name . '!')
             ->line('Se solicitó un restablecimiento de contraseña para tu cuenta ' . $notifiable->getEmailForPasswordReset() . ', haz clic en el botón que aparece a continuación para cambiar tu contraseña.')

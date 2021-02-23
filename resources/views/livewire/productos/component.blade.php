@@ -31,32 +31,32 @@
                     <table class="table table-hover table-checkable table-sm">
                         <thead>
                             <tr>                                                   
-                                <th class="">ID</th>
+                                <th class="">CODIGO</th>
                                 <th class="">DESCRIPCIÓN</th>
-                                @can('Productos_create')
+                                <!-- @can('Productos_create') -->
                                 <th class="text-center">PR. COSTO</th>
-                                @endcan
+                                <!-- @endcan -->
                                 <th class="text-center">PR. VENTA</th>
                                 <th class="text-center">ESTADO</th>
-                                @can('Productos_create')
+                                <!-- @can('Productos_create') -->
                                 <th class="">RUBRO</th>
                                 <th class="text-center">ACCIONES</th>
-                                @endcan
+                                <!-- @endcan -->
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($info as $r)
                             <tr>                     
-                                <td><p class="mb-0">{{$r->id}}</p></td>
+                                <td class="text-center"><p class="mb-0">{{$r->codigo}}</p></td>
                                 <td>{{$r->descripcion}}</td>
-                                @can('Productos_create')
+                                <!-- @can('Productos_create') -->
                                 <td class="text-right">{{$r->precio_costo}}</td>
-                                @endcan
+                                <!-- @endcan -->
                                 <td class="text-right">{{$r->precio_venta}}</td>
                                 <td class="text-center">{{$r->estado}}</td>
-                                @can('Productos_create')
+                                <!-- @can('Productos_create') -->
                                 <td>{{$r->rubro}}</td>
-                                @endcan
+                                <!-- @endcan -->
                                 <td class="text-center">
                                     @include('common.actions', ['edit' => 'Productos_edit', 'destroy' => 'Productos_destroy'])
                                 </td>

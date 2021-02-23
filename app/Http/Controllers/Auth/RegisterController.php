@@ -10,12 +10,12 @@ use App\Comercio;
 use App\UsuarioComercio;
 use App\UsuarioComercioPlanes;
 use App\Plan;
-// use App\Role;
 use App\ModelHasRole;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use DB;
 
 class RegisterController extends Controller
@@ -38,7 +38,8 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    
+     
 
 
     /**
@@ -63,12 +64,10 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'apellido' => ['required', 'string', 'max:255'],
             'nombreComercio' => ['required', 'string', 'max:255'],
-            'telefono1' => ['required', 'numeric', 'min:100000000' , 'max:999999999999999'], 
+            'sexo' => ['required', 'not_in:0'],
             'email' => ['required', 'string', 'email', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
             ]);
         }
-        // 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
 
     /**
      * Create a new user instance after a valid registration.
@@ -78,38 +77,49 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        //genera un password random de 8 caracteres y crea una sesion con ese password
+        $password = Str::random(8);
+        session(['pass' => $password]);
+        session(['empleado' => false]);
+
+        $cadena = strtolower($data['nombreComercio']);
+        $username = str_replace(' ', '',Str::finish('admin@', $cadena));
+        
         DB::begintransaction();                 //iniciar transacción para grabar
         try{ 
             $comercio = Comercio::create([
                 'nombre' => strtoupper($data['nombreComercio']),            
                 'tipo_id' => $data['tipo']            
             ]);
-
+                
             $user = User::create([            
                 'name' => ucwords($data['name']),
                 'apellido' => ucwords($data['apellido']),
-                'telefono1' => $data['telefono1'],
+                'sexo' => $data['sexo'],
+                'username' => $username,
                 'email' => strtolower($data['email']),
-                'password' => Hash::make($data['password']),
+                'password' => Hash::make($password),
+                'pass' => $password,
                 'abonado' => 'Si'
             ]);
-
+                
             UsuarioComercio::create([
                 'usuario_id' => $user->id,            
                 'comercio_id' => $comercio->id            
             ]);
-
+                        
             $role = Role::create([
                 'name' => 'Admin'. $comercio->id,
+                'alias' => 'Admin',
                 'comercio_id' => $comercio->id         
             ]);
-
+                            
             ModelHasRole::create([
                 'role_id' => $role->id,
                 'model_type' => 'App\User',           
                 'model_id' => $user->id           
             ]);
-
+                                
             $role->givePermissionTo([
                 'Estadisticas_index','Abm_index','Config_index','Empresa_index','Permisos_index','Productos_index',
                 'Productos_create','Productos_edit','Productos_destroy','Rubros_index','Rubros_create','Rubros_edit',
@@ -120,20 +130,17 @@ class RegisterController extends Controller
                 'Reportes_index','VentasDiarias_index','VentasPorFechas_index','Usuarios_index','Usuarios_create',
                 'Usuarios_edit','Usuarios_destroy','Movimientos_index','Movimientos_create','Movimientos_edit',
                 'Movimientos_destroy','Facturas_imp','Fact_delivery_imp'           
-            ]);
-
-            // $user->assignRole('Admin');
-
-
+            ]);                                    
+                                    
             $usercomercio = UsuarioComercio::select('id')->orderBy('id', 'desc')->get();
             $plan = Plan::select('*')->where('id', '1')->get(); 
-            
+                                    
             $fecha_inicio = Carbon::now()->locale('en');      //inicializo fecha_inicio con la fecha en que se suscribe al sistema
             $mes = $fecha_inicio->monthName;                  //recupero el mes
             Carbon::setTestNow($fecha_inicio);                //habilito a Carbon para que actúe sobre fecha_inicio
             $fecha_fin = new Carbon('last day of ' . $mes);   //inicializo fecha_fin con el último día del mes en curso
             $diferencia = $fecha_inicio->diffInDays($fecha_fin); //efectúo la diferencia entre fechas para saber los días que las separan
-    
+                                    
             if($diferencia < 15)                                 //si son menos de 15 días
             {                                  
                 $fecha_fin = Carbon::now()->addMonthsNoOverflow(1)->locale('en'); //agrego un mes a fecha_fin a partir del corriente mes
@@ -142,7 +149,7 @@ class RegisterController extends Controller
                 $fecha_fin = new Carbon('last day of ' . $mes);       //modifico fecha_fin con el último día del mes siguiente
             }
             Carbon::setTestNow();               //IMPORTANTE: resetea la fecha actual para grabarla en create_at y update_at
-
+            
             UsuarioComercioPlanes::create([
                 'usuariocomercio_id'   => $usercomercio[0]->id,
                 'plan_id'              => $plan[0]->id,
@@ -153,8 +160,8 @@ class RegisterController extends Controller
                 'fecha_fin'            => Carbon::parse($fecha_fin)->format('Y,m,d') . ' 23:59:59',
                 'fecha_vto'            => Carbon::parse($fecha_fin)->format('Y,m,d') . ' 23:59:59',
                 'comentarios'          => 'Inicio plan de prueba'
-            ]);
-            
+                ]);
+                
             DB::commit();
             return $user;
         }catch (Exception $e){
@@ -163,3 +170,4 @@ class RegisterController extends Controller
         }
     }
 }
+    
