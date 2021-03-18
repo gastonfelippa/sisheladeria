@@ -11,9 +11,9 @@ use DB;
 
 class PermisosController extends Component
 {
-    public $permisoTitle = "Crear", $roleTitle = "Crear", $userSelected;
-    public $tab = 'roles', $roleSelected;
-    public $comercioId;
+    public $agregarRol, $userSelected;
+    public $tab = 'roles', $roleSelected, $habilitar_botones = true;
+    public $comercioId, $adminId, $noUsuarioId;
 
     public function render()
     {
@@ -21,90 +21,108 @@ class PermisosController extends Component
         $this->comercioId = session('idComercio');   
         
         $usuarios = User::join('usuario_comercio as uc', 'uc.usuario_id', 'users.id')
-        ->where('uc.comercio_id', $this->comercioId)
-        ->select('users.*')->get();
+            ->where('uc.comercio_id', $this->comercioId)
+            ->select('users.*')->get();
 
         $roles = Role::select('*', DB::RAW("0 as checked"))
-        ->where('comercio_id', $this->comercioId)->get();
+            ->where('comercio_id', $this->comercioId)->get();
 
         // $permisos = Permission::select('*', DB::RAW("0 as checked"))->get();
         $pProductos = Permission::where('name', 'Productos_index')
-        ->orWhere('name', 'Productos_create')
-        ->orWhere('name', 'Productos_edit')
-        ->orWhere('name', 'Productos_destroy')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Productos_create')
+            ->orWhere('name', 'Productos_edit')
+            ->orWhere('name', 'Productos_destroy')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pClientes = Permission::where('name', 'Clientes_index')
-        ->orWhere('name', 'Clientes_create')
-        ->orWhere('name', 'Clientes_edit')
-        ->orWhere('name', 'Clientes_destroy')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Clientes_create')
+            ->orWhere('name', 'Clientes_edit')
+            ->orWhere('name', 'Clientes_destroy')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pEmpleados = Permission::where('name', 'Empleados_index')
-        ->orWhere('name', 'Empleados_create')
-        ->orWhere('name', 'Empleados_edit')
-        ->orWhere('name', 'Empleados_destroy')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Empleados_create')
+            ->orWhere('name', 'Empleados_edit')
+            ->orWhere('name', 'Empleados_destroy')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pFacturas = Permission::where('name', 'Facturas_index')
-        ->orWhere('name', 'Facturas_edit_item')
-        ->orWhere('name', 'Facturas_destroy_item')
-        ->orWhere('name', 'Facturas_create_producto')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Facturas_edit_item')
+            ->orWhere('name', 'Facturas_destroy_item')
+            ->orWhere('name', 'Facturas_create_producto')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pRubros = Permission::where('name', 'Rubros_index')
-        ->orWhere('name', 'Rubros_create')
-        ->orWhere('name', 'Rubros_edit')
-        ->orWhere('name', 'Rubros_destroy')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Rubros_create')
+            ->orWhere('name', 'Rubros_edit')
+            ->orWhere('name', 'Rubros_destroy')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pGastos = Permission::where('name', 'Gastos_index')
-        ->orWhere('name', 'Gastos_create')
-        ->orWhere('name', 'Gastos_edit')
-        ->orWhere('name', 'Gastos_destroy')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Gastos_create')
+            ->orWhere('name', 'Gastos_edit')
+            ->orWhere('name', 'Gastos_destroy')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pUsuarios = Permission::where('name', 'Usuarios_index')
-        ->orWhere('name', 'Usuarios_create')
-        ->orWhere('name', 'Usuarios_edit')
-        ->orWhere('name', 'Usuarios_destroy')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Usuarios_create')
+            ->orWhere('name', 'Usuarios_edit')
+            ->orWhere('name', 'Usuarios_destroy')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pCaja = Permission::where('name', 'Caja_index')
-        ->orWhere('name', 'CorteDeCaja_index')
-        ->orWhere('name', 'MovimientosDiarios_index')
-        ->orWhere('name', 'CajaRepartidor_index')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'CorteDeCaja_index')
+            ->orWhere('name', 'MovimientosDiarios_index')
+            ->orWhere('name', 'CajaRepartidor_index')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pReportes = Permission::where('name', 'Reportes_index')
-        ->orWhere('name', 'VentasDiarias_index')
-        ->orWhere('name', 'VentasPorFechas_index')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'VentasDiarias_index')
+            ->orWhere('name', 'VentasPorFechas_index')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pConfiguraciones = Permission::where('name', 'Config_index')
-        ->orWhere('name', 'Empresa_index')
-        ->orWhere('name', 'Permisos_index')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Empresa_index')
+            ->orWhere('name', 'Permisos_index')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         $pMovDeCaja = Permission::where('name', 'Movimientos_index')
-        ->orWhere('name', 'Movimientos_create')
-        ->orWhere('name', 'Movimientos_edit')
-        ->orWhere('name', 'Movimientos_destroy')
-        ->select('*', DB::RAW("0 as checked"))->get();
+            ->orWhere('name', 'Movimientos_create')
+            ->orWhere('name', 'Movimientos_edit')
+            ->orWhere('name', 'Movimientos_destroy')
+            ->select('*', DB::RAW("0 as checked"))->get();
 
         if($this->userSelected != '' && $this->userSelected != 'Seleccionar')
         {
+            //habilita o deshabilita el botón 'Asignar Roles'
+            foreach($roles as $r){            
+                if($r->alias == 'Admin') $this->adminId = $r->id;
+                if($r->alias == 'No Usuario') $this->noUsuarioId = $r->id;
+            }
+            if($this->userSelected == $this->adminId){
+                $this->habilitar_botones = false;
+            }else{
+                $this->habilitar_botones = true;
+            }
+            ////         
             foreach($roles as $r){
+                // $r->checked = false;
                 $user = User::find($this->userSelected);
                 $tieneRole = $user->hasRole($r->name);
-                if($tieneRole){
-                        $r->checked = 1;
-                }
+                if($tieneRole) $r->checked = 1;
             }
-        }
-
+        }      
+        
         if($this->roleSelected != '' && $this->roleSelected != 'Seleccionar')
         {
+            //habilita o deshabilita el botón 'Asignar Permisos'
+            foreach($roles as $r){            
+                if($r->alias == 'Admin') $this->adminId = $r->id;
+            }
+            if($this->roleSelected == $this->adminId) $this->habilitar_botones = false;
+            else $this->habilitar_botones = true;
+            ////
+
             foreach($pProductos as $p){
                 $role = Role::find($this->roleSelected);
                 $tienePermiso = $role->hasPermissionTo($p->name);
@@ -205,8 +223,7 @@ class PermisosController extends Component
         //sección de roles
     public function resetInput()
     {
-        $this->roleTitle = 'Crear';
-        $this->permisoTitle = 'Crear';
+        $this->agregarRol = '';
         $this->userSelected = '';
         $this->roleSelected = '';
     }
@@ -222,27 +239,30 @@ class PermisosController extends Component
 
     public function CrearRole($roleName, $roleId)
     {
-        if($roleId)
-            $this->UpdateRole($roleName, $roleId);
-        else
-            $this->SaveRole($roleName);
+        if($roleId) $this->UpdateRole($roleName, $roleId);
+        else $this->SaveRole($roleName);
     }
 
     public function SaveRole($roleName)
     {
         $role = Role::where('name', $roleName . $this->comercioId)
-            ->where('comercio_id', $this->comercioId)->first();
-        if($role){
+            ->where('comercio_id', $this->comercioId)
+            ->select(DB::raw('count(*) as filas'))->get();
+
+        if($role[0]->filas > 0){
             session()->flash('msg-ops', 'El rol que intentas registrar ya existe en el sistema');
+            $this->resetInput();
             return;
+        }else {
+            Role::create([
+                'name' => ucwords($roleName . $this->comercioId),
+                'comercio_id' => $this->comercioId,
+                'alias' => ucwords($roleName)
+            ]);
+            session()->flash('msg-ok', 'El rol se registró correctamente');
         }
-        Role::create([
-            'name' => ucwords($roleName . $this->comercioId),
-            'comercio_id' => $this->comercioId,
-            'alias' => ucwords($roleName)
-        ]);
-        session()->flash('msg-ok', 'El rol se registró correctamente');
         $this->resetInput();
+        return;
     }
 
     public function UpdateRole($roleName, $roleId)

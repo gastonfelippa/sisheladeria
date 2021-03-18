@@ -34,10 +34,12 @@ Route::get('/notify', 'HomeController@notificado')->name('notify')->middleware('
 //rutas de impresion
 Route::get('/pdfFacturas', 'PdfController@PDFFacturas')->middleware('permission:Facturas_imp');
 Route::get('/pdfFactDel/{id}', 'PdfController@PDFFactDel')->middleware('permission:Fact_delivery_imp');
+Route::get('/pdfViandas', 'PdfController@PDFViandas');
 
 Route::view('rubros', 'rubros')->middleware('permission:Rubros_index');
 Route::view('productos', 'productos')->middleware('permission:Productos_index');
 Route::view('clientes', 'clientes')->middleware('permission:Clientes_index');
+Route::view('proveedores', 'proveedores')->middleware('permission:Proveedores_index');
 Route::view('empleados', 'empleados')->middleware('permission:Empleados_index');
 Route::view('facturas', 'facturas')->middleware('permission:Facturas_index');
 // Route::view('tipogastos', 'tipogastos');
@@ -48,6 +50,9 @@ Route::view('cajarepartidor', 'cajarepartidor')->middleware('permission:CajaRepa
 Route::view('ventasdiarias', 'ventasdiarias')->middleware('permission:VentasDiarias_index');
 Route::view('ventasporfechas', 'ventasporfechas')->middleware('permission:VentasPorFechas_index');
 Route::view('usuarios', 'usuarios')->middleware('permission:Usuarios_index');
+Route::view('compras', 'compras')->middleware('permission:Compras_index');
+Route::view('viandas', 'viandas');
+Route::view('ctacte', 'ctacte');
 
 Route::view('permisos', 'permisos')->middleware('permission:Usuarios_index');
 Route::view('empresa', 'empresa')->middleware('permission:Empresa_index');

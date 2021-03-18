@@ -1,106 +1,131 @@
 <div class="row layout-top-spacing">	
     <div class="col-md-12 col-lg-6 layout-spacing"> 		
 		<div class="widget-content-area br-4">
-			<div class="widget-one">
+			<div class="widget-one widget-h">
                 <div class="row">
                     <div class="col-md-6">
-                        <h3>Factura N°:{{$numFactura}}</h3>
+                        <h3>Factura N°: {{$numFactura}}</h3>
                     </div>
                     <div class="col-md-6 text-center">
                         <h3 class="bg-danger">Total : $ {{number_format($total,2)}}</h3> 
                     </div>
                 </div>  
                 <div class="row">
-                    <div class="col-md-4">
-                        <h6>Fecha {{\Carbon\Carbon::now()->format('d-m-Y')}} </h6>
+                    <div class="col-md-3">
+                        <p style="font-size:14px;">Fecha {{\Carbon\Carbon::now()->format('d-m-Y')}} <p>
                     </div>                    
-                    <div class="col-md-8 text-right">
-                        @if($dejar_pendiente)
-                            <button id="pendiente" type="button" wire:click="dejar_pendiente()" onclick="setfocus('barcode')" 
-                                class="btn btn-dark" enabled>
-                                Delivery   
-                            </button>
-                        @else
-                            <button id="pendiente" type="button" wire:click="dejar_pendiente()" onclick="setfocus('barcode')" 
-                                class="btn btn-dark" disabled>
-                                Delivery   
-                            </button>
-                        @endif 
-                        @if($total == 0)                       
-                            <button type="button" wire:click="cobrar_factura()" onclick="setfocus('barcode')" 
-                                class="btn btn-primary" disabled>
-                                Cobrar   
-                            </button>
-                            <button type="button" class="btn btn-success" disabled>                                
-                                Imprimir
-                            </button>
-                        @else
-                            <button type="button" wire:click="cobrar_factura()" onclick="setfocus('barcode')" 
-                                class="btn btn-primary" enabled>
-                                Cobrar   
-                            </button>
-                            <button type="button" class="btn btn-success" enabled>
-                                <a href="{{url('pdfFactDel',array($factura_id))}}" target="_blank">
-                                Imprimir</a>
-                            </button>
-                        @endif
+                    <div class="col-md-9 text-right">
+                        <div class="btn-group mb-2" role="group" aria-label="Basic mixed styles example">            
+                            @if($total == 0)
+                                <button type="button" onclick="openModal({{$factura_id}})" onclick="setfocus('barcode')" 
+                                    class="btn btn-dark" enabled>
+                                    Delivery   
+                                </button>        
+                                <button type="button" class="btn btn-warning" disabled>Dejar Pendiente</button>                    
+                                <button type="button" class="btn btn-primary" disabled>Cobrar</button>
+                                <button type="button" class="btn btn-success" disabled>Imprimir</button>
+                            @else
+                                @if($delivery == 0)
+                                    <button type="button" onclick="openModal({{$factura_id}})" onclick="setfocus('barcode')" 
+                                        class="btn btn-dark" enabled>
+                                        Delivery   
+                                    </button>
+                                    <button type="button" class="btn btn-warning" disabled>
+                                        Dejar Pendiente
+                                    </button>
+                                @else
+                                    <button type="button" onclick="openModal({{$factura_id}})"
+                                        class="btn btn-dark" enabled>
+                                        Mod Cli/Rep                                         
+                                    </button>
+                                    <button type="button" wire:click.prevent="dejar_pendiente()"
+                                        class="btn btn-warning" enabled>
+                                        Dejar Pendiente
+                                    </button>
+                                @endif 
+                                <button type="button" wire:click.prevent="cobrar_factura()" onclick="setfocus('barcode')" 
+                                    class="btn btn-primary" enabled>
+                                    Cobrar   
+                                </button>
+                                <button type="button" class="btn btn-success" enabled>
+                                    <a href="{{url('pdfFactDel',array($factura_id))}}" target="_blank">
+                                    Imprimir</a>
+                                </button>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            @if($grabar_encabezado)
-                <form> 
-                    <div class="row mt-1">
-                        <div class="form-group col-md-5 col-sm-12 ">                       
-                            <label>
-                                Cliente
-                                @if($habilitar_botones)
-                                    <span class="badge badge-primary ml-4" 
-                                    wire:click.prevent="grabarModEncabezado({{$factura_id}})">Grabar</span>
-                                    <span class="badge badge-dark" 
-                                    wire:click.prevent="cancelarModEncabezado()">Cancelar</span>
-                                @else                               
-                                    <span class="badge badge-primary ml-4" >
-                                    <a href="{{ url('clientes') }}" style="color: white">Agregar</a></span>                              
-                                @endif
-                            </label>   
-                            <select id="comboCliente" wire:model="cliente" class="form-control form-control-sm text-center">
-                                <option value="Elegir">Elegir</option>
-                                @foreach($clientes as $t)
-                                    <option value="{{ $t->id }}">
-                                    {{$t->apellido}} {{$t->nombre}}                         
-                                    </option> 
-                                @endforeach                               
-                            </select>                      		               
-                        </div> 
-                        <div class="form-group col-md-4 col-sm-12">
-                            <label >Dirección</label> 
-                            <input wire:model="dirCliente" type="text" class="form-control form-control-sm" disabled>
-                        </div> 
-                        <div class="form-group col-md-3 col-sm-12 ">                          
-                            <label >Repartidor</label>
-                            <select id="comboRepartidor" wire:model="empleado" class="form-control form-control-sm text-center">
-                                <option value="Elegir" onclick="setfocus('cantidad)">Elegir</option>
-                                 @foreach($empleados as $t)
-                                    <option value="{{ $t->id }}" onclick="setfocus('cantidad')">
-                                    {{$t->apellido}}, {{$t->nombre}}                         
-                                    </option> 
-                                @endforeach                               
-                            </select>                   
-                        </div>  
+                <!-- si es delivery y es inicio de factura -->
+            @if($delivery == 1)          
+                @if($total == 0)   
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <h6>Cliente:  {{$apeNomCli}}</h6>
+                        </div>
+                        <div class="col-6">
+                            <h6>Rep:  {{$apeNomRep}}</h6>
+                        </div>
                     </div>
-                </form>
-            @else
-                <div class="row mt-2">
-                    <div class="col-sm-7">
-                        <h6>Cliente:  {{$encabezado[0]->apeCli}} {{$encabezado[0]->nomCli}}</h6>
-                        <h6>Dirección:  {{$encabezado[0]->calle}} {{$encabezado[0]->numero}}</h6>
-                        <h6>Repartidor:  {{$encabezado[0]->apeRep}} {{$encabezado[0]->nomRep}}</h6>
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Dirección:  {{$dirCliente}}</h6>
+                        </div>
+                        <div class="col-6">
+                            @if($saldoCtaCte < 0)
+                                <h6 style="color:red">Saldo Cta. Cte.:<b> {{number_format($saldoCtaCte,2)}}</b></h6>   
+                            @else
+                                <h6 style="color:green">Saldo Cta. Cte.:<b> {{number_format($saldoCtaCte,2)}}</b></h6> 
+                            @endif
+                        </div>
+                    </div>       
+                @else
+                <!-- si muestra datos en BD de la factura -->
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <h6>Cliente:  {{$encabezado[0]->apeCli}} {{$encabezado[0]->nomCli}}</h6>
+                        </div>
+                        <div class="col-6">
+                            <h6>Rep:  {{$encabezado[0]->apeRep}} {{$encabezado[0]->nomRep}}</h6>
+                        </div>
                     </div>
-                    <div class="col-sm-5 mt-4">
-                        <span class="badge badge-primary ml-4"
-                            wire:click.prevent="modificarEncabezado()">Modificar Cli/Rep</span>
-                    </div>
-                </div>                
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Dirección:  {{$encabezado[0]->calle}} {{$encabezado[0]->numero}}</h6>
+                        </div>
+                        <div class="col-6">
+                            @if($saldoCtaCte < 0)
+                                <h6 style="color:red">Saldo Cta. Cte.:<b> {{number_format($saldoCtaCte,2)}}</b></h6>   
+                            @else
+                                <h6 style="color:green">Saldo Cta. Cte.:<b> {{number_format($saldoCtaCte,2)}}</b></h6> 
+                            @endif
+                        </div>
+                    </div>                
+                @endif
+          
             @endif
+            @if($mostrar_datos == 1)
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <h6>Cliente:  {{$apeNomCli}}</h6>
+                        </div>
+                        <div class="col-6">
+                            <h6>Rep:  {{$apeNomRep}}</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Dirección:  {{$dirCliente}}</h6>
+                        </div>
+                        <div class="col-6">
+                            @if($saldoCtaCte < 0)
+                                <h6 style="color:red">Saldo Cta. Cte.:<b> {{number_format($saldoCtaCte,2)}}</b></h6>   
+                            @else
+                                <h6 style="color:green">Saldo Cta. Cte.:<b> {{number_format($saldoCtaCte,2)}}</b></h6> 
+                            @endif
+                        </div>
+                    </div>   
+            @endif
+
 			@include('common.alerts')
 				<div class="table-responsive scroll">
 					<table class="table table-hover table-checkable table-sm mb-4">
@@ -108,14 +133,14 @@
 							<tr>
 								<th class="text-center">CANTIDAD</th>
 								<th class="text-center">DESCRIPCIÓN</th>
-								<th class="text-center">PRECIO UNITARIO</th>
-								<th class="text-center">IMPORTE</th>
+								<th class="text-right">P/UNITARIO</th>
+								<th class="text-right">IMPORTE</th>
 								<th class="text-center">ACCIONES</th>
 							</tr>
 						</thead>
 						<tbody>
 							@foreach($info as $r)
-							<tr class="table-danger">
+							<tr class="">
 								<td class="text-center">{{number_format($r->cantidad,2)}}</td>
 								<td class="text-left">{{$r->producto}}</td>
 								<td class="text-right">{{$r->precio}}</td>
@@ -134,9 +159,6 @@
     <div class="col-md-12 col-lg-6 layout-spacing">
         <div class="widget-content-area">
             <div class="widget-one">
-                <h5>
-                    <b>@if($selected_id ==0) Agregar Item  @else Editar Item @endif  </b>
-                </h5>
                 <form>
                     @include('common.messages')    
                     <div class="row">
@@ -145,63 +167,89 @@
                             <input id="cantidad" wire:model.lazy="cantidad" onclick.keydown.enter="setfocus('barcode')" type="text" 
                                 class="form-control form-control-sm text-center">
                         </div> 
-                        <div class="form-group col-sm-12 col-md-3">
+                        <div class="form-group col-sm-12 col-md-2">
                             <label >Código</label>
                             <input id="barcode" wire:model.lazy="barcode"  type="text" 
                                 onclick.keydown.enter="setfocus('guardar')" class="form-control form-control-sm">
                         </div>
-                        <div class="form-group col-sm-12 col-md-4">
+                        <div class="form-group col-sm-12 col-md-3">
                             <label>Producto</label>
-                            @can('Facturas_create_producto')
-                            <span class="badge badge-primary ml-4" >
-                                    <a href="{{ url('productos') }}" style="color: white">Agregar</a></span>                            
-                            @endcan
                             <select id="producto" wire:model="producto" class="form-control form-control-sm text-center">
                                 <option value="Elegir" >Elegir</option>
                                 @foreach($productos as $t)
-                                <option value="{{ $t->id }}" wire:click.prevent="buscarProducto({{$t->codigo}})"
-                                    wire:tab="buscarProducto({{$t->id}})">
+                                <option value="{{ $t->id }}">
                                     {{$t->descripcion}}                         
                                 </option> 
                                 @endforeach                               
                             </select>			               
                         </div>            
-                        <div class="form-group col-sm-12 col-md-3">
-                            <label>Precio Unitario</label>
+                        <div class="form-group col-sm-12 col-md-2">
+                            <label>P/Unitario</label>
                             <input wire:model.lazy="precio" type="text" class="form-control form-control-sm" disabled>
                         </div>
-                    </div>
-                    <div class="row ">
-                        <div class="col-12 mt-1 text-left">
-                            <button type="button" wire:click="resetInput()" onclick="setfocus('barcode')" class="btn btn-dark mr-1">
-                                <i class="mbri-left"></i> Cancelar
-                            </button>
-                            <button id="guardar" type="button" wire:click="StoreOrUpdate()" onclick="setfocus('barcode')" class="btn btn-primary ml-2">
-                                <i class="mbri-success"></i> Guardar
+                        <div class="form-group col-sm-12 col-md-2 mt-2">
+                            <label></label>
+                            <button id="guardar" type="button" wire:click="StoreOrUpdate('0')" onclick="setfocus('barcode')" class="btn btn-primary">
+                                 Guardar
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-        <div class="widget-content-area mt-3">
-            <div class="widget-one"> 
-                <div class="row m-1 rounded">
-                    <img src="images/helados.jpg" class="img-fluid" 
-                        alt="Responsive image" style="height:150px;width:585px">
+        <div class="row mt-2">
+            <div class="col-sm-12 col-lg-4">
+                <div class="widget-content-area">
+                    <div class="widget-one scrollb"> 
+                        <div class="scrollContent"> 
+                            @foreach($categorias as $c)                    
+                                <button style="width: 100%;"  wire:click.prevent="buscarArticulo({{$c->id}})" type="button" class="btn btn-warning mb-1">{{$c->descripcion}}</button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-8">
+                <div class="widget-content-area">
+                    <div class="widget-one scrollb"> 
+                        <div class="scrollContent"> 
+                            @if($articulos != null)
+                            @foreach($articulos as $a)                    
+                                <button style="width: 30%;height: 75px;" wire:click="StoreOrUpdate('{{$a->id}}')" type="button" class="btn btn-primary mb-1">{{$a->descripcion}}</button>
+                            @endforeach 
+                            @endif                   
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>         
-    </div>   
+    @include('livewire.facturas.modal')  
+    </div> 
 </div>
 
 <style type="text/css" scoped>
-.scroll{
-    position: relative;
-    height: 200px;
-    margin-top: .5rem;
-    overflow: auto;
-}
+    .widget-h{
+        position: relative;
+        height:375px;
+        overflow: hidden;
+    }
+    .scroll{
+        position: relative;
+        max-height: 220px;
+        margin-top: .5rem;
+        overflow: auto;
+    }
+    .scrollb {
+        width: 100%;
+        height:240px;
+        overflow:hidden;
+    }
+    .scrollContent{
+        width: 108%;
+        height:240px;
+        overflow-y:auto;
+        overflow-x:hidden;
+    }
 </style>
 
 <script type="text/javascript">
@@ -225,11 +273,37 @@
 			swal.close()   
         })
     }
+    function openModal(id)
+    {
+        $('#facturaId').val(id)
+        $('#facturaId').hide()
+        $('#cliente').val('Elegir')
+        $('#empleado').val('Elegir')
+        $('#modal').modal('show')
+	}
+	function save()
+    {     
+        if($('#cliente option:selected').val() == 'Elegir')
+        {
+            toastr.error('Elige una opción válida para el Cliente')
+            return;
+        }
+        if($('#empleado option:selected').val() == 'Elegir')
+        {
+            toastr.error('Elige una opción válida para el Repartidor')
+            return;
+        }
 
-    function buscarProducto(id)
-    { 
-        window.livewire.emit(buscarProducto(id))
-    }
+        var data = JSON.stringify({
+            'factura_id'   : $('#facturaId').val(),
+            'cliente_id'   : $('#cliente option:selected').val(),
+            'empleado_id'  : $('#empleado option:selected').val()
+        });
+
+        $('#modal').modal('hide')
+        console.log(data)
+        window.livewire.emit('modCliRep', data)
+    } 
 
     window.onload = function() {
         document.getElementById("barcode").focus();
@@ -239,5 +313,5 @@
     function setfocus($id) {
         document.getElementById($id).focus();
     }
-
+  
 </script>

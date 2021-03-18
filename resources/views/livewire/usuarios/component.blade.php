@@ -5,14 +5,12 @@
     		<div class="widget-header">
     			<div class="row">
     				<div class="col-xl-12 text-center">
-    					<h5><b>Usuarios de Sistema</b></h5>
+    					<h5><b>Usuarios y Empleados</b></h5>
     				</div> 
     			</div>
-			</div>
-			
-			<!-- <button type="button" onclick="openModal('{{$empleados}},{{$roles}}')" class="btn btn-dark"></button> -->
-			
+			</div>					
 			@include('common.search') 
+			@include('common.messages') 
 			@include('common.alerts') 
     		<div class="table-responsive scroll">
     			<table class="table table-hover table-checkable table-sm mb-2">
@@ -32,25 +30,11 @@
     						<td><p class="mb-0">{{$r->apellido}}, {{$r->name}}</p></td>
     						<td>{{$r->alias}}</td>
     						<td>{{$r->telefono1}}</td>
-    						<td>{{$r->direccion}}</td>
+    						<td>{{$r->calle}} {{$r->numero}}</td>
     						<td>{{$r->email}}</td>
     						<td class="text-center">
 								@include('common.actions', ['edit' => 'Usuarios_edit', 'destroy' => 'Usuarios_destroy']) 
-								<!-- <ul class="table-controls">
-									@can('Usuarios_edit')
-									<li>
-										<a href="javascript:void(0);" wire:click="edit({{$r->id}})" data-toggle="tooltip" data-placement="top" title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2 text-success"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
-									</li>
-									@endcan
-									@can('Usuarios_destroy')
-									<li>
-										<a href="javascript:void(0);"          		
-										onclick="Confirm('{{$r->id}}')"
-										data-toggle="tooltip" data-placement="top" title="Delete"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 text-danger"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></a>
-									</li>
-									@endcan
-								</ul> -->
-    						</td>
+							</td>
     					</tr>
     					@endforeach
     				</tbody>
@@ -58,9 +42,9 @@
     			{{$info->links()}} <!--paginado de tabla -->
     		</div>
 		</div> 
-		@include('livewire.usuarios.modal')  
     	@elseif($action == 2)
     	@include('livewire.usuarios.form')		
+		@include('livewire.usuarios.modal')  
     	@endif  
     </div>
 </div>
@@ -118,41 +102,6 @@
 				Swal.fire('Changes are not saved', '', 'info')
 			}
 		})
-	}
-	function openModal(empleados,roles)
-    {
-        $('#empleado').val('Elegir')
-        $('#rol').val('Elegir')
-        $('#empleados').val(empleados)
-        $('#roles').val(roles)
-        $('#modalRolUsuario').modal('show')
-	}
-	function save()
-    {
-        if($('#empleado option:selected').val() == 'Elegir')
-        {
-            toastr.error('Elige una opción válida para el Empleado')
-            return;
-        }
-        if($('#rol option:selected').val() == 'Elegir')
-        {
-            toastr.error('Elige una opción válida para el Rol')
-            return;
-        }
-        var data = JSON.stringify({
-            'empleado_id': $('#empleado option:selected').val(),
-            'rol_id'  : $('#rol option:selected').val()
-        });
-
-        window.livewire.emit('createFromModal', data)
-    }           
-
-    document.addEventListener('DOMContentLoaded', function(){
-        window.livewire.on('msgok', dataMsg => {
-            $('#modalRolUsuario').modal('hide')
-        })
-        window.livewire.on('msgerror', dataMsg => {
-            $('#modalRolUsuario').modal('hide')
-        })
-    });
+	}	
+	
 </script>

@@ -11,6 +11,8 @@
     <link href="{{ asset('assets/css/loader.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('assets/js/loader.js') }}"></script>
 
+    @yield('content_script_head')
+
     <!-- STYLES GENERALES  -->
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
     <link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
@@ -29,25 +31,24 @@
     <link href="{{ asset('plugins/flatpickr/flatpickr.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('plugins/flatpickr/material_red.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('assets/css/elements/color_library.css') }}" rel="stylesheet" type="text/css" />
-
     
-
     <!-- Sección para incluír estilos personalizados en los módulos del sistema  -->
      @yield('styles')
 
     <!-- Necesario para el funcionamiento de Livewire -->
     <livewire:styles />
-
-
-
 </head>
 <body class="alt-menu sidebar-noneoverflow">
     
     <!-- BEGIN LOADER -->
-    <!-- <div id="load_screen"> <div class="loader"> <div class="loader-content">
-        <div class="spinner-grow align-self-center"></div>
-    </div></div></div> -->
+    <div id="load_screen"> 
+        <div class="loader"> 
+            <div class="loader-content">
+                <div class="spinner-grow align-self-center">
+    </div></div></div></div>   
     <!--  END LOADER -->
+
+        <!-- <div class="loader"></div> -->
 
     <!--  BEGIN NAVBAR  -->
     <div class="header-container">
@@ -120,7 +121,7 @@
                 
                 <ul class="list-unstyled menu-categories" id="topAccordion">
                 <!-- ESTADÍSTICAS -->
-                @can('Estadisticas_index')
+                <!-- @can('Estadisticas_index')
                     <li class="menu single-menu ">
                         <a href="#dashboard" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle autodroprown">
                             <div class="">
@@ -129,7 +130,7 @@
                             </div>
                         </a>               
                     </li>
-                @endcan                
+                @endcan                 -->
                 <!-- ABM -->
                     <li class="menu single-menu">
                         <a href="#abm" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
@@ -145,24 +146,29 @@
                                 <a href="{{ url('productos') }}"> PRODUCTOS  </a>
                             </li>
                         @endcan
+                        @can('Rubros_index')
+                        <li>
+                            <a href="{{ url('rubros') }}"> CATEGORIAS  </a>
+                        </li>
+                        @endcan
                         @can('Clientes_index')
                             <li>
                                 <a href="{{ url('clientes') }}"> CLIENTES  </a>
                             </li>
                         @endcan
-                        @can('Rubros_index')
+                        @can('Proveedores_index')
                             <li>
-                                <a href="{{ url('rubros') }}"> RUBROS  </a>
-                            </li>
-                        @endcan
-                        @can('Empleados_index')
-                            <li>
-                                <a href="{{ url('empleados') }}"> EMPLEADOS  </a>
+                                <a href="{{ url('proveedores') }}"> PROVEEDORES  </a>
                             </li>                            
                         @endcan
                         @can('Gastos_index')
                             <li>
                                 <a href="{{ url('gastos') }}"> GASTOS  </a>
+                            </li>
+                        @endcan
+                        @can('Empleados_index')
+                            <li>
+                                <a href="{{ url('empleados') }}"> EMPLEADOS  </a>
                             </li>
                         @endcan
                             <!-- <li>
@@ -176,7 +182,7 @@
                         <a href="#components" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                                <span>CONFIGURACIONES</span>
+                                <span>CONFIG</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
@@ -201,6 +207,17 @@
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                                 <span>FACTURAS</span>
+                            </div>                           
+                        </a>                        
+                    </li>
+                @endcan
+                <!-- COMPRAS -->
+                @can('Compras_index')
+                    <li class="menu single-menu">
+                        <a href="{{ url('compras') }}" >
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                <span>COMPRAS</span>
                             </div>                           
                         </a>                        
                     </li>
@@ -291,8 +308,25 @@
                         </ul>
                     </li>
                 @endcan
-                    <!-- EMAILS -->
+                    <!-- VIANDAS -->
                     <li class="menu single-menu">
+                        <a href="{{ url('viandas') }}" >
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                <span>VIANDAS</span>
+                            </div>                           
+                        </a>                        
+                    </li>
+                    <li class="menu single-menu">
+                        <a href="{{ url('ctacte') }}" >
+                            <div class="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                <span>CTA CTE</span>
+                            </div>                           
+                        </a>                        
+                    </li>
+                    <!-- EMAILS -->
+                    <!-- <li class="menu single-menu">
                         <a href="#mails" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/></svg>
@@ -306,24 +340,6 @@
                             </li>  
                             <li>
                                 <a href="{{route('registrarse.index')}}">REGISTRARSE</a>
-                            </li>                  
-                        </ul>
-                    </li>
-                    <!-- <li class="menu single-menu">
-                        <a href="#mails" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                            <div class="">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                                <span>ADMIN</span>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                        </a>
-                        
-                        <ul class="collapse submenu list-unstyled" id="mails" data-parent="#topAccordion">
-                            <li>
-                                <a href="{{url('planes')}}">PLANES</a>
-                            </li>  
-                            <li>
-                                <a href="{{url('abonados')}}">ABONADOS</a>
                             </li>                  
                         </ul>
                     </li> -->
@@ -353,11 +369,18 @@
 
     <!-- SCRIPTS GENERALES -->
     <script src="{{ asset('assets/js/libs/jquery-3.1.1.min.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>   
     <script src="{{ asset('bootstrap/js/popper.min.js') }}"></script>
     <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('assets/js/app.js') }}"></script>
-    
+    <script src="{{ asset('assets/js/app.js') }}"></script>  
+    <script src="{{ asset('assets/js/custom.js') }}"></script>
+    <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
+    <script src="{{ asset('plugins/notification/snackbar/snackbar.min.js') }}"></script>
+    <script src="{{ asset('plugins/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ asset('plugins/flatpickr/flatpickr_es.js') }}"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>    
+    <script src="{{ asset('assets/js/sweetalert.min.js') }}"></script>  
     <script>
         $(document).ready(function() {
             App.init();
@@ -367,26 +390,10 @@
                 'locale': 'es'
             });
         });
+        // $(window).load(function() {
+        //     $(".loader").fadeOut("slow");
+        // });
     </script>
-    
-    <script src="{{ asset('assets/js/custom.js') }}"></script>
-    <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
-    <script src="{{ asset('plugins/notification/snackbar/snackbar.min.js') }}"></script>
-    <script src="{{ asset('plugins/flatpickr/flatpickr.js') }}"></script>
-    <script src="{{ asset('plugins/flatpickr/flatpickr_es.js') }}"></script>   
-    
-
-   
-    <!-- Sección para incluír scripts personalizados en los módulos del sistema  -->
-<!-- @yield('scripts') -->
-
-    <!--Necesario para el funcionamiento de Livewire -->
-   
-
-    <!--scripts para los mensajes y notificaciones  -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>     
-   
-    <script src="{{ asset('assets/js/sweetalert.min.js') }}"></script>     
 
 
     <!-- Validaciones globales del sistema -->  

@@ -59,15 +59,15 @@ class RegisterController extends Controller
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
-    {
+    {     
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'apellido' => ['required', 'string', 'max:255'],
-            'nombreComercio' => ['required', 'string', 'max:255'],
+            'nombreComercio' => ['required', 'string', 'max:255','unique:comercios,nombre'],
             'sexo' => ['required', 'not_in:0'],
             'email' => ['required', 'string', 'email', 'max:255'],
             ]);
-        }
+    }
 
     /**
      * Create a new user instance after a valid registration.
@@ -83,10 +83,10 @@ class RegisterController extends Controller
         session(['empleado' => false]);
 
         $cadena = strtolower($data['nombreComercio']);
-        $username = str_replace(' ', '',Str::finish('admin@', $cadena));
+        $username = str_replace(' ', '',Str::finish('admin@', $cadena));     
         
         DB::begintransaction();                 //iniciar transacción para grabar
-        try{ 
+        try{    
             $comercio = Comercio::create([
                 'nombre' => strtoupper($data['nombreComercio']),            
                 'tipo_id' => $data['tipo']            
@@ -107,29 +107,42 @@ class RegisterController extends Controller
                 'usuario_id' => $user->id,            
                 'comercio_id' => $comercio->id            
             ]);
-                        
-            $role = Role::create([
+            //creo los roles Admin, No Usuario y Repartidor            
+            $rolAdmin = Role::create([
                 'name' => 'Admin'. $comercio->id,
                 'alias' => 'Admin',
                 'comercio_id' => $comercio->id         
+            ]);            
+            
+            Role::create([
+                'name' => 'No Usuario'. $comercio->id,
+                'alias' => 'No Usuario',
+                'comercio_id' => $comercio->id         
+                ]);
+                
+            Role::create([
+                'name' => 'Repartidor'. $comercio->id,
+                'alias' => 'Repartidor',
+                'comercio_id' => $comercio->id         
             ]);
-                            
+            //Asigno el rol Admin al nuevo Usuario
             ModelHasRole::create([
-                'role_id' => $role->id,
+                'role_id' => $rolAdmin->id,
                 'model_type' => 'App\User',           
                 'model_id' => $user->id           
             ]);
                                 
-            $role->givePermissionTo([
+            $rolAdmin->givePermissionTo([
                 'Estadisticas_index','Abm_index','Config_index','Empresa_index','Permisos_index','Productos_index',
                 'Productos_create','Productos_edit','Productos_destroy','Rubros_index','Rubros_create','Rubros_edit',
                 'Rubros_destroy','Empleados_index','Empleados_create','Empleados_edit','Empleados_destroy',
-                'Clientes_index','Clientes_create','Clientes_edit','Clientes_destroy','Gastos_index','Gastos_create',
+                'Clientes_index','Clientes_create','Clientes_edit','Clientes_destroy', 'Proveedores_index',
+                'Proveedores_create','Proveedores_edit','Proveedores_destroy','Gastos_index','Gastos_create',
                 'Gastos_edit','Gastos_destroy','Facturas_index','Facturas_create_producto','Facturas_edit_item',
-                'Facturas_destroy_item','Caja_index','CorteDeCaja_index','MovimientosDiarios_index','CajaRepartidor_index',
-                'Reportes_index','VentasDiarias_index','VentasPorFechas_index','Usuarios_index','Usuarios_create',
-                'Usuarios_edit','Usuarios_destroy','Movimientos_index','Movimientos_create','Movimientos_edit',
-                'Movimientos_destroy','Facturas_imp','Fact_delivery_imp'           
+                'Facturas_destroy_item', 'Compras_index','Compras_create_producto','Compras_edit_item',
+                'Compras_destroy_item','Caja_index','CorteDeCaja_index','MovimientosDiarios_index','CajaRepartidor_index',
+                'Reportes_index','VentasDiarias_index','VentasPorFechas_index','Usuarios_index','Usuarios_create','Usuarios_edit',
+                'Usuarios_destroy','Movimientos_create','Movimientos_edit','Movimientos_destroy','Facturas_imp','Fact_delivery_imp'           
             ]);                                    
                                     
             $usercomercio = UsuarioComercio::select('id')->orderBy('id', 'desc')->get();

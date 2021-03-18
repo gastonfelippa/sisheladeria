@@ -21,13 +21,18 @@ class CreateFacturasTable extends Migration
             $table->foreign('cliente_id')->references('id')->on('clientes');
 
             $table->unsignedBigInteger('repartidor_id')->nullable();
-            $table->foreign('repartidor_id')->references('id')->on('empleados');
+            $table->foreign('repartidor_id')->references('id')->on('users');
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
          
             $table->decimal('importe',10,2);
             $table->enum('estado', ['ABIERTA','PAGADA', 'PENDIENTE', 'CTACTE', 'ANULADA'])->default('ABIERTA');
+
+            $table->unsignedBigInteger('user_id_delete')->nullable();
+            $table->foreign('user_id_delete')->references('id')->on('users');
+
+            $table->string('comentario',100)->nullable();
 
             $table->unsignedBigInteger('comercio_id');
             $table->foreign('comercio_id')->references('id')->on('comercios');

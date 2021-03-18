@@ -1,5 +1,5 @@
 <div class="row layout-top-spacing">    
-    <div class="col-sm-12 col-md-7 layout-spacing">             
+    <div class="col-sm-12 col-md-6 layout-spacing">             
         <div class="widget-content-area">
             <div class="widget-one">
                 <div class="row">
@@ -7,41 +7,25 @@
                         <h3><b>Productos</b></h3>
                     </div> 
                 </div>    		
-				@include('common.inputBuscarBtnNuevo', ['create' => 'Productos_create'])  
-                <!-- <div class="row justify-content-between mb-3">
-                    <div class="col-sm-">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
-                            </div>
-                            <input id="search" type="text" wire:model="search" class="form-control" placeholder="Buscar.." aria-label="notification" aria-describedby="basic-addon1">
-                        </div>
-                    </div>
-                    <div class="col-sm-3 mr-2">
-                        @can('Productos_create')
-                        <button type="button" wire:click="doAction(2)" onclick="setfocus('codigo')" class="btn btn-dark">
-                            <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users mr-2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                            Nuevo
-                        </button>
-                        @endcan
-                    </div>
-                </div>  -->
+				@include('common.inputBuscarBtnNuevo', ['create' => 'Productos_create']) 
                 @include('common.alerts') <!-- mensajes -->  
+                @include('livewire.productos.modal')
                 <div class="table-responsive scroll">
                     <table class="table table-hover table-checkable table-sm">
                         <thead>
                             <tr>                                                   
-                                <th class="">CODIGO</th>
+                                <th class="">ID</th>
                                 <th class="">DESCRIPCIÓN</th>
-                                <!-- @can('Productos_create') -->
-                                <th class="text-center">PR. COSTO</th>
-                                <!-- @endcan -->
-                                <th class="text-center">PR. VENTA</th>
+                                @can('Productos_create')
+                                <th class="text-center">P/COSTO</th>
+                                @endcan
+                                <th class="text-center">P/VENTA</th>
                                 <th class="text-center">ESTADO</th>
-                                <!-- @can('Productos_create') -->
-                                <th class="">RUBRO</th>
+                                <th class="text-center">STOCK</th>
+                                @can('Productos_create')
+                                <th class="text-center">CATEGORIA</th>
                                 <th class="text-center">ACCIONES</th>
-                                <!-- @endcan -->
+                                @endcan
                             </tr>
                         </thead>
                         <tbody>
@@ -49,14 +33,15 @@
                             <tr>                     
                                 <td class="text-center"><p class="mb-0">{{$r->codigo}}</p></td>
                                 <td>{{$r->descripcion}}</td>
-                                <!-- @can('Productos_create') -->
+                                @can('Productos_create')
                                 <td class="text-right">{{$r->precio_costo}}</td>
-                                <!-- @endcan -->
-                                <td class="text-right">{{$r->precio_venta}}</td>
+                                @endcan
+                                <td class="text-right">{{$r->precio_venta}}</td>                               
                                 <td class="text-center">{{$r->estado}}</td>
-                                <!-- @can('Productos_create') -->
+                                <td class="text-center">{{$r->stock}}</td>
+                                @can('Productos_create')
                                 <td>{{$r->rubro}}</td>
-                                <!-- @endcan -->
+                                @endcan
                                 <td class="text-center">
                                     @include('common.actions', ['edit' => 'Productos_edit', 'destroy' => 'Productos_destroy'])
                                 </td>
@@ -69,15 +54,15 @@
         </div> 
     </div>
     @can('Productos_create')
-    <div class="col-sm-12 col-md-5 layout-spacing"> 
+    <div class="col-sm-12 col-md-6 layout-spacing"> 
         <div class="widget-content-area ">
             <div class="widget-one">
                 <h5>
                     <b>@if($selected_id ==0) Crear Nuevo Producto  @else Editar Producto @endif  </b>
                 </h5>
-                <form>
+                <form class="mb-3">
                     @include('common.messages')    
-                    <div class="row mt-4 mb-3">
+                    <div class="row mt-4">
                         <div class="form-group col-sm-5">
                             <label >Código Sugerido:</label><span class="ml-2">{{$codigo_sugerido}}</span>
                             <input id="codigo" wire:model.lazy="codigo" type="text" class="form-control text-center" placeholder= "código">
@@ -86,10 +71,11 @@
                             <label >Nombre del Producto</label>
                             <input id="nombre" wire:model.lazy="descripcion" type="text" class="form-control text-capitalize"  placeholder="nombre">
                         </div>
-
-                        <div class="form-group col-md-6 col-sm-12">
-                            <label >Rubro</label><span class="badge badge-primary ml-5" >
-                                    <a href="{{ url('rubros') }}" style="color: white">Agregar</a></span> 
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-5 ">
+                        <label >Categoría</label>
+                        <div class="input-group">
                             <select wire:model="rubro" class="form-control text-center">
                                 <option value="Elegir" disabled="">Elegir</option>
                                 @foreach($rubros as $t)
@@ -97,22 +83,42 @@
                                     {{$t->descripcion}}
                                 </option>                                       
                                 @endforeach                              
-                            </select>			               
+                            </select>
+                            <div class="input-group-append">
+                                <span class="input-group-text" onclick="openModal()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg></span>
+                            </div>			               
                         </div>
-                        <div class="form-group col-md-6 col-sm-12">
+                        </div>
+                        <div class="form-group col-md-4 col-sm-12">
                             <label >Estado</label>
                             <select wire:model="estado" class="form-control text-center">
-                                <option value="DISPONIBLE">DISPONIBLE</option>
-                                <option value="SUSPENDIDO">SUSPENDIDO</option>
-                                <option value="SIN STOCK">SIN STOCK</option>
+                                <option value="DISPONIBLE">Disponible</option>
+                                <option value="SUSPENDIDO">Suspendido</option>
+                                <option value="SIN STOCK">Sin Stock</option>
                             </select>
                         </div>	
 
-                        <div class="form-group col-md-6 col-sm-12">
+                        <div class="form-group col-md-3 col-sm-12">
+                            <label >Stock</label>
+                            <input wire:model.lazy="stock" type="text" class="form-control"  placeholder="stock">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-4 col-sm-12">
+                            <label >Tipo</label>
+                            <select wire:model="tipo" class="form-control text-center">
+                                <option value="Art. Venta">Art. Venta</option>
+                                <option value="Art. Compra">Art. Compra</option>
+                                <option value="Ambos">Ambos</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-4 col-sm-12">
                             <label >Precio de Costo</label>
                             <input wire:model.lazy="precio_costo" onblur="calcularPrecioVenta()" type="text" class="form-control"  placeholder="precio de costo">
                         </div>
-                        <div class="form-group col-md-6 col-sm-12">
+                        <div class="form-group col-md-4 col-sm-12">
                             <label >Precio de Venta</label>
                             <input wire:model.lazy="precio_venta" type="text" class="form-control"  placeholder="precio de venta">
                         </div>                        
@@ -133,6 +139,14 @@
     overflow: auto;
 }
 </style>
+
+@section('content_script_head')   
+<script>
+   function calcularPrecioVenta() {
+        window.livewire.emit('calcular_precio_venta');
+    }
+</script>
+@endsection
 
 <script type="text/javascript">
     function Confirm(id)
@@ -161,8 +175,27 @@
     function setfocus($id) {
         document.getElementById($id).focus();
     }
-    function calcularPrecioVenta() {
-        window.livewire.emit('calcular_precio');
-    }
+ 
+    function openModal()
+    {        
+        $('#descripcion').val('')
+        $('#margen').val('')
+        $('#modalRubros').modal('show')
+	}
+	function saveRubro()
+    {
+        if($('#descripcion').val() == '')
+        {
+            toastr.error('El campo Descripción no puede estar vacío')
+            return;
+        }
+        var data = JSON.stringify({
+            'descripcion': $('#descripcion').val()
+            'margen': $('#margen').val()
+        });
+
+        $('#modalRubros').modal('hide')
+        window.livewire.emit('createRubroFromModal', data)
+    } 
     
 </script>

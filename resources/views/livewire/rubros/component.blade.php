@@ -4,7 +4,7 @@
     		<div class="widget-one">
     			<div class="row">
     				<div class="col-xl-12 text-center">
-    					<h3><b>Rubros</b></h3>
+    					<h3><b>Categorías</b></h3>
     				</div> 
     			</div>    		
 				@include('common.inputBuscarBtnNuevo', ['create' => 'Rubros_create'])
@@ -14,7 +14,7 @@
 						<thead>
 							<tr>
 								<th class="">DESCRIPCIÓN</th>
-								<th class="">MARGEN</th>
+								<th class="">MARGEN DE GANANCIA</th>
 								<th class="text-center">ACCIONES</th>
 							</tr>
 						</thead>
@@ -39,7 +39,7 @@
 		<div class="widget-content-area">
             <div class="widget-one">
                 <h5>
-                    <b>@if($selected_id ==0) Crear Nuevo Rubro  @else Editar Rubro @endif  </b>
+                    <b>@if($selected_id ==0) Nueva Categoría  @else Editar Categoría @endif  </b>
                 </h5>
                 @include('common.messages')
                 <div class="row mt-3">                               
@@ -48,7 +48,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></span>
                             </div>
-                            <input id="nombre" type="text" class="form-control text-uppercase" placeholder="Nombre del Rubro" wire:model="descripcion">
+                            <input id="nombre" type="text" class="form-control text-uppercase" placeholder="Nombre del Rubro" wire:model="descripcion" autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></span>
                             </div>
-                            <input type="text" class="form-control" placeholder=Margen  wire:model="margen">
+                            <input type="text" class="form-control" placeholder="Margen %"  wire:model="margen">
                         </div>
                     </div>
                 </div>

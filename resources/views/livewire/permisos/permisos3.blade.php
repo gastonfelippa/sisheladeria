@@ -71,8 +71,8 @@
                         </tr>
                         @endforeach
                     </tbody>
-                </table> -->
-            <!-- </div>
+                </table>
+            </div>
         </div>
         <div class="col-sm-12 col-md-4">
             <h6 class="text-left"><b>Elegir Role</b></h6>   

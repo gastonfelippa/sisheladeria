@@ -17,16 +17,24 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('apellido');
-            $table->enum('sexo', ['1', '2']);
+            $table->string('documento',15)->nullable();
+            $table->string('calle')->nullable();
+            $table->string('numero',10)->nullable();
+
+            $table->unsignedBigInteger('localidad_id')->nullable();
+            $table->foreign('localidad_id')->references('id')->on('localidades');
+
             $table->string('telefono1',15)->nullable();
             $table->string('telefono2',15)->nullable();
-            $table->string('direccion')->nullable();
+            $table->enum('sexo', ['1', '2']);
+            $table->enum('abonado', ['Si', 'No', 'Admin'])->default('No');
             $table->string('username')->unique()->nullable();
+            $table->string('pass')->nullable();
             $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
-            $table->string('pass')->nullable();
-            $table->enum('abonado', ['Si', 'No', 'Admin'])->default('No');
+            $table->datetime('fecha_ingreso')->nullable();
+            $table->datetime('fecha_nac')->nullable();
 
             // $table->unsignedBigInteger('comercio_id');
             // $table->foreign('comercio_id')->references('id')->on('comercios');

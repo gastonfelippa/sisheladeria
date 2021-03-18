@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use\App\Rubro;
+use App\Rubro;
 
 class RubroController extends Component
 {
@@ -61,8 +61,7 @@ class RubroController extends Component
     { 
                 //validación campos requeridos
         $this->validate([
-            'descripcion' => 'required', //validamos que descripción no sea vacío o nullo y que tenga al menos 4 caracteres
-            'margen' => 'required'
+            'descripcion' => 'required' //validamos que descripción no sea vacío o nullo y que tenga al menos 4 caracteres
         ]);
 
         //valida si existe otro cajón con el mismo nombre (edicion de tipos)

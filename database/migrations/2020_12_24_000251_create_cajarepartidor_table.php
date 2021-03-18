@@ -22,7 +22,7 @@ class CreateCajarepartidorTable extends Migration
             $table->foreign('gasto_id')->references('id')->on('gastos');
 
             $table->unsignedBigInteger('empleado_id');
-            $table->foreign('empleado_id')->references('id')->on('empleados');
+            $table->foreign('empleado_id')->references('id')->on('users');
             
             $table->timestamps();
         });

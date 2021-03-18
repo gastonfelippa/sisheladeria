@@ -13,7 +13,7 @@
 		<tbody>
 			@foreach($info as $r)
 			<tr>
-				<td class="text-left">{{$r->nomcli}}</td>
+				<td class="text-left">{{$r->apeCli}}, {{$r->nomCli}}</td>
 				<td class="text-right">{{number_format($r->importe,2)}}</td>
 			</tr>
 			@endforeach

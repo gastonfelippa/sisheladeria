@@ -17,9 +17,11 @@ class CreateProductosTable extends Migration
             $table->id();
             $table->unsignedBigInteger('codigo');
             $table->string('descripcion');
-            $table->decimal('precio_costo',10,2);
-            $table->decimal('precio_venta',10,2);
+            $table->decimal('precio_costo',10,2)->nullable();
+            $table->decimal('precio_venta',10,2)->nullable();
+            $table->unsignedBigInteger('stock')->nullable();
             $table->enum('estado', ['DISPONIBLE','SUSPENDIDO','SIN STOCK'])->default('DISPONIBLE');
+            $table->enum('tipo', ['Art. Compra','Art. Venta','Ambos'])->default('Art. Venta');
 
             $table->unsignedBigInteger('rubro_id');
             $table->foreign('rubro_id')->references('id')->on('rubros');

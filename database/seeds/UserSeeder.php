@@ -6,6 +6,7 @@ use Spatie\Permission\Models\Permission;
 use App\User;
 use App\TipoComercio;
 use App\Comercio;
+use App\CondIva;
 use App\Plan;
 use App\Proceso;
 use App\Provincia;
@@ -47,6 +48,11 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'Clientes_edit', 'alias' => 'Modificar']);
         Permission::create(['name' => 'Clientes_destroy', 'alias' => 'Eliminar']);
 
+        Permission::create(['name' => 'Proveedores_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Proveedores_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Proveedores_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Proveedores_destroy', 'alias' => 'Eliminar']);
+
         Permission::create(['name' => 'Gastos_index', 'alias' => 'Ver']);
         Permission::create(['name' => 'Gastos_create', 'alias' => 'Agregar']);
         Permission::create(['name' => 'Gastos_edit', 'alias' => 'Modificar']);
@@ -56,6 +62,11 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'Facturas_edit_item', 'alias' => 'Modificar']);
         Permission::create(['name' => 'Facturas_destroy_item', 'alias' => 'Eliminar']);
         Permission::create(['name' => 'Facturas_create_producto', 'alias' => 'Agregar Producto']);
+
+        Permission::create(['name' => 'Compras_index', 'alias' => 'Crear']);
+        Permission::create(['name' => 'Compras_edit_item', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Compras_destroy_item', 'alias' => 'Eliminar']);
+        Permission::create(['name' => 'Compras_create_producto', 'alias' => 'Agregar Compra']);
 
         Permission::create(['name' => 'Caja_index', 'alias' => 'Ver Caja']);
         Permission::create(['name' => 'CorteDeCaja_index', 'alias' => 'Ver Corte De Caja']);
@@ -142,6 +153,12 @@ class UserSeeder extends Seeder
         Provincia::create(['descripcion' => 'Santiago del Estero']);
         Provincia::create(['descripcion' => 'Tierra del Fuego']);
         Provincia::create(['descripcion' => 'Tucumán']); 
+
+        CondIva::create(['descripcion' => 'Cons. Final']);
+        CondIva::create(['descripcion' => 'Resp. Monotributo']);
+        CondIva::create(['descripcion' => 'Resp. Inscripto']);
+        CondIva::create(['descripcion' => 'Exento']);
+        CondIva::create(['descripcion' => 'IVA No Alcanzado']);
 
         User::create([
             'name' => 'Gastón',

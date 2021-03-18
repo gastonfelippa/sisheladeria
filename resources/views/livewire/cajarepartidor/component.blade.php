@@ -4,19 +4,39 @@
 			<div class="widget-one">
                 <div class="row col-12">
                     <div class="col-sm-12 col-md-6">
-                        <div class="row">
-                            <h6><span class="badge badge-warning mr-1" 
-                            onclick="openModal(1)" >...</span></h6><b>Caja Inicial:.................</b>$ {{number_format($totalCI,2)}}
+                        <div class="row mb-1">
+                            <div class="col-8">
+                                <b><span class="badge badge-warning mr-1" 
+                                onclick="openModal(1)" >...</span>Caja Inicial..........$</b>
+                            </div>
+                            <div class="col-4 text-right">
+                                <b>{{number_format($totalCI,2)}}</b>
+                            </div>
                         </div>
-                        <div class="row">
-                            <h6><span class="badge badge-light mr-1">...</span></h6><b>Total de Cobranzas:..</b>$ {{number_format($totalCobrado,2)}}
+                        <div class="row mb-1">
+                            <div class="col-8">
+                                <b><span class="badge badge-light mr-1">...</span>Total Cobranzas.$</b> 
+                            </div>
+                            <div class="col-4 text-right">
+                                <b>{{number_format($totalCobrado,2)}}</b>
+                            </div>
                         </div>
-                        <div class="row">
-                            <h6><span class="badge badge-warning mr-1" 
-                            onclick="openModal(0)" >...</span></h6><b>Total de Gastos:.........</b>$ {{number_format($totalGastos,2)}}
+                        <div class="row mb-1">
+                            <div class="col-8">
+                                <b><span class="badge badge-warning mr-1" 
+                                onclick="openModal(0)" >...</span>Total de Gastos..$</b>
+                            </div>
+                            <div class="col-4 text-right">
+                                <b>-{{number_format($totalGastos,2)}}</b>
+                            </div>                        
                         </div>                        
-                        <div class="row">
-                            <h6><span class="badge badge-light mr-1">...</span></h6><b style="color: #ff7f26">CAJA FINAL:................$ {{number_format($totalCF,2)}}</b>
+                        <div class="row" style="color: #ff7f26">
+                            <div class="col-8">
+                                <b><span class="badge badge-light mr-1">...</span>CAJA FINAL..........$</b>
+                            </div>
+                            <div class="col-4 text-right">
+                                <b>{{number_format($totalCF,2)}}</b>
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-6">
@@ -29,7 +49,7 @@
                             <option value="Elegir">Elegir</option>
                             @foreach($empleados as $t)
                             <option value="{{ $t->id }}">
-                                {{$t->nombre}}                         
+                                {{$t->apellido}} {{$t->name}}                        
                             </option> 
                             @endforeach                               
                         </select>	
@@ -50,7 +70,7 @@
 						<tbody>
 							@foreach($info as $r)
 							<tr>
-								<td class="text-left">{{$r->nomcli}}</td>
+								<td class="text-left">{{$r->apeCli}} {{$r->nomCli}}</td>
 								<td class="text-center">{{number_format($r->importe,2)}}</td>
                                 @can('Facturas_edit_item')
 								<td class="text-center">
@@ -110,6 +130,26 @@
 			swal.close()   
         })
     }
+ 	function ConfirmGastoIngreso(id)
+    {
+       let me = this
+       swal({
+        title: 'CONFIRMAR',
+        text: '¿DESEAS ELIMINAR EL REGISTRO si?',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar',
+        closeOnConfirm: false
+    },
+		function() {
+			window.livewire.emit('destroyGastoIngreso', id)    
+			toastr.success('info', 'Registro eliminado con éxito')
+			swal.close()   
+        })
+    }
 
     function ConfirmDel(id)
     {
@@ -156,7 +196,7 @@
     function CobrarTodas(repId, nomRep)
     {
        let me = this
-       swal({
+        swal({
         title: 'CONFIRMAR',
         text: '¿DESEAS COBRAR TODAS LAS FACTURAS PENDIENTES DEL REPARTIDOR \n'+ nomRep +'?',
         type: 'warning',

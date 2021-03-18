@@ -9,8 +9,8 @@ use App\Rubro;
 
 class ProductoController extends Component
 {
-	public $rubro ='Elegir', $descripcion, $estado='DISPONIBLE', $precio_costo=null, $precio_venta;
-	public $codigo, $codigo_sugerido, $selected_id = null, $search, $rubros;
+	public $rubro ='Elegir', $descripcion, $estado='DISPONIBLE', $precio_costo=null, $precio_venta, $stock, $tipo = 'Art. Venta';
+	public $codigo = null, $codigo_sugerido, $selected_id = null, $search, $rubros;
 	public $comercioId;
 	
 	public function render()
@@ -33,7 +33,7 @@ class ProductoController extends Component
 		}else{
 			$this->codigo_sugerido = $this->selected_id;
 		}
-
+		if ($this->codigo == null)
 		$this->codigo = $this->codigo_sugerido;
 
 		if(strlen($this->search) > 0) 
@@ -74,23 +74,26 @@ class ProductoController extends Component
 
 	public function resetInput()
 	{
-		$this->codigo = '';
+		$this->codigo = null;
 		$this->descripcion = '';
 		$this->precio_costo = null;
 		$this->precio_venta = '';
+		$this->stock = null;
+		$this->tipo = 'Art. Venta';
 		$this->rubro = 'Elegir';
 		$this->estado = 'DISPONIBLE';
 		$this->selected_id = null;
 		$this->search ='';
 	}
 
-	public function calcular_precio()
+	public function calcular_precio_venta()
 	{
 		if($this->precio_costo <> '' && $this->rubro <> 'Elegir')
 		{
 			$porcentaje = Rubro::where('id', $this->rubro)->select('margen')->get();
 			$this->precio_venta = $this->precio_costo + ($this->precio_costo * $porcentaje[0]->margen / 100);
-
+		}else{
+			session()->flash('msg-error', 'Debe elegir una Categoría');
 		}
 	}
 
@@ -103,6 +106,8 @@ class ProductoController extends Component
 		$this->descripcion = $record->descripcion;
 		$this->precio_costo = $record->precio_costo;
 		$this->precio_venta = $record->precio_venta;
+		$this->stock = $record->stock;
+		$this->tipo = $record->tipo;
 		$this->estado = $record->estado;
 	}
 
@@ -116,28 +121,27 @@ class ProductoController extends Component
 			'rubro' => 'required',
 			'codigo' => 'required|integer',
 			'descripcion' => 'required',
-			'precio_venta' => 'required',
-			'estado' => 'required'
-		//	'precio_costo' => 'required',
+			'estado' => 'required',
+			'tipo' => 'required'
         ]);
         
         //valida si existe otro producto con el mismo nombre (edicion de productos)
         if($this->selected_id > 0) {
-            $existe = Producto::where('descripcion', $this->descripcion)
-				->where('id', '<>', $this->selected_id)
-                ->where('comercio_id', $this->comercioId)				
-                ->get();
-        
+			$existe = Producto::where('descripcion', $this->descripcion)
+			->where('id', '<>', $this->selected_id)
+			->where('comercio_id', $this->comercioId)				
+			->get();
+			
             if( $existe->count() > 0) {
-                session()->flash('msg-error', 'Ya existe el Producto');
+				session()->flash('msg-error', 'Ya existe el Producto');
                 $this->resetInput();
                 return;
 			}
 			//valida si existe otro producto con el mismo código (edicion de productos)
 			$existe = Producto::where('codigo', $this->codigo)
-				->where('id', '<>', $this->selected_id)
-				->where('comercio_id', $this->comercioId)
-				->get();
+			->where('id', '<>', $this->selected_id)
+			->where('comercio_id', $this->comercioId)
+			->get();
 	
 			if( $existe->count() > 0) {
 				session()->flash('msg-error', 'Ya existe el Código');
@@ -170,6 +174,8 @@ class ProductoController extends Component
 				'descripcion' => ucwords($this->descripcion),
 				'precio_costo' => $this->precio_costo,
 				'precio_venta' => $this->precio_venta,
+				'stock' => $this->stock,
+				'tipo' => $this->tipo,
 				'rubro_id' => $this->rubro,
 				'estado' => $this->estado,
 				'comercio_id' => $this->comercioId
@@ -178,12 +184,14 @@ class ProductoController extends Component
 		else {
 			
 			$record = Producto::find($this->selected_id);
-				if ($this->precio_costo == '') $this->precio_costo = 0.00;
+				// if ($this->precio_costo == '') $this->precio_costo = 0.00;
 			$record->update([
 				'codigo' => $this->codigo,
 				'descripcion' => ucwords($this->descripcion),
 				'precio_costo' => $this->precio_costo,			
-				'precio_venta' => $this->precio_venta,
+				'precio_venta' => $this->precio_venta,				
+				'stock' => $this->stock,
+				'tipo' => $this->tipo,
 				'rubro_id' => $this->rubro,
 				'estado' => $this->estado
 			]);
@@ -210,6 +218,18 @@ class ProductoController extends Component
 	
 	protected $listeners = [
 		'deleteRow' => 'destroy',
-		'calcular_precio' => 'calcular_precio'    
-	];  
+		'calcular_precio_venta' => 'calcular_precio_venta',
+		'createRubroFromModal' => 'createRubroFromModal' 
+	]; 
+
+	public function createRubroFromModal($info)
+    {
+        $data = json_decode($info);
+           
+        Rubro::create([
+            'descripcion' => ucwords($data->descripcion),
+            'margen' => $data->margen
+        ]);
+        session()->flash('message', 'Rubro creado exitosamente!!!');  
+    } 
 }

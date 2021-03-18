@@ -1,15 +1,15 @@
 <div class="tab-pane fade {{$tab == 'roles' ? 'show active' : ''}}" id="roles_content" role="tabpanel">
     <div class="row mt-2">
         <div class="col-sm-12 col-md-7">
-            <h6 class="text-center"><b>LISTADO DE ROLES</b></h6>
+            <h6 class="text-center"><b>LISTADO DE ROLES DE USUARIOS</b></h6>
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"
-                    onclick="clearRoleSelected()">
+                        onclick="clearRoleSelected()">
                         <i class="la la-remove la-lg"></i>
                     </span>
                 </div>
-                <input type="text" id="roleName" class="form-control  text-capitalize" autocomplete="off">
+                <input type="text" id="roleName" wire:model.lazy="agregarRol" class="form-control  text-capitalize" placeholder="Agregar Rol..." autocomplete="off">
                 <input type="hidden" id="roleId">
                 <div class="input-group-prepend">
                     <span class="input-group-text" 
@@ -35,16 +35,19 @@
                             <td>{{$r->alias}}</td>
                             <td class="text-center">{{\App\User::role($r->name)->count()}}</td>
                             <td class="text-center">
-                                <span style="cursor:pointer"
-                                onclick="showRole('{{$r}}')">
-                                    <i class="la la-edit la-2x text-center"></i>
-                                </span>
-                                @if(\App\User::role($r->name)->count() <= 0)
-                                <a href="javascript:void(0)"
-                                onclick="Confirm('{{$r->id}}', 'destroyRole')"
-                                title="Eliminar role">
-                                    <i class="la la-trash la-2x text-center"></i>
-                                </a>
+                                @if($r->alias != 'Admin' && $r->alias != 'No Usuario' && $r->alias != 'Repartidor')
+                                    <span style="cursor:pointer"
+                                        onclick="showRole('{{$r}}')"
+                                        title="Editar rol">
+                                        <i class="la la-edit la-2x text-center"></i>
+                                    </span>
+                                    @if(\App\User::role($r->name)->count() <= 0)
+                                        <a href="javascript:void(0)"
+                                            onclick="Confirm('{{$r->id}}', 'destroyRole')"
+                                            title="Eliminar rol">
+                                            <i class="la la-trash la-2x text-center"></i>
+                                        </a>
+                                    @endif
                                 @endif
                             </td>
                             <td class="text-center">
@@ -74,8 +77,12 @@
                     <option value="{{$u->id}}">{{$u->apellido}}, {{$u->name}}</option>
                     @endforeach
                 </select>
-            </div>   
-            <button type="button" onclick="AsignarRoles()" class="btn btn-primary mt-4">Asignar Roles</button>      
+            </div>  
+            @if($habilitar_botones) 
+            <button type="button" onclick="AsignarRoles()" class="btn btn-primary mt-4" enabled>Asignar Roles</button> 
+            @else     
+            <button type="button" onclick="AsignarRoles()" class="btn btn-primary mt-4" disabled>Asignar Roles</button>      
+            @endif
         </div>
     </div>
 </div>

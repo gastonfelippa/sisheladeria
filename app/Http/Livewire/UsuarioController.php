@@ -11,11 +11,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Comercio;
 use App\Empleado;
+use App\Localidad;
 use App\ModelHasRole;
+use App\Provincia;
 use App\Role;
 use App\TipoComercio;
 use App\User;
 use App\UsuarioComercio;
+use Carbon\Carbon;
+use DB;
 
 use App\Events\UserRegistered;
 use Illuminate\Mail\Mailable;
@@ -28,21 +32,24 @@ class UsuarioController extends Component
 {
     use RegistersUsers;
 
-    use WithPagination;
-
-    public $tipo = "Elegir", $name, $apellido, $sexo = 0, $telefono1, $email, $direccion = "---";
-    public $selected_id, $search, $login = 0;
+    use WithPagination; 
+    
+    public $name, $apellido, $documento, $calle, $numero, $localidad = 'Elegir', $provincia = 'Elegir';
+    public $sexo = 0, $telefono1, $fecha_ingreso, $fecha_nac, $email, $username, $password;
+    public $selected_id = null, $search;
     public $action = 1, $pagination = 5;
     public $comercioId;
     public $empleado, $rol;
     public $empleados, $roles;
-    public $username, $password, $email_empleado;
     public $comercio, $admin;
 
     public function render()
     {
          //busca el comercio que está en sesión
         $this->comercioId = session('idComercio');
+
+        $localidades = Localidad::select()->orderBy('descripcion','asc')->get();
+        $provincias = Provincia::all();
  
         $this->empleados = Empleado::select('*')->where('comercio_id', $this->comercioId)->get();
         $this->roles = Role::select('*')->where('id', '<>', '1')->where('comercio_id', $this->comercioId)->get();
@@ -81,7 +88,11 @@ class UsuarioController extends Component
                 ->select('users.*', 'roles.alias')
                 ->paginate($this->pagination);
         }         
-        return view('livewire.usuarios.component', ['info' => $info]);
+        return view('livewire.usuarios.component', [
+            'info' =>$info,
+            'localidades' => $localidades,
+            'provincias' => $provincias
+        ]);
     }
     
     public function updatingSearch()
@@ -99,10 +110,15 @@ class UsuarioController extends Component
     {
         $this->name = '';
         $this->apellido = '';
-        $this->sexo = 0;
+        $this->documento = '';
+        $this->calle = '';
+        $this->numero = '';
+        $this->localidad = 'Elegir';
         $this->telefono1 = '';
+        $this->fecha_nac = '';
+        $this->fecha_ingreso = '';
+        $this->sexo = 0;
         $this->email = '';
-        $this->direccion = '';
         $this->password = '';
         $this->selected_id = null;
         $this->action = 1;
@@ -115,21 +131,15 @@ class UsuarioController extends Component
 	];
 
 	// es diferente porque se usan ventanas modales
-	public function createFromModal($info)
+    public function createFromModal($info)
 	{
 		$data = json_decode($info);
-		$this->empleado = $data->empleado_id;
-		$this->rol = $data->rol_id;
-
-		$this->AsignarRoles();
-    }
-    public function AsignarRoles()
-    {
-        $user_rol = ModelHasRole::create([
-            'role_id' => $this->rol,
-            'model_type' => 'App\User',
-            'model_id' => $this->empleado
+        
+        Localidad::create([
+            'descripcion' => ucwords($data->localidad),
+            'provincia_id' => $data->provincia_id
         ]);
+        session()->flash('message', 'Localidad creada exitosamente!!!');  
     }
     
     public function edit($id)
@@ -137,10 +147,15 @@ class UsuarioController extends Component
         $record = User::find($id);
         $this->name = $record->name;
         $this->apellido = $record->apellido;
-        $this->sexo = $record->sexo;
+        $this->documento = $record->documento;
+        $this->calle = $record->calle;
+        $this->numero = $record->numero;
+        $this->localidad = $record->localidad_id;
         $this->telefono1 = $record->telefono1;
+        $this->fecha_ingreso = Carbon::parse($record->fecha_ingreso)->format('d-m-Y');
+        $this->fecha_nac = Carbon::parse($record->fecha_nac)->format('d-m-Y');
+        $this->sexo = $record->sexo;
         $this->email = $record->email;
-        $this->direccion = $record->direccion;
         $this->selected_id = $record->id;
         $this->action = 2;
     }
@@ -156,61 +171,94 @@ class UsuarioController extends Component
         $cadena = Comercio::select('nombre')->where('id', $this->comercioId)->first();
         $cadena = strtolower($cadena->nombre);
         $username = str_replace(' ', '',Str::finish($nombre,'@'. $cadena));
-        $this->username = $username;   
+        
+        //si existe el username, le agregamos un número al nombre
+        $existe = User::where('username', $username);
+        $i=2;
+        if($existe->count() > 0){
+            do{
+                $username = str_replace(' ', '',Str::finish($nombre, $i .'@'. $cadena));
+                $existe = User::where('username', $username);
+                $i ++;
+            }while($existe->count() > 0 );            
+        }
+        $this->username = $username; 
+        //busco el id del rol No Usuario para agregarlo por defecto al nuevo usuario
+        $rolNoUsuario = Role::where('alias', 'No Usuario')
+                    ->where('comercio_id', $this->comercioId)
+                    ->select('id')->get();
         
         $this->validate([
-			'sexo' => 'not_in:0'
+			'sexo' => 'not_in:0',
+			'localidad' => 'not_in:Elegir'
 		]);
         
         $this->validate([
             'name' => 'required',
-            'apellido' => 'required', 
-            'email' => 'required|email'
-            ]);
-            
-        if($this->selected_id <= 0)
-        {
-            $user = User::create([
-                'name' => ucwords($this->name),
-                'apellido' => ucwords($this->apellido),
-                'sexo' => $this->sexo,
-                'telefono1' => $this->telefono1,
-                'direccion' => $this->direccion,
-                'email' => strtolower($this->email),
-                'username' => $username,
-                'password' => Hash::make($password),
-                'pass' => $password,
-                'abonado' => 'No'
-            ]);
-                    
-            UsuarioComercio::create([
-                'usuario_id' => $user->id,            
-                'comercio_id' => $this->comercioId           
-            ]);
-        }
-        else{
-            $user = User::find($this->selected_id);
-            $user->update([
-                'name' => $this->name,
-                'apellido' => $this->apellido,
-                'sexo' => $this->sexo,
-                'telefono1' => $this->telefono1,
-                'email' => $this->email,
-                'direccion' => $this->direccion,
-                'username' => $username
-                ]);
-            }  
-            // 'password' => bcrypt($this->password)
-                    
-        if($this->selected_id)
-            session()->flash('message', 'Usuario Actualizado');            
-        else
-            session()->flash('message', 'Usuario creado exitosamente! Verificar envío de email');       
-        
-        $this->sendEmail($user, $this->comercio, $this->admin); //falta mensaje de aviso de mensaje enviado
+            'apellido' => 'required'
+            ]);  
 
-        //limpiamos las propiedades
-        $this->resetInput();  
+        if($this->numero == '' && $this->calle != '') $this->numero = 's/n';       
+        
+        DB::begintransaction();                 //iniciar transacción para grabar
+        try{       
+            if($this->selected_id <= 0)
+            {
+                $user = User::create([
+                    'name' => ucwords($this->name),
+                    'apellido' => ucwords($this->apellido),
+                    'documento' => $this->documento,
+                    'calle' => ucwords($this->calle),
+                    'numero' => $this->numero,
+                    'localidad_id' => $this->localidad,
+                    'telefono1' => $this->telefono1,
+                    'fecha_ingreso' => Carbon::parse($this->fecha_ingreso)->format('Y,m,d h:i:s'),             
+                    'fecha_nac' => Carbon::parse($this->fecha_nac)->format('Y,m,d h:i:s'),
+                    'sexo' => $this->sexo,
+                    'email' => strtolower($this->email),
+                    'username' => $username,
+                    'password' => Hash::make($password),
+                    'pass' => $password,
+                    'abonado' => 'No'
+                ]);
+                    
+                UsuarioComercio::create([
+                    'usuario_id' => $user->id,            
+                    'comercio_id' => $this->comercioId           
+                ]);
+
+                ModelHasRole::create([
+                    'role_id' => $rolNoUsuario[0]->id,
+                    'model_type' => 'App\User',           
+                    'model_id' => $user->id           
+                ]);
+            }
+            else{
+                $user = User::find($this->selected_id);
+                $user->update([
+                    'name' => ucwords($this->name),
+                    'apellido' => ucwords($this->apellido),
+                    'documento' => $this->documento,
+                    'calle' => ucwords($this->calle),
+                    'numero' => $this->numero,
+                    'localidad_id' => $this->localidad,
+                    'telefono1' => $this->telefono1,
+                    'fecha_ingreso' => Carbon::parse($this->fecha_ingreso)->format('Y,m,d h:i:s'),             
+                    'fecha_nac' => Carbon::parse($this->fecha_nac)->format('Y,m,d h:i:s'),
+                    'sexo' => $this->sexo,
+                    'email' => strtolower($this->email),
+                    'abonado' => 'No'
+                ]);
+            }
+            DB::commit();
+            $this->sendEmail($user, $this->comercio, $this->admin);
+            $this->doAction(1);
+            if($this->selected_id > 0) session()->flash('message', 'Usuario Actualizado');            
+            else session()->flash('message', 'Usuario creado exitosamente! Verificar envío de email');       
+        }catch (Exception $e){
+            DB::rollback();    //en caso de error, deshacemos para no generar inconsistencia de datos  
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
+        }  
     }  
     
     public function destroy($id)

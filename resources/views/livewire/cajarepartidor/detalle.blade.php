@@ -8,7 +8,7 @@
 						<tr>
 							<th class="text-center">CANTIDAD</th>
 							<th class="text-center">DESCRIPCIÓN</th>
-							<th class="text-center">PRECIO UNITARIO</th>
+							<th class="text-center">P/UNITARIO</th>
 							<th class="text-center">IMPORTE</th>
 							<th class="text-center">ACCIONES</th>
 						</tr>
@@ -46,12 +46,11 @@
                     <div class="form-group col-sm-12 col-md-6">
                         <label>Productos</label>
 						<select wire:model="productoEdit" class="form-control form-control-sm text-center">
-								<option value="Elegir" >Elegir</option>
-							@foreach($productosEdit as $t)
-								<option value="{{ $t->id }}" wire:click="buscarProducto({{$t->id}})"
-									wire:tab="buscarProducto({{$t->id}})">
-									{{$t->descripcion}}                         
-								</option> 
+							<option value="Elegir" >Elegir</option>
+							@foreach($productos as $t)
+							<option value="{{$t->id}}">
+								{{$t->descripcion}}                         
+							</option> 
 							@endforeach                               
 						</select>			               
 					</div>            

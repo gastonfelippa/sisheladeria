@@ -9,6 +9,8 @@ use App\Factura;
 use App\Cliente;
 use App\Producto;
 use App\Detfactura;
+use App\Vianda;
+use Carbon\Carbon;
 use PDF;
 use DB;
 
@@ -32,7 +34,7 @@ class PdfController extends Controller
             ->leftjoin('empleados as r','r.id','facturas.repartidor_id')
             ->select('facturas.*', 'c.nombre as nomCli', 'c.apellido as apeCli',
                      'r.nombre as nomRep', 'r.apellido as apeRep',DB::RAW("'' as total"))
-            ->where('facturas.estado','like','PAGADA')
+            ->where('facturas.estado','CTACTE')
             ->where('facturas.comercio_id', $this->comercioId)
             ->orderBy('facturas.id', 'asc')->get(); 
 
@@ -75,5 +77,71 @@ class PdfController extends Controller
         }
         $pdf = PDF::loadView('livewire.pdf.pdfFactDel', compact(['infoDetalle','info','delivery']));
         return $pdf->stream('fact.pdf');
+    }
+
+    public function PDFViandas() {
+
+        //busca el comercio que está en sesión
+        $this->comercioId = session('idComercio'); 
+
+        $dt = Carbon::now();
+        $diaDeLaSemana=date('w');
+        
+        switch ($diaDeLaSemana) {
+            case '1':
+                $info = Vianda::join('clientes as c', 'c.id', 'viandas.cliente_id')
+                        ->where('viandas.c_lunes_m', '<>', '')
+                        ->where('c.comercio_id', $this->comercioId)
+                        ->select('viandas.c_lunes_m as cantidad','viandas.h_lunes_m as hora',
+                                 'c.apellido', 'c.nombre')->orderBy('viandas.h_lunes_m')->get();                
+            break;
+        case '2':
+                $info = Vianda::join('clientes as c', 'c.id', 'viandas.cliente_id')
+                        ->where('viandas.c_martes_m', '<>', '')
+                        ->where('c.comercio_id', $this->comercioId)
+                        ->select('viandas.c_martes_m as cantidad','viandas.h_martes_m as hora',
+                                 'c.apellido', 'c.nombre')->get(); 
+            break;
+        case '3':
+                $info = Vianda::join('clientes as c', 'c.id', 'viandas.cliente_id')
+                        ->where('viandas.c_miercoles_m', '<>', '')
+                        ->where('c.comercio_id', $this->comercioId)
+                        ->select('viandas.c_miercoles_m as cantidad','viandas.h_miercoles_m as hora',
+                                 'c.apellido', 'c.nombre')->get(); 
+            break;
+        case '4':
+                $info = Vianda::join('clientes as c', 'c.id', 'viandas.cliente_id')
+                        ->where('viandas.c_jueves_m', '<>', '')
+                        ->where('c.comercio_id', $this->comercioId)
+                        ->select('viandas.c_jueves_m as cantidad','viandas.h_jueves_m as hora',
+                                 'c.apellido', 'c.nombre')->orderBy('h_jueves_m')->get(); 
+            break;
+        case '5':
+                $info = Vianda::join('clientes as c', 'c.id', 'viandas.cliente_id')
+                        ->where('viandas.c_viernes_m', '<>', '')
+                        ->where('c.comercio_id', $this->comercioId)
+                        ->select('viandas.c_viernes_m as cantidad','viandas.h_viernes_m as hora', 
+                                 'c.apellido', 'c.nombre')->get(); 
+            break;
+        case '6':
+            $info = Vianda::join('clientes as c', 'c.id', 'viandas.cliente_id')
+            ->where('c.vianda', '1')
+            ->where('viandas.c_sabado_m', '<>', '')
+            ->where('c.comercio_id', $this->comercioId)
+            ->select('c_sabado_m as cantidad','h_sabado_m as hora','c.apellido', 'c.nombre')
+            ->orderBy('h_sabado_m')->get(); 
+      
+            break;
+        case '7':
+                $info = Vianda::join('clientes as c', 'c.id', 'viandas.cliente_id')
+                        ->where('viandas.c_domingo_m', '<>', '')
+                        ->where('c.comercio_id', $this->comercioId)
+                        ->select('viandas.c_domingo_m as cantidad','viandas.h_domingo_m as hora',
+                                 'c.apellido', 'c.nombre')->get(); 
+            break;
+            default:
+        }
+        $pdf = PDF::loadView('livewire.pdf.pdfViandas', compact('info'));
+        return $pdf->stream('viandas.pdf');
     }
 }

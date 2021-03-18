@@ -34,7 +34,8 @@ class EmpleadoController extends Component
                 ->orderBy('apellido', 'asc')->get();
             return view('livewire.empleados.component', [
                 'info' =>$info,
-                'localidades' => $localidades
+                'localidades' => $localidades,
+                'provincias' => $provincias
             ]);
         }
         else {
