@@ -166,11 +166,16 @@
                                 <a href="{{ url('gastos') }}"> GASTOS  </a>
                             </li>
                         @endcan
-                        @can('Empleados_index')
+                        @can('Usuarios_index')
+                            <li>
+                                <a href="{{ url('usuarios') }}"> EMPLEADOS  </a>
+                            </li>
+                        @endcan
+                        <!-- @can('Empleados_index')
                             <li>
                                 <a href="{{ url('empleados') }}"> EMPLEADOS  </a>
                             </li>
-                        @endcan
+                        @endcan -->
                             <!-- <li>
                                 <a href="{{ url('tipogastos') }}"> TIPOS DE GASTOS  </a>
                             </li> -->
@@ -291,7 +296,7 @@
                     </li>
                 @endcan
                 <!-- USUARIOS -->
-                @can('Usuarios_index')
+                <!-- @can('Usuarios_index')
                     <li class="menu single-menu">
                         <a href="#more" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
@@ -307,7 +312,7 @@
                             </li>                   
                         </ul>
                     </li>
-                @endcan
+                @endcan -->
                     <!-- VIANDAS -->
                     <li class="menu single-menu">
                         <a href="{{ url('viandas') }}" >
