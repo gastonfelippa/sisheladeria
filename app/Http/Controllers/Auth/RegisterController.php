@@ -18,6 +18,12 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use DB;
 
+//use App\Events\UserRegistered;
+use Illuminate\Mail\Mailable;
+
+use App\Mail\NuevoAbonado;
+use Illuminate\Support\Facades\Mail;
+
 class RegisterController extends Controller
 {
     /*
@@ -38,15 +44,15 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    
-     
-
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
+
+    public $comercio, $nombre;
+
     public function __construct()
     {
         $this->middleware('guest');
@@ -91,6 +97,7 @@ class RegisterController extends Controller
                 'nombre' => strtoupper($data['nombreComercio']),            
                 'tipo_id' => $data['tipo']            
             ]);
+            $this->comercio = $comercio->nombre;
                 
             $user = User::create([            
                 'name' => ucwords($data['name']),
@@ -175,12 +182,25 @@ class RegisterController extends Controller
                 'comentarios'          => 'Inicio plan de prueba'
                 ]);
                 
-            DB::commit();
+                $this->sendEmail($user, $this->comercio);
+                DB::commit();
             return $user;
-        }catch (Exception $e){
+        }catch (\Exception $e){
             DB::rollback();    //en caso de error, deshacemos para no generar inconsistencia de datos  
             session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
         }
+    }
+    public function sendEmail($user, $comercio)
+    {
+        $objDemo = new \stdClass();
+        $objDemo->demo_one = $user->username;
+        $objDemo->demo_two = '';
+        $objDemo->sender = 'El equipo de FlokI';
+        $objDemo->receiver = $user->name;
+
+        $email = 'admin@floki.com';
+ 
+        Mail::to(env('MAIL_FROM_ADDRESS'))->send(new NuevoAbonado($user, $comercio));
     }
 }
     

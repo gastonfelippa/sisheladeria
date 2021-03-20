@@ -255,7 +255,7 @@ class UsuarioController extends Component
             $this->doAction(1);
             if($this->selected_id > 0) session()->flash('message', 'Usuario Actualizado');            
             else session()->flash('message', 'Usuario creado exitosamente! Verificar envío de email');       
-        }catch (Exception $e){
+        }catch (\Exception $e){
             DB::rollback();    //en caso de error, deshacemos para no generar inconsistencia de datos  
             session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
         }  
