@@ -184,7 +184,9 @@ class FacturaController extends Component
     
     protected $listeners = [
         'modCliRep' => 'modCliRep',
-        'deleteRow' => 'destroy'         
+        'deleteRow' => 'destroy',
+        'factura_contado' => 'factura_contado',
+        'factura_ctacte' => 'factura_ctacte'      
     ];
 
 	public function buscarArticulo($id)
@@ -323,15 +325,38 @@ class FacturaController extends Component
         return;          
     }
     
-    public function cobrar_factura()
+    public function factura_contado()
     {
         $record = Factura::find($this->factura_id);
         $record->update([
             'estado' => 'PAGADA',
             'importe' => $this->total
         ]);              
-        session()->flash('message', 'Factura Cobrada'); 
+        //session()->flash('message', 'Factura Cobrada'); 
         $this->resetInputTodos();
+    }
+
+    public function factura_ctacte()
+    {
+        DB::begintransaction();                         //iniciar transacción para grabar
+        try{ 
+            $record = Factura::find($this->factura_id);
+            $record->update([
+                'estado' => 'CTACTE',
+                'importe' => $this->total
+            ]);
+            Ctacte::create([
+                'cliente_id' => $this->clienteId,
+                'factura_id' => $this->factura_id
+            ]);
+            DB::commit();               
+            //session()->flash('message', 'Factura Cuenta Corriente'); 
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
+        }
+        $this->resetInputTodos();
+        return;
     }
         
     public function dejar_pendiente()

@@ -43,7 +43,7 @@
                                         Dejar Pendiente
                                     </button>
                                 @endif 
-                                <button type="button" wire:click.prevent="cobrar_factura()" onclick="setfocus('barcode')" 
+                                <button type="button" onclick="Cobrar({{$factura_id}})" 
                                     class="btn btn-primary" enabled>
                                     Cobrar   
                                 </button>
@@ -272,6 +272,25 @@
 			toastr.success('info', 'Registro eliminado con éxito')
 			swal.close()   
         })
+    }
+    function Cobrar(id)
+    {
+        Swal.fire({
+            title: 'Elige una opción...',
+            showDenyButton: true,
+            showCancelButton: true,
+            cancelButtonText: `Cancelar`,
+            confirmButtonText: `Contado`,
+            denyButtonText: `Cuenta Corriente`,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.livewire.emit('factura_contado', id)
+                    Swal.fire('Factura Cobrada!', '', 'success')
+                } else if (result.isDenied) {
+                    window.livewire.emit('factura_ctacte', id)
+                    Swal.fire('Factura Cuenta Corriente', '', 'success')
+                }
+            })
     }
     function openModal(id)
     {
