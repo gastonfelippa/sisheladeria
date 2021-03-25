@@ -23,12 +23,13 @@ class CreateProductosTable extends Migration
             $table->enum('estado', ['DISPONIBLE','SUSPENDIDO','SIN STOCK'])->default('DISPONIBLE');
             $table->enum('tipo', ['Art. Compra','Art. Venta','Ambos'])->default('Art. Venta');
 
-            $table->unsignedBigInteger('rubro_id');
-            $table->foreign('rubro_id')->references('id')->on('rubros');
+            $table->unsignedBigInteger('categoria_id');
+            $table->foreign('categoria_id')->references('id')->on('categorias');
 
             $table->unsignedBigInteger('comercio_id');
             $table->foreign('comercio_id')->references('id')->on('comercios');
             
+            $table->softDeletes();
             $table->timestamps();
         });
     }

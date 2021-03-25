@@ -33,9 +33,5 @@
 		<div class="text-right mr-2">
 			<b>TOTAL: $  {{number_format($info[0]->importe,2)}}</b>
 		</div>
-		<!-- <br>
-		<div class="text-center font-italic" style="font-size:14px">
-        	<p>¡¡¡Muchas gracias por elegirnos!!! </p>
-    	</div> -->
 	</div>
 @endsection

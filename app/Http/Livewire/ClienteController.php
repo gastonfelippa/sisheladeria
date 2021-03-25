@@ -20,6 +20,7 @@ class ClienteController extends Component
     public $h_viernes_m, $h_viernes_n, $h_sabado_m, $h_sabado_n, $h_domingo_m, $h_domingo_n;
     public $c_lunes_m, $c_lunes_n, $c_martes_m, $c_martes_n, $c_miercoles_m, $c_miercoles_n, $c_jueves_m, $c_jueves_n;
     public $c_viernes_m, $c_viernes_n, $c_sabado_m, $c_sabado_n, $c_domingo_m, $c_domingo_n;
+    public $recuperar_registro = 0, $descripcion_soft_deleted, $id_soft_deleted;
 
     public function render()
     {
@@ -131,25 +132,7 @@ class ClienteController extends Component
         $this->selected_id = null;       
         $this->search = '';
     }
-    
-    //escuchar eventos y ejecutar acción solicitada
-    protected $listeners = [
-        'deleteRow'=>'destroy',
-        'createFromModal' => 'createFromModal'       
-    ];  
 
-    public function createFromModal($info)
-    {
-        $data = json_decode($info);
-           
-        Localidad::create([
-            'descripcion' => ucwords($data->localidad),
-            'provincia_id' => $data->provincia_id
-        ]);
-        session()->flash('message', 'Localidad creada exitosamente!!!');  
-    }
-    
-        //buscamos el registro seleccionado y asignamos la info a las propiedades
     public function edit($id)
     {
         $record = Cliente::findOrFail($id);
@@ -162,115 +145,137 @@ class ClienteController extends Component
         $this->localidad = $record->localidad_id;
         $this->telefono = $record->telefono;
         $this->vianda = $record->vianda;
+
         $this->action = 2;
     }
+    
+    public function volver()
+    {
+        $this->recuperar_registro = 0;
+        $this->resetInput();
+        return; 
+    }
 
+    public function RecuperarRegistro($id)
+    {
+        DB::begintransaction();
+        try{
+            Cliente::onlyTrashed()->find($id)->restore();
+            session()->flash('msg-ok', 'Registro recuperado');
+            $this->volver();
+            
+            DB::commit();               
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se recuperó...');
+        }
+    }
 
-//método para registrar y/o actualizar info
     public function StoreOrUpdate()
     {
         $this->validate([
             'vianda' => 'not_in:0',
             'localidad' => 'not_in:Elegir'
-		]);     
-            //validación campos requeridos
+        ]);     
         $this->validate([
-            'nombre' => 'required', //validamos que descripción no sea vacío o nullo y que tenga al menos 4 caracteres
+            'nombre' => 'required', 
             'apellido' => 'required',
             'calle' => 'required'
         ]);
         if($this->numero == '') $this->numero = 's/n';
+        
+        DB::begintransaction();
+        try{
+            if($this->selected_id > 0) {
+                $existe = Cliente::where('nombre', $this->nombre)
+                    ->where('apellido', $this->apellido)
+                    ->where('calle', $this->calle)
+                    ->where('numero', $this->numero)
+                    ->where('localidad_id', $this->localidad)
+                    ->where('comercio_id', $this->comercioId)
+                    ->where('id', '<>', $this->selected_id)
+                    ->select('*')
+                    ->withTrashed()->get();
+                if($existe->count() > 0 && $existe[0]->deleted_at != null) {
+                    session()->flash('info', 'El Cliente que desea modificar ya existe pero fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+                    $this->action = 1;
+                    $this->recuperar_registro = 1;
+                    $this->descripcion_soft_deleted = $existe[0]->apellido . ' ' . $existe[0]->nombre;
+                    $this->id_soft_deleted = $existe[0]->id;
+                    return;
+                }elseif( $existe->count() > 0) {
+                    session()->flash('info', 'El Cliente ya existe...e');
+                    $this->resetInput();
+                    return;
+                }
+            }else {
+                $existe = Cliente::where('nombre', $this->nombre)
+                    ->where('apellido', $this->apellido)
+                    ->where('calle', $this->calle)
+                    ->where('numero', $this->numero)
+                    ->where('localidad_id', $this->localidad)
+                    ->where('comercio_id', $this->comercioId)
+                    ->select('*')->withTrashed()->get();
 
-        //valida si existe otro cliente con el mismo nombre
-        if($this->selected_id > 0) {
-            $existe = Cliente::where('nombre', $this->nombre)
-            ->where('apellido', $this->apellido)
-            ->where('calle', $this->calle)
-            ->where('numero', $this->numero)
-            ->where('localidad_id', $this->localidad)
-            ->where('comercio_id', $this->comercioId)
-            ->where('id', '<>', $this->selected_id)
-            ->select('*')
-            ->get();
-
-            if( $existe->count() > 0) {
-                session()->flash('msg-error', 'Ya existe el Cliente');
-                $this->resetInput();
-                return;
+                if($existe->count() > 0 && $existe[0]->deleted_at != null) {
+                    session()->flash('info', 'El Cliente que desea agregar ya existe pero fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+                    $this->action = 1;
+                    $this->recuperar_registro = 1;
+                    $this->descripcion_soft_deleted = $existe[0]->apellido . ' ' . $existe[0]->nombre;
+                    $this->id_soft_deleted = $existe[0]->id;
+                    return;
+                }elseif($existe->count() > 0 ) {
+                    session()->flash('info', 'El Cliente ya existe...');
+                    $this->resetInput();
+                    return;
+                }
+            }        
+            if($this->selected_id <= 0) {
+                Cliente::create([
+                    'nombre' => strtoupper($this->nombre),            
+                    'apellido' => strtoupper($this->apellido),     
+                    'calle' => ucwords($this->calle),            
+                    'numero' => $this->numero,            
+                    'localidad_id' => $this->localidad,            
+                    'telefono' => $this->telefono,
+                    'vianda' => $this->vianda,
+                    'comercio_id' => $this->comercioId            
+                ]);
+            }else {   
+                $record = Cliente::find($this->selected_id);
+                $record->update([
+                    'nombre' => strtoupper($this->nombre),            
+                    'apellido' => strtoupper($this->apellido),     
+                    'calle' => ucwords($this->calle),            
+                    'numero' => $this->numero,            
+                    'localidad_id' => $this->localidad,            
+                    'telefono' => $this->telefono,
+                    'vianda' => $this->vianda
+                ]); 
+                $this->action = 1;             
             }
-        }        
-        else 
-        {
-            //valida si existe otro cliente con el mismo nombre (nuevos registros)
-            $existe = Cliente::where('nombre', $this->nombre)
-            ->where('apellido', $this->apellido)
-            ->where('calle', $this->calle)
-            ->where('numero', $this->numero)
-            ->where('localidad_id', $this->localidad)
-            ->where('comercio_id', $this->comercioId)
-            ->select('*')
-            ->get();
+            if($this->selected_id) session()->flash('msg-ok', 'Cliente Actualizado');    
+            else session()->flash('msg-ok', 'Cliente Creado'); 
 
-            if($existe->count() > 0 ) {
-                session()->flash('msg-error', 'Ya existe el Cliente');
-                $this->resetInput();
-                return;
-            }
+            DB::commit();               
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
         }
-
-        if($this->selected_id <= 0) {
-            //creamos el registro
-            Cliente::create([
-                'nombre' => strtoupper($this->nombre),            
-                'apellido' => strtoupper($this->apellido),     
-                'calle' => ucwords($this->calle),            
-                'numero' => $this->numero,            
-                'localidad_id' => $this->localidad,            
-                'telefono' => $this->telefono,
-                'vianda' => $this->vianda,
-                'comercio_id' => $this->comercioId            
-            ]);
-        }
-        else 
-        {   
-            //buscamos la familia
-            $record = Cliente::find($this->selected_id);
-            //actualizamos el registro
-            $record->update([
-                'nombre' => strtoupper($this->nombre),            
-                'apellido' => strtoupper($this->apellido),     
-                'calle' => ucwords($this->calle),            
-                'numero' => $this->numero,            
-                'localidad_id' => $this->localidad,            
-                'telefono' => $this->telefono,
-                'vianda' => $this->vianda
-            ]);              
-        }
-
-        //enviamos feedback al usuario
-        if($this->selected_id) {
-            session()->flash('message', 'Cliente Actualizado');            
-        }
-        else {
-            session()->flash('message', 'Cliente Creado');            
-        }
-        //limpiamos las propiedades
         $this->resetInput();
-        $this->action = 1;
+        return;
     }
-
+        
     public function grabarViandas()
     {
-        $this->validate([
-            'producto' => 'not_in:Elegir'
-		]);
-
-        DB::begintransaction();                 //iniciar transacción para grabar
+        $this->validate(['producto' => 'not_in:Elegir']);
+            
+        DB::begintransaction();                
         try{
             $existe = Vianda::where('cliente_id', $this->selected_id);
-
+                
             if($existe->count() > 0){
-                $existe->update([
+                   $existe->update([
                     'cliente_id' => $this->selected_id, 
                     'producto_id' => $this->producto,
                     'estado' => 'activo', 
@@ -340,32 +345,55 @@ class ClienteController extends Component
                     'c_domingo_n' => $this->c_domingo_n 
                 ]);        
             }
+            if($existe->count() > 0) session()->flash('msg-ok', 'Detalle de Viandas actualizado exitosamente!!');            
+            else session()->flash('msg-ok', 'Detalle de Viandas creado exitosamente!!');  
+            
             DB::commit();
-            if($existe->count() > 0) {
-                session()->flash('message', 'Detalle de Viandas actualizado exitosamente!!');            
-            }
-            else {
-                session()->flash('message', 'Detalle de Viandas creado exitosamente!!');            
-            }
-            $this->resetInput();
-            $this->action = 1;
-        }catch (Exception $e){
-            DB::rollback();    //en caso de error, deshacemos para no generar inconsistencia de datos  
+        }catch (\Exception $e){
+            DB::rollback();     
             session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
-            $this->resetInput();
-            $this->action = 1;
         }
+        $this->resetInput();
+        $this->action = 1;
     }
-
-
-
-//método para eliminar un registro dado
+        
+    protected $listeners = [
+        'deleteRow'=>'destroy',
+        'createFromModal' => 'createFromModal'       
+    ];  
+    
     public function destroy($id)
     {
-        if ($id) { //si es un id válido
-            $record = Cliente::where('id', $id); //buscamos el registro
-            $record->delete(); //eliminamos el registro
-            $this->resetInput(); //limpiamos las propiedades
+        if ($id) {
+            DB::begintransaction();
+            try{
+                $cliente = Cliente::find($id)->delete();
+                session()->flash('msg-ok', 'Registro eliminado con éxito!!');
+                DB::commit();               
+            }catch (\Exception $e){
+                DB::rollback();
+                session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se eliminó...');
+            }
+            $this->resetInput();
+            return;
+        }    
+    }
+
+    public function createFromModal($info)
+    {
+        $data = json_decode($info);
+        DB::begintransaction();
+        try{   
+            Localidad::create([
+                'descripcion' => ucwords($data->localidad),
+                'provincia_id' => $data->provincia_id
+            ]);
+            session()->flash('msg-ok', 'Localidad creada exitosamente!!!'); 
+            DB::commit();               
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se eliminó...');
         }
     }
 }
+    

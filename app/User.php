@@ -10,11 +10,15 @@ use Spatie\Permission\Traits\HasRoles;
 use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmail;
 use App\Events\UserRegistered;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
     use HasRoles;
+    use SoftDeletes; 
+    
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.

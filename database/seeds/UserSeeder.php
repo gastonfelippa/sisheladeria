@@ -33,10 +33,10 @@ class UserSeeder extends Seeder
         Permission::create(['name' => 'Productos_edit', 'alias' => 'Modificar']);
         Permission::create(['name' => 'Productos_destroy', 'alias' => 'Eliminar']);
 
-        Permission::create(['name' => 'Rubros_index', 'alias' => 'Ver']);
-        Permission::create(['name' => 'Rubros_create', 'alias' => 'Agregar']);
-        Permission::create(['name' => 'Rubros_edit', 'alias' => 'Modificar']);
-        Permission::create(['name' => 'Rubros_destroy', 'alias' => 'Eliminar']);
+        Permission::create(['name' => 'Categorias_index', 'alias' => 'Ver']);
+        Permission::create(['name' => 'Categorias_create', 'alias' => 'Agregar']);
+        Permission::create(['name' => 'Categorias_edit', 'alias' => 'Modificar']);
+        Permission::create(['name' => 'Categorias_destroy', 'alias' => 'Eliminar']);
 
         Permission::create(['name' => 'Empleados_index', 'alias' => 'Ver']);
         Permission::create(['name' => 'Empleados_create', 'alias' => 'Agregar']);

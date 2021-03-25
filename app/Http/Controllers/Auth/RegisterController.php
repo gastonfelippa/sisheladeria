@@ -141,8 +141,8 @@ class RegisterController extends Controller
                                 
             $rolAdmin->givePermissionTo([
                 'Estadisticas_index','Abm_index','Config_index','Empresa_index','Permisos_index','Productos_index',
-                'Productos_create','Productos_edit','Productos_destroy','Rubros_index','Rubros_create','Rubros_edit',
-                'Rubros_destroy','Empleados_index','Empleados_create','Empleados_edit','Empleados_destroy',
+                'Productos_create','Productos_edit','Productos_destroy','Categorias_index','Categorias_create','Categorias_edit',
+                'Categorias_destroy','Empleados_index','Empleados_create','Empleados_edit','Empleados_destroy',
                 'Clientes_index','Clientes_create','Clientes_edit','Clientes_destroy', 'Proveedores_index',
                 'Proveedores_create','Proveedores_edit','Proveedores_destroy','Gastos_index','Gastos_create',
                 'Gastos_edit','Gastos_destroy','Facturas_index','Facturas_create_producto','Facturas_edit_item',
@@ -185,7 +185,7 @@ class RegisterController extends Controller
                 $this->sendEmail($user, $this->comercio);
                 DB::commit();
             return $user;
-        }catch (\Exception $e){
+        }catch (Exception $e){
             DB::rollback();    //en caso de error, deshacemos para no generar inconsistencia de datos  
             session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
         }

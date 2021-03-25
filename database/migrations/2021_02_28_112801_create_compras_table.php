@@ -30,7 +30,8 @@ class CreateComprasTable extends Migration
 
             $table->unsignedBigInteger('comercio_id');
             $table->foreign('comercio_id')->references('id')->on('comercios');
-            
+         
+            $table->softDeletes();
             $table->timestamps();
         });
     }

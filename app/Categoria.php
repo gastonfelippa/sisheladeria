@@ -5,12 +5,12 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Gasto extends Model
+class Categoria extends Model
 {
     use SoftDeletes; 
     
     protected $dates = ['deleted_at'];
-
-    protected $table = 'gastos';
-    protected $fillable = ['descripcion', 'comercio_id'];
+    
+    protected $table = 'categorias';
+    protected $fillable = ['descripcion', 'margen', 'comercio_id'];
 }

@@ -24,7 +24,7 @@
                     <thead>
                         <tr>
                             <th class="text-center">DESCRIPCIÓN</th>
-                            <th class="text-center">USUARIOS <br>con el role</th>
+                            <th class="text-center">USUARIOS <br>con el rol</th>
                             <th class="text-center">ACCIONES</th>
                             <th class="text-center"></th>
                         </tr>

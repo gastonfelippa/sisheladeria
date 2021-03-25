@@ -8,7 +8,7 @@ use App\Producto;
 use App\Factura;
 use App\Cliente;
 use App\Empleado;
-use App\Rubro;
+use App\Categoria;
 use App\Ctacte;
 use App\User;
 use Carbon\Carbon;
@@ -35,12 +35,12 @@ class FacturaController extends Component
         
         $this->productos = Producto::select()->where('comercio_id', $this->comercioId)->orderBy('descripcion', 'asc')->get();
         $this->clientes = Cliente::select()->where('comercio_id', $this->comercioId)->orderBy('apellido', 'asc')->get();
-        $this->categorias = Rubro::select()->where('comercio_id', $this->comercioId)->orderBy('descripcion', 'asc')->get();
+        $this->categorias = Categoria::select()->where('comercio_id', $this->comercioId)->orderBy('descripcion', 'asc')->get();
         $this->empleados = User::join('model_has_roles as mhr', 'mhr.model_id', 'users.id')
-        ->join('roles as r', 'r.id', 'mhr.role_id')
-        ->where('r.alias', 'Repartidor')
-        ->where('r.comercio_id', $this->comercioId)
-        ->select('users.*')->orderBy('apellido')->get();
+            ->join('roles as r', 'r.id', 'mhr.role_id')
+            ->where('r.alias', 'Repartidor')
+            ->where('r.comercio_id', $this->comercioId)
+            ->select('users.*')->orderBy('apellido')->get();
         
         if(strlen($this->barcode) > 0) $this->buscarProducto($this->barcode); 
         else $this->precio = '';
@@ -192,7 +192,7 @@ class FacturaController extends Component
 	public function buscarArticulo($id)
 	{
 		$this->articulos = Producto::where('comercio_id', $this->comercioId)
-                                ->where('rubro_id', $id)->orderBy('descripcion', 'asc')->get();
+                                ->where('categoria_id', $id)->orderBy('descripcion', 'asc')->get();
 	}
     
     public function buscarProducto($id)
@@ -336,22 +336,27 @@ class FacturaController extends Component
         $this->resetInputTodos();
     }
 
-    public function factura_ctacte()
+    public function factura_ctacte($cliId)
     {
+        if($cliId != '') {
+            $data = json_decode($cliId);
+            $this->cliente = $data->cliente_id;
+        } 
         DB::begintransaction();                         //iniciar transacción para grabar
         try{ 
             $record = Factura::find($this->factura_id);
             $record->update([
+                'cliente_id' => $this->cliente,
                 'estado' => 'CTACTE',
                 'importe' => $this->total
             ]);
             Ctacte::create([
-                'cliente_id' => $this->clienteId,
+                'cliente_id' => $this->cliente,
                 'factura_id' => $this->factura_id
             ]);
             DB::commit();               
             //session()->flash('message', 'Factura Cuenta Corriente'); 
-        }catch (\Exception $e){
+        }catch (Exception $e){
             DB::rollback();
             session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
         }

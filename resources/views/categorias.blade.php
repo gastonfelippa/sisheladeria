@@ -8,6 +8,6 @@
 
 @section('content')
      
-  @livewire('rubro-controller')
+  @livewire('categoria-controller')
 
 @endsection

@@ -7,15 +7,15 @@ use App\CondIva;
 use App\Localidad;
 use App\Proveedor;
 use App\Provincia;
+use DB;
 
 class ProveedorController extends Component
 {
-   	//public properties
     public $nombre_empresa, $nombre_contacto, $apellido_contacto, $calle, $numero, $localidad = 'Elegir', $provincia = 'Elegir';
     public $tel_empresa, $tel_contacto, $comercioId, $condIvaId = 'Elegir', $cuit; 
     public $selected_id = null, $search, $action = 1; 
+    public $recuperar_registro = 0, $descripcion_soft_deleted, $id_soft_deleted;
    
-        //método que se ejecuta después de mount al inciar el componente
     public function render()
     {
         //busca el comercio que está en sesión
@@ -25,7 +25,6 @@ class ProveedorController extends Component
         $provincias = Provincia::all();
         $condIva = CondIva::all();
            
-        //si la propiedad buscar tiene al menos un caracter, devolvemos el componente y le inyectamos los registros de una búsqueda con like y paginado a  5 
         if(strlen($this->search) > 0)
         {
             $info = Proveedor::join('localidades as loc', 'loc.id', 'proveedores.localidad_id')
@@ -60,14 +59,12 @@ class ProveedorController extends Component
             ]);
         }
     }
-        //activa la vista edición o creación
     public function doAction($action)
     {
         $this->action = $action;
         $this->resetInput();
     }
    
-        //método para reiniciar variables
     private function resetInput()
     {
         $this->nombre_empresa = '';
@@ -82,9 +79,8 @@ class ProveedorController extends Component
         $this->tel_contacto = '';
         $this->selected_id = null;   
         $this->search = '';
-    }
+    }   
    
-        //buscamos el registro seleccionado y asignamos la info a las propiedades
     public function edit($id)
     {
         $record = Proveedor::findOrFail($id);
@@ -99,10 +95,34 @@ class ProveedorController extends Component
         $this->nombre_contacto = $record->nombre_contacto;
         $this->apellido_contacto = $record->apellido_contacto;
         $this->tel_contacto = $record->tel_contacto;
+
         $this->action = 2;
     }
+    
+    public function volver()
+    {
+        $this->recuperar_registro = 0;
+        $this->resetInput();
+        return; 
+    }
 
-    public function validar_cuil($nCuit){
+    public function RecuperarRegistro($id)
+    {
+        DB::begintransaction();
+        try{
+            Proveedor::onlyTrashed()->find($id)->restore();
+            session()->flash('msg-ok', 'Registro recuperado');
+            $this->volver();
+            
+            DB::commit();               
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se recuperó...');
+        }
+    }
+
+    public function validar_cuil($nCuit)
+    {
         $nCuit = str_replace('-','',trim($nCuit));
         if (!is_numeric($nCuit)) return false;
         if (strlen($nCuit) != 11) return false;
@@ -117,8 +137,6 @@ class ProveedorController extends Component
         return ($digitoVerificador == substr($nCuit, strlen($nCuit)-1));
     }
    
-   
-        //método para registrar y/o actualizar info
     public function StoreOrUpdate()
     {         
         $this->validate([
@@ -144,113 +162,146 @@ class ProveedorController extends Component
                 $codVerificador = substr($nCuit,10,1);
                 $this->cuit = $tipo . '-' . $numero . '-' . $codVerificador;
             }
-            //valida si existe otro proveedor con el mismo nombre (edicion de proveedores)
-            if($this->selected_id > 0) {
-                $existe = Proveedor::where('nombre_empresa', $this->nombre_empresa)
-                    ->where('comercio_id', $this->comercioId)
-                    ->where('id', '<>', $this->selected_id)
-                    ->orWhere('cuit', $this->cuit)
-                    ->where('comercio_id', $this->comercioId)
-                    ->where('id', '<>', $this->selected_id)
-                    ->select('*')
-                    ->get();
-    
-                if( $existe->count() > 0) {
-                    session()->flash('msg-error', 'Ya existe el Proveedor!!!');
-                    $this->resetInput();
-                    return;
-                }
-            }else {
-                //valida si existe otro proveedor con el mismo nombre (nuevos registros)
-                $existe = Proveedor::where('nombre_empresa', $this->nombre_empresa)
-                    ->where('comercio_id', $this->comercioId)
-                    ->orWhere('cuit', $this->cuit)
-                    ->where('cuit', '<>', '')
-                    ->where('comercio_id', $this->comercioId)
-                    ->select('*')
-                    ->get();
-    
-                if($existe->count() > 0 ) {
-                    session()->flash('msg-error', 'Ya existe el Proveedor');
-                    $this->resetInput();
-                    return;
-                }
+            DB::begintransaction();
+            try{
+                if($this->selected_id > 0) {
+                    $existe = Proveedor::where('nombre_empresa', $this->nombre_empresa)
+                        ->where('comercio_id', $this->comercioId)
+                        ->where('id', '<>', $this->selected_id)
+                        ->orWhere('cuit', $this->cuit)
+                        ->where('comercio_id', $this->comercioId)
+                        ->where('id', '<>', $this->selected_id)
+                        ->select('*')
+                        ->withTrashed()->get();
+                    if($existe->count() > 0 && $existe[0]->deleted_at != null) {
+                        session()->flash('info', 'El Proveedor que desea modificar ya existe pero fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+                        $this->action = 1;
+                        $this->recuperar_registro = 1;
+                        $this->descripcion_soft_deleted = $existe[0]->nombre_empresa;
+                        $this->id_soft_deleted = $existe[0]->id;
+                        return;
+                    }elseif( $existe->count() > 0) {
+                        session()->flash('info', 'El Proveedor ya existe...');
+                        $this->resetInput();
+                        return;
+                    }
+                }else {
+                    $existe = Proveedor::where('nombre_empresa', $this->nombre_empresa)
+                        ->where('comercio_id', $this->comercioId)
+                        ->orWhere('cuit', $this->cuit)
+                        ->where('cuit', '<>', '')
+                        ->where('comercio_id', $this->comercioId)
+                        ->select('*')->withTrashed()->get();
+
+                    if($existe->count() > 0 && $existe[0]->deleted_at != null) {
+                        session()->flash('info', 'El Proveedor que desea agregar ya existe pero fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+                        $this->action = 1;
+                        $this->recuperar_registro = 1;
+                        $this->descripcion_soft_deleted = $existe[0]->nombre_empresa;
+                        $this->id_soft_deleted = $existe[0]->id;
+                        return;
+                    }elseif($existe->count() > 0 ) {
+                        session()->flash('info', 'El Proveedor ya existe...');
+                        $this->resetInput();
+                        return;
+                    }   
+                }   
+                if($this->selected_id <= 0) {
+                    Proveedor::create([
+                        'nombre_empresa' => strtoupper($this->nombre_empresa),            
+                        'tel_empresa' => $this->tel_empresa,      
+                        'condiva_id' => $this->condIvaId,      
+                        'cuit' => $this->cuit,            
+                        'calle' => ucwords($this->calle),            
+                        'numero' => $this->numero,            
+                        'localidad_id' => $this->localidad,            
+                        'nombre_contacto' => strtoupper($this->nombre_contacto),            
+                        'apellido_contacto' => strtoupper($this->apellido_contacto),            
+                        'tel_contacto' => $this->tel_contacto,      
+                        'comercio_id' => $this->comercioId            
+                    ]);
+                }else {   
+                    $record = Proveedor::find($this->selected_id);
+                    $record->update([
+                        'nombre_empresa' => strtoupper($this->nombre_empresa),            
+                        'tel_empresa' => $this->tel_empresa,      
+                        'condiva_id' => $this->condIvaId,      
+                        'cuit' => $this->cuit,            
+                        'calle' => ucwords($this->calle),            
+                        'numero' => $this->numero,            
+                        'localidad_id' => $this->localidad,            
+                        'nombre_contacto' => strtoupper($this->nombre_contacto),            
+                        'apellido_contacto' => strtoupper($this->apellido_contacto),            
+                        'tel_contacto' => $this->tel_contacto  
+                    ]);
+                    $this->action = 1;              
+                }   
+                if($this->selected_id) session()->flash('msg-ok', 'Proveedor Actualizado');            
+                else session()->flash('msg-ok', 'Proveedor Creado');            
+       
+                DB::commit();               
+            }catch (\Exception $e){
+                DB::rollback();
+                session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
             }
-   
-            if($this->selected_id <= 0) {
-                //creamos el registro
-                Proveedor::create([
-                    'nombre_empresa' => strtoupper($this->nombre_empresa),            
-                    'tel_empresa' => $this->tel_empresa,      
-                    'condiva_id' => $this->condIvaId,      
-                    'cuit' => $this->cuit,            
-                    'calle' => ucwords($this->calle),            
-                    'numero' => $this->numero,            
-                    'localidad_id' => $this->localidad,            
-                    'nombre_contacto' => strtoupper($this->nombre_contacto),            
-                    'apellido_contacto' => strtoupper($this->apellido_contacto),            
-                    'tel_contacto' => $this->tel_contacto,      
-                    'comercio_id' => $this->comercioId            
-                ]);
-            }else {   
-                //buscamos el registro
-                $record = Proveedor::find($this->selected_id);
-                //actualizamos el registro
-                $record->update([
-                    'nombre_empresa' => strtoupper($this->nombre_empresa),            
-                    'tel_empresa' => $this->tel_empresa,      
-                    'condiva_id' => $this->condIvaId,      
-                    'cuit' => $this->cuit,            
-                    'calle' => ucwords($this->calle),            
-                    'numero' => $this->numero,            
-                    'localidad_id' => $this->localidad,            
-                    'nombre_contacto' => strtoupper($this->nombre_contacto),            
-                    'apellido_contacto' => strtoupper($this->apellido_contacto),            
-                    'tel_contacto' => $this->tel_contacto  
-                ]);              
-            }   
-            //enviamos feedback al usuario
-            if($this->selected_id) session()->flash('message', 'Proveedor Actualizado');            
-            else session()->flash('message', 'Proveedor Creado');            
+            $this->resetInput();
+            return;
         }
-        //limpiamos las propiedades
-        $this->resetInput();
-        return;
     }
-    //escuchar eventos y ejecutar acción solicitada
+
     protected $listeners = [
         'deleteRow'=>'destroy',
         'createFromModal' => 'createFromModal',         
         'createIvaFromModal' => 'createIvaFromModal'         
     ];
-       
+    
+    public function destroy($id)
+    {
+        if ($id) {
+            DB::begintransaction();
+            try{
+                $proveedor = Proveedor::find($id)->delete();
+                session()->flash('msg-ok', 'Registro eliminado con éxito!!');
+                DB::commit();               
+            }catch (\Exception $e){
+                DB::rollback();
+                session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se eliminó...');
+            }
+            $this->resetInput();
+            return;
+        }
+    }
+    
     public function createFromModal($info)
     {
         $data = json_decode($info);
-           
-        Localidad::create([
-            'descripcion' => ucwords($data->localidad),
-            'provincia_id' => $data->provincia_id
-        ]);
-        session()->flash('message', 'Localidad creada exitosamente!!!');  
+        DB::begintransaction();
+        try{   
+            Localidad::create([
+                'descripcion' => ucwords($data->localidad),
+                'provincia_id' => $data->provincia_id
+            ]);
+            session()->flash('msg-ok', 'Localidad creada exitosamente!!!'); 
+            DB::commit();               
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se eliminó...');
+        } 
     }
+
     public function createIvaFromModal($info)
     {
         $data = json_decode($info);
-           
-        CondIva::create([
-            'descripcion' => ucwords($data->descripcion)
-        ]);
-        session()->flash('message', 'Condición de Iva creada exitosamente!!!');  
-    }
-   
-   //método para eliminar un registro dado
-    public function destroy($id)
-    {
-        if ($id) { //si es un id válido
-            $record = Proveedor::where('id', $id); //buscamos el registro
-            $record->delete(); //eliminamos el registro
-            $this->resetInput(); //limpiamos las propiedades
-        }
-    }
+        DB::begintransaction();
+        try{   
+            CondIva::create([
+                'descripcion' => ucwords($data->descripcion)
+            ]);
+            session()->flash('msg-ok', 'Condición de Iva creada exitosamente!!!'); 
+            DB::commit();               
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se eliminó...');
+        }  
+    }   
 }

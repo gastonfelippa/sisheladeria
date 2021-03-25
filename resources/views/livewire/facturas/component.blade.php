@@ -7,7 +7,7 @@
                         <h3>Factura N°: {{$numFactura}}</h3>
                     </div>
                     <div class="col-md-6 text-center">
-                        <h3 class="bg-danger">Total : $ {{number_format($total,2)}}</h3> 
+                        <h3 class="bg-danger" style="border-radius: 5px;">Total : $ {{number_format($total,2)}}</h3> 
                     </div>
                 </div>  
                 <div class="row">
@@ -43,7 +43,7 @@
                                         Dejar Pendiente
                                     </button>
                                 @endif 
-                                <button type="button" onclick="Cobrar({{$factura_id}})" 
+                                <button type="button" onclick="Cobrar({{$delivery}})" 
                                     class="btn btn-primary" enabled>
                                     Cobrar   
                                 </button>
@@ -200,13 +200,19 @@
         <div class="row mt-2">
             <div class="col-sm-12 col-lg-4">
                 <div class="widget-content-area">
-                    <div class="widget-one scrollb"> 
-                        <div class="scrollContent"> 
-                            @foreach($categorias as $c)                    
-                                <button style="width: 100%;"  wire:click.prevent="buscarArticulo({{$c->id}})" type="button" class="btn btn-warning mb-1">{{$c->descripcion}}</button>
-                            @endforeach
+                    @if($categorias->count() > 6)
+                        <div class="widget-one scrollb"> 
+                            <div class="scrollContent"> 
+                                @foreach($categorias as $c)                    
+                                    <button style="width: 100%;"  wire:click.prevent="buscarArticulo({{$c->id}})" type="button" class="btn btn-warning mb-1">{{$c->descripcion}}</button>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @else                   
+                        @foreach($categorias as $c)                    
+                            <button style="width: 100%;"  wire:click.prevent="buscarArticulo({{$c->id}})" type="button" class="btn btn-warning mb-1">{{$c->descripcion}}</button>
+                        @endforeach                       
+                    @endif
                 </div>
             </div>
             <div class="col-sm-12 col-lg-8">
@@ -224,6 +230,7 @@
             </div>
         </div>         
     @include('livewire.facturas.modal')  
+    @include('livewire.facturas.modalCtacte')  
     </div> 
 </div>
 
@@ -255,25 +262,25 @@
 <script type="text/javascript">
  	function Confirm(id)
     {
-       let me = this
-       swal({
-        title: 'CONFIRMAR',
-        text: '¿DESEAS ELIMINAR EL REGISTRO?',
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        closeOnConfirm: false
-    },
-		function() {
-			window.livewire.emit('deleteRow', id)    
-			toastr.success('info', 'Registro eliminado con éxito')
-			swal.close()   
-        })
+        let me = this
+        swal({
+            title: 'CONFIRMAR',
+            text: '¿DESEAS ELIMINAR EL REGISTRO?',
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            closeOnConfirm: false
+            },
+            function() {
+                window.livewire.emit('deleteRow', id)    
+                toastr.success('info', 'Registro eliminado con éxito')
+                swal.close()   
+            })
     }
-    function Cobrar(id)
+    function Cobrar(delivery)
     {
         Swal.fire({
             title: 'Elige una opción...',
@@ -284,14 +291,35 @@
             denyButtonText: `Cuenta Corriente`,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.livewire.emit('factura_contado', id)
+                    window.livewire.emit('factura_contado')
                     Swal.fire('Factura Cobrada!', '', 'success')
                 } else if (result.isDenied) {
-                    window.livewire.emit('factura_ctacte', id)
-                    Swal.fire('Factura Cuenta Corriente', '', 'success')
+                    if(delivery == 0) {
+                        modalCtacte()
+                    }else {
+                        window.livewire.emit('factura_ctacte', 0)
+                        Swal.fire('Factura Cuenta Corriente', '', 'success')
+                    }
                 }
             })
     }
+    function modalCtacte()
+    {
+        $('#cliente2').val('Elegir')
+        $('#modalCtacte').modal('show')
+	}
+	function saveCtacte()
+    {     
+        if($('#cliente2 option:selected').val() == 'Elegir') {
+            toastr.error('Elige una opción válida para el Cliente')
+            return;
+        }
+        var data = JSON.stringify({
+            'cliente_id'   : $('#cliente2 option:selected').val()
+        });
+        $('#modalCtacte').modal('hide')
+        window.livewire.emit('factura_ctacte', data)
+    } 
     function openModal(id)
     {
         $('#facturaId').val(id)
@@ -302,25 +330,20 @@
 	}
 	function save()
     {     
-        if($('#cliente option:selected').val() == 'Elegir')
-        {
+        if($('#cliente option:selected').val() == 'Elegir') {
             toastr.error('Elige una opción válida para el Cliente')
             return;
         }
-        if($('#empleado option:selected').val() == 'Elegir')
-        {
+        if($('#empleado option:selected').val() == 'Elegir') {
             toastr.error('Elige una opción válida para el Repartidor')
             return;
         }
-
         var data = JSON.stringify({
             'factura_id'   : $('#facturaId').val(),
             'cliente_id'   : $('#cliente option:selected').val(),
             'empleado_id'  : $('#empleado option:selected').val()
         });
-
         $('#modal').modal('hide')
-        console.log(data)
         window.livewire.emit('modCliRep', data)
     } 
 

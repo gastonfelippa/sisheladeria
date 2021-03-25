@@ -94,9 +94,9 @@
                     </div>
                     <div class="col">
                         <div class="card border-dark text-dark bg-light mb-3">
-                            <div class="card-header">Rubros</div>
+                            <div class="card-header">Categorias</div>
                             <div class="card-body">
-                            @foreach($pRubros as $p)
+                            @foreach($pCategorias as $p)
                             <tr>
                                 <td class="text-center">
                                     <div class="n-check" id="divPermisos">

@@ -48,8 +48,6 @@
     </div></div></div></div>   
     <!--  END LOADER -->
 
-        <!-- <div class="loader"></div> -->
-
     <!--  BEGIN NAVBAR  -->
     <div class="header-container">
         <header class="header navbar navbar-expand-sm">
@@ -101,36 +99,10 @@
 
     <!--  BEGIN MAIN CONTAINER  -->
     <div class="main-container" id="container">
-<!-- 
-        <div class="overlay"></div>
-        <div class="search-overlay"></div> -->
-
         <!--  BEGIN TOPBAR  -->
         <div class="topbar-nav header navbar" role="banner">
-            <nav id="topbar">
-                <!-- <ul class="navbar-nav theme-brand flex-row  text-center">
-                    <li class="nav-item theme-logo">
-                        <a href="index.html">
-                            <img src="assets/img/90x90.jpg" class="navbar-logo" alt="logo">
-                        </a>
-                    </li>
-                    <li class="nav-item theme-text">
-                        <a href="{{ url('/') }}" class="nav-link"> SISHELADERIA </a>
-                    </li>
-                </ul> -->
-                
+            <nav id="topbar">                
                 <ul class="list-unstyled menu-categories" id="topAccordion">
-                <!-- ESTADÍSTICAS -->
-                <!-- @can('Estadisticas_index')
-                    <li class="menu single-menu ">
-                        <a href="#dashboard" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle autodroprown">
-                            <div class="">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart" viewBox="0 0 16 16"><path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/></svg>
-                                <span>DATOS</span>
-                            </div>
-                        </a>               
-                    </li>
-                @endcan                 -->
                 <!-- ABM -->
                     <li class="menu single-menu">
                         <a href="#abm" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
@@ -146,9 +118,9 @@
                                 <a href="{{ url('productos') }}"> PRODUCTOS  </a>
                             </li>
                         @endcan
-                        @can('Rubros_index')
+                        @can('Categorias_index')
                         <li>
-                            <a href="{{ url('rubros') }}"> CATEGORIAS  </a>
+                            <a href="{{ url('categorias') }}"> CATEGORIAS  </a>
                         </li>
                         @endcan
                         @can('Clientes_index')
@@ -171,14 +143,6 @@
                                 <a href="{{ url('usuarios') }}"> EMPLEADOS  </a>
                             </li>
                         @endcan
-                        <!-- @can('Empleados_index')
-                            <li>
-                                <a href="{{ url('empleados') }}"> EMPLEADOS  </a>
-                            </li>
-                        @endcan -->
-                            <!-- <li>
-                                <a href="{{ url('tipogastos') }}"> TIPOS DE GASTOS  </a>
-                            </li> -->
                         </ul>                         
                     </li>
                 <!-- CONFIG --> 
@@ -201,7 +165,10 @@
                             <li>
                                 <a href="{{ url('permisos') }}">ROLES Y PERMISOS </a>
                             </li>
-                        @endcan
+                        @endcan  
+                            <li>
+                                <a href="{{ url('auditorias') }}">AUDITORIAS </a>
+                            </li>
                         </ul>
                     </li>
                 @endcan
@@ -295,24 +262,6 @@
                         </ul>
                     </li>
                 @endcan
-                <!-- USUARIOS -->
-                <!-- @can('Usuarios_index')
-                    <li class="menu single-menu">
-                        <a href="#more" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                            <div class="">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                                <span>USUARIOS</span>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                        </a>
-                        
-                        <ul class="collapse submenu list-unstyled" id="more" data-parent="#topAccordion">
-                            <li>
-                                <a href="{{url('usuarios')}}">OPERADORES</a>
-                            </li>                   
-                        </ul>
-                    </li>
-                @endcan -->
                     <!-- VIANDAS -->
                     <li class="menu single-menu">
                         <a href="{{ url('viandas') }}" >
@@ -322,6 +271,7 @@
                             </div>                           
                         </a>                        
                     </li>
+                     <!-- CTA CTE -->
                     <li class="menu single-menu">
                         <a href="{{ url('ctacte') }}" >
                             <div class="">
@@ -385,7 +335,7 @@
     <script src="{{ asset('plugins/flatpickr/flatpickr.js') }}"></script>
     <script src="{{ asset('plugins/flatpickr/flatpickr_es.js') }}"></script>  
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>    
-    <script src="{{ asset('assets/js/sweetalert.min.js') }}"></script>  
+    <script src="{{ asset('assets/js/sweetalert.min.js') }}"></script>
     <script>
         $(document).ready(function() {
             App.init();
@@ -395,9 +345,6 @@
                 'locale': 'es'
             });
         });
-        // $(window).load(function() {
-        //     $(".loader").fadeOut("slow");
-        // });
     </script>
 
 

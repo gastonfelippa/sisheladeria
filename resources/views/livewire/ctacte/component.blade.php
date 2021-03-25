@@ -56,8 +56,22 @@
 								@endif
 								
 								<td class="text-center">
-									@include('common.actions', ['edit' => 'Rubros_edit', 'destroy' => 'Rubros_destroy']) <!-- botons editar y eliminar -->
-								</td> 
+								@if($verHistorial == 1)
+									<ul class="table-controls">
+										<li>                                 
+											<a href="javascript:void(0);"
+											wire:click="verViandas({{$r->id}}, 3)"  
+											data-toggle="tooltip" data-placement="top" title="Ver"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye text-success"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>                                 
+										</li>
+										<li>
+											<a href="javascript:void(0);"          		
+												onclick="Cobrar('{{$r->factura_id}}')"
+												data-toggle="tooltip" data-placement="top" title="Cobrar">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign text-dark"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+										</li>
+									</ul>
+								@endif								
+                                </td>
 							</tr>
 							@endforeach
 						</tbody>
@@ -142,6 +156,24 @@
     		toastr.success('info', 'Registro eliminado con éxito') //mostramos mensaje de confirmación 
     		swal.close()   //cerramos la modal
     	})
+    }
+	function Cobrar(id)
+    {
+		Swal.fire({
+			title: 'CONFIRMAR',
+			text: "¿Deseas cobrar la factura seleccionada?",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Si!',
+			cancelButtonText: 'No...'
+			}).then((result) => {
+				if (result.isConfirmed) {
+                    window.livewire.emit('cobrar_factura', id)
+					Swal.fire('Cobrado!','Cobro exitoso.','success')
+				}
+			})
     }
     window.onload = function() {
         document.getElementById("search").focus();

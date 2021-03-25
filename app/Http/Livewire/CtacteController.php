@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Cliente;
 use App\Ctacte;
+use App\Factura;
 use App\Recibo;
 use DB;
 
@@ -164,8 +165,24 @@ class CtacteController extends Component
     }
         //escuchar eventos y ejecutar acción solicitada
     protected $listeners = [
-        'deleteRow'=>'destroy'        
-    ];  
+        'deleteRow'=>'destroy',
+        'cobrar_factura' => 'cobrar_factura'       
+        ]; 
+
+    public function cobrar_factura($id)
+    {
+        //dd($id);
+        if($id != '') {           
+            $record = Factura::find($id);
+            $record->update([
+                'estado' => 'PAGADA'
+            ]);
+            $record = Ctacte::where('factura_id', $id);
+            $record->delete();
+        }              
+        //session()->flash('message', 'Factura Cobrada'); 
+        $this->resetInput();
+    } 
         //método para eliminar un registro dado
     public function destroy($id)
     {

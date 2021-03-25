@@ -27,7 +27,6 @@ class PermisosController extends Component
         $roles = Role::select('*', DB::RAW("0 as checked"))
             ->where('comercio_id', $this->comercioId)->get();
 
-        // $permisos = Permission::select('*', DB::RAW("0 as checked"))->get();
         $pProductos = Permission::where('name', 'Productos_index')
             ->orWhere('name', 'Productos_create')
             ->orWhere('name', 'Productos_edit')
@@ -52,10 +51,10 @@ class PermisosController extends Component
             ->orWhere('name', 'Facturas_create_producto')
             ->select('*', DB::RAW("0 as checked"))->get();
 
-        $pRubros = Permission::where('name', 'Rubros_index')
-            ->orWhere('name', 'Rubros_create')
-            ->orWhere('name', 'Rubros_edit')
-            ->orWhere('name', 'Rubros_destroy')
+        $pCategorias = Permission::where('name', 'Categorias_index')
+            ->orWhere('name', 'Categorias_create')
+            ->orWhere('name', 'Categorias_edit')
+            ->orWhere('name', 'Categorias_destroy')
             ->select('*', DB::RAW("0 as checked"))->get();
 
         $pGastos = Permission::where('name', 'Gastos_index')
@@ -151,7 +150,7 @@ class PermisosController extends Component
                         $p->checked = 1;
                 }
             }
-            foreach($pRubros as $p){
+            foreach($pCategorias as $p){
                 $role = Role::find($this->roleSelected);
                 $tienePermiso = $role->hasPermissionTo($p->name);
                 if($tienePermiso){
@@ -208,7 +207,7 @@ class PermisosController extends Component
             'pClientes' => $pClientes,
             'pEmpleados' => $pEmpleados,
             'pFacturas' => $pFacturas,
-            'pRubros' => $pRubros,
+            'pCategorias' => $pCategorias,
             'pGastos' => $pGastos,
             'pUsuarios' => $pUsuarios,
             'pCaja' => $pCaja,

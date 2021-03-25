@@ -4,21 +4,23 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Producto;
-use App\Rubro;
+use App\Categoria;
+use DB;
 
 
 class ProductoController extends Component
 {
-	public $rubro ='Elegir', $descripcion, $estado='DISPONIBLE', $precio_costo=null, $precio_venta, $stock, $tipo = 'Art. Venta';
-	public $codigo = null, $codigo_sugerido, $selected_id = null, $search, $rubros;
-	public $comercioId;
+	public $categoria ='Elegir', $descripcion, $estado='DISPONIBLE', $precio_costo=null, $precio_venta, $stock, $tipo = 'Art. Venta';
+	public $codigo = null, $codigo_sugerido, $selected_id = null, $search, $categorias;
+	public $comercioId, $action = 1;
+	public $recuperar_registro = 0, $descripcion_soft_deleted, $id_soft_deleted;
 	
 	public function render()
 	{
 		//busca el comercio que está en sesión
 		$this->comercioId = session('idComercio');
 		
-		$this->rubros = Rubro::select('*')->where('comercio_id', $this->comercioId)->get();
+		$this->categorias = Categoria::select('*')->where('comercio_id', $this->comercioId)->get();
 
 		if($this->selected_id == null) {
 			$nuevo_codigo = Producto::select('*')->where('comercio_id', $this->comercioId)->get();
@@ -36,30 +38,27 @@ class ProductoController extends Component
 		if ($this->codigo == null)
 		$this->codigo = $this->codigo_sugerido;
 
-		if(strlen($this->search) > 0) 
-		{
-			$info = Producto::leftjoin('rubros as r','r.id','productos.rubro_id')
-			->select('productos.*', 'r.descripcion as rubro')
-			->where('productos.descripcion', 'like', '%' . $this->search .'%')
-			->where('productos.comercio_id', $this->comercioId)
-			->orWhere('productos.estado', 'like', '%' . $this->search .'%')
-			->where('productos.comercio_id', $this->comercioId)
-			->orWhere('r.descripcion', 'like', '%' . $this->search .'%')
-			->where('productos.comercio_id', $this->comercioId)
-			->orderBy('productos.descripcion', 'asc')
-			->get();
+		if(strlen($this->search) > 0) {
+			$info = Producto::leftjoin('categorias as r','r.id','productos.categoria_id')
+				->select('productos.*', 'r.descripcion as categoria')
+				->where('productos.descripcion', 'like', '%' . $this->search .'%')
+				->where('productos.comercio_id', $this->comercioId)
+				->orWhere('productos.estado', 'like', '%' . $this->search .'%')
+				->where('productos.comercio_id', $this->comercioId)
+				->orWhere('r.descripcion', 'like', '%' . $this->search .'%')
+				->where('productos.comercio_id', $this->comercioId)
+				->orderBy('productos.descripcion', 'asc')
+				->get();
 
 			return view('livewire.productos.component', [
 				'info' => $info
 			]);
-		}
-		else 
-		{
-			$info = Producto::leftjoin('rubros as r','r.id','productos.rubro_id')
-			->select('productos.*', 'r.descripcion as rubro')
-			->where('productos.comercio_id', $this->comercioId)
-			->orderBy('productos.descripcion', 'asc')
-			->get();
+		}else {
+			$info = Producto::leftjoin('categorias as r','r.id','productos.categoria_id')
+				->select('productos.*', 'r.descripcion as categoria')
+				->where('productos.comercio_id', $this->comercioId)
+				->orderBy('productos.descripcion', 'asc')
+				->get();
 		
 			return view('livewire.productos.component', [
 				'info' => $info
@@ -69,6 +68,7 @@ class ProductoController extends Component
 
 	public function doAction($action)
 	{
+		$this->action = $action;
 		$this->resetInput();
 	}
 
@@ -80,28 +80,18 @@ class ProductoController extends Component
 		$this->precio_venta = '';
 		$this->stock = null;
 		$this->tipo = 'Art. Venta';
-		$this->rubro = 'Elegir';
+		$this->categoria = 'Elegir';
 		$this->estado = 'DISPONIBLE';
 		$this->selected_id = null;
 		$this->search ='';
 	}
-
-	public function calcular_precio_venta()
-	{
-		if($this->precio_costo <> '' && $this->rubro <> 'Elegir')
-		{
-			$porcentaje = Rubro::where('id', $this->rubro)->select('margen')->get();
-			$this->precio_venta = $this->precio_costo + ($this->precio_costo * $porcentaje[0]->margen / 100);
-		}else{
-			session()->flash('msg-error', 'Debe elegir una Categoría');
-		}
-	}
-
+	
 	public function edit($id)
 	{
+		$this->action = 2;
 		$record = Producto::find($id);
 		$this->selected_id = $id;
-		$this->rubro = $record->rubro_id;		
+		$this->categoria = $record->categoria_id;		
 		$this->codigo = $record->codigo;
 		$this->descripcion = $record->descripcion;
 		$this->precio_costo = $record->precio_costo;
@@ -110,126 +100,195 @@ class ProductoController extends Component
 		$this->tipo = $record->tipo;
 		$this->estado = $record->estado;
 	}
+	
+	public function volver()
+    {
+		$this->recuperar_registro = 0;
+        $this->resetInput();
+        return; 
+    }
+	
+    public function RecuperarRegistro($id)
+    {
+		DB::begintransaction();
+        try{
+			Producto::onlyTrashed()->find($id)->restore();
+            session()->flash('msg-ok', 'Registro recuperado');
+            $this->volver();
+            
+            DB::commit();               
+        }catch (\Exception $e){
+            DB::rollback();
+            session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se recuperó...');
+        }
+    }
 
 	public function StoreOrUpdate()
 	{
 		$this->validate([
-			'rubro' => 'not_in:Elegir'
+			'categoria' => 'not_in:Elegir'
 		]);
 		
 		$this->validate([
-			'rubro' => 'required',
-			'codigo' => 'required|integer',
+			'categoria' => 'required',
 			'descripcion' => 'required',
 			'estado' => 'required',
 			'tipo' => 'required'
-        ]);
-        
-        //valida si existe otro producto con el mismo nombre (edicion de productos)
-        if($this->selected_id > 0) {
-			$existe = Producto::where('descripcion', $this->descripcion)
-			->where('id', '<>', $this->selected_id)
-			->where('comercio_id', $this->comercioId)				
-			->get();
+		]);
 			
-            if( $existe->count() > 0) {
-				session()->flash('msg-error', 'Ya existe el Producto');
-                $this->resetInput();
-                return;
+		DB::begintransaction();
+        try{
+			if($this->selected_id > 0) {
+				$existeProducto = Producto::where('descripcion', $this->descripcion)
+				->where('id', '<>', $this->selected_id)
+				->where('comercio_id', $this->comercioId)				
+				->withTrashed()->get();
+                if($existeProducto->count() > 0 && $existeProducto[0]->deleted_at != null) {
+					session()->flash('info', 'El Producto que desea modificar ya existe pero fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+                    $this->action = 1;
+                    $this->recuperar_registro = 1;
+                    $this->descripcion_soft_deleted = $existeProducto[0]->descripcion;
+                    $this->id_soft_deleted = $existeProducto[0]->id;
+                    return;				
+				}elseif( $existeProducto->count() > 0) {
+					session()->flash('info', 'El Producto ya existe...');
+					$this->resetInput();
+					return;
+				}
+				
+				$existeCodigo = Producto::where('codigo', $this->codigo)
+				->where('id', '<>', $this->selected_id)
+				->where('comercio_id', $this->comercioId)
+				->withTrashed()->get();
+                if($existeCodigo->count() > 0 && $existeCodigo[0]->deleted_at != null) {
+					session()->flash('info', 'El Código que desea modificar ya existe pero fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+                    $this->action = 1;
+                    $this->recuperar_registro = 1;
+                    $this->descripcion_soft_deleted = $existeCodigo[0]->descripcion;
+                    $this->id_soft_deleted = $existeCodigo[0]->id;
+                    return;				
+				}elseif( $existeCodigo->count() > 0) {
+					session()->flash('info', 'El Código ya existe...');
+					return;
+				}
+			}else {
+				$existeProducto = Producto::where('descripcion', $this->descripcion)
+				->where('comercio_id', $this->comercioId)->withTrashed()->get();
+				
+				if($existeProducto->count() > 0 && $existeProducto[0]->deleted_at != null) {
+					session()->flash('info', 'El Producto que desea agregar fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+					$this->action = 1;
+					$this->recuperar_registro = 1;
+					$this->descripcion_soft_deleted = $existeProducto[0]->descripcion;
+					$this->id_soft_deleted = $existeProducto[0]->id;
+					return;
+				}elseif($existeProducto->count() > 0 ) {
+					session()->flash('info', 'El Producto ya existe...');
+					$this->resetInput();
+					return;
+				}
+				
+				$existeCodigo = Producto::where('codigo', $this->codigo)
+				->where('comercio_id', $this->comercioId)		
+				->withTrashed()->get();
+                if($existeCodigo->count() > 0 && $existeCodigo[0]->deleted_at != null) {
+					session()->flash('info', 'El Código que desea agregar ya existe pero fué eliminado anteriormente, para recuperarlo haga click en el botón "Recuperar registro"');
+                    $this->action = 1;
+                    $this->recuperar_registro = 1;
+                    $this->descripcion_soft_deleted = $existeCodigo[0]->descripcion;
+                    $this->id_soft_deleted = $existeCodigo[0]->id;
+                    return;				
+				}elseif($existeCodigo->count() > 0 ) {
+					session()->flash('info', 'El Código ya existe...');
+					return;
+				}
 			}
-			//valida si existe otro producto con el mismo código (edicion de productos)
-			$existe = Producto::where('codigo', $this->codigo)
-			->where('id', '<>', $this->selected_id)
-			->where('comercio_id', $this->comercioId)
-			->get();
-	
-			if( $existe->count() > 0) {
-				session()->flash('msg-error', 'Ya existe el Código');
-				return;
-		}
-        }else{
-            //valida si existe otro producto con el mismo nombre (nuevos registros)
-			$existe = Producto::where('descripcion', $this->descripcion)
-								->where('comercio_id', $this->comercioId)->get();
-        
-            if($existe->count() > 0 ) {
-                session()->flash('msg-error', 'Ya existe el Producto');
-                $this->resetInput();
-                return;
+			if($this->selected_id <=0) {
+				$producto = Producto::create([
+					'codigo' => $this->codigo_sugerido,
+					'descripcion' => ucwords($this->descripcion),
+					'precio_costo' => $this->precio_costo,
+					'precio_venta' => $this->precio_venta,
+					'stock' => $this->stock,
+					'tipo' => $this->tipo,
+					'categoria_id' => $this->categoria,
+					'estado' => $this->estado,
+					'comercio_id' => $this->comercioId
+				]);
+			}else {				
+				$record = Producto::find($this->selected_id);
+				$record->update([
+					'descripcion' => ucwords($this->descripcion),
+					'precio_costo' => $this->precio_costo,			
+					'precio_venta' => $this->precio_venta,				
+					'stock' => $this->stock,
+					'tipo' => $this->tipo,
+					'categoria_id' => $this->categoria,
+					'estado' => $this->estado
+				]);
+				$this->action = 1;
 			}
-			//valida si existe otro producto con el mismo código de barras (nuevos registros)
-			$existe = Producto::where('codigo', $this->codigo)
-								->where('comercio_id', $this->comercioId)->get();
-        
-            if($existe->count() > 0 ) {
-                session()->flash('msg-error', 'Ya existe el Código');
-                return;
-            }
-        }
+			if($this->selected_id > 0) session()->flash('msg-ok', 'Producto Actualizado');       
+			else session()->flash('msg-ok', 'Producto Creado');
 
-		if($this->selected_id <=0)
-		{
-			$producto = Producto::create([
-				'codigo' => $this->codigo,
-				'descripcion' => ucwords($this->descripcion),
-				'precio_costo' => $this->precio_costo,
-				'precio_venta' => $this->precio_venta,
-				'stock' => $this->stock,
-				'tipo' => $this->tipo,
-				'rubro_id' => $this->rubro,
-				'estado' => $this->estado,
-				'comercio_id' => $this->comercioId
-			]);
+			DB::commit();               
+		}catch (Exception $e){
+			DB::rollback();
+			session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
 		}
-		else {
-			
-			$record = Producto::find($this->selected_id);
-				// if ($this->precio_costo == '') $this->precio_costo = 0.00;
-			$record->update([
-				'codigo' => $this->codigo,
-				'descripcion' => ucwords($this->descripcion),
-				'precio_costo' => $this->precio_costo,			
-				'precio_venta' => $this->precio_venta,				
-				'stock' => $this->stock,
-				'tipo' => $this->tipo,
-				'rubro_id' => $this->rubro,
-				'estado' => $this->estado
-			]);
-		}
-
-		if($this->selected_id > 0)		
-		session()->flash('message', 'Producto Actualizado');       
-		else 
-		session()->flash('message', 'Producto Creado'); 
-
 		$this->resetInput();
+		return;
 	}
-
-	public function destroy($id) //eliminar / delete / remove
-	{
-		if($id) {
-			$record = Producto::where('id', $id);
-			$record->delete();
-			$this->resetInput();
-			$this->emit('msg-ok','Registro eliminado con éxito');
-
-		}
-	}
-	
+			
 	protected $listeners = [
 		'deleteRow' => 'destroy',
 		'calcular_precio_venta' => 'calcular_precio_venta',
-		'createRubroFromModal' => 'createRubroFromModal' 
+		'createCategoriaFromModal' => 'createCategoriaFromModal' 
 	]; 
-
-	public function createRubroFromModal($info)
-    {
-        $data = json_decode($info);
-           
-        Rubro::create([
-            'descripcion' => ucwords($data->descripcion),
-            'margen' => $data->margen
-        ]);
-        session()->flash('message', 'Rubro creado exitosamente!!!');  
-    } 
+			
+	public function destroy($id) 
+	{
+		if ($id) {
+			DB::begintransaction();
+			try{
+				$producto = Producto::find($id)->delete();
+				session()->flash('msg-ok', 'Registro eliminado con éxito!!');
+				DB::commit();               
+			}catch (\Exception $e){
+				DB::rollback();
+				session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se eliminó...');
+			}
+			$this->resetInput();
+			return;
+		}	
+	}
+			
+	public function calcular_precio_venta()
+	{
+		if($this->precio_costo <> '' && $this->categoria <> 'Elegir') {
+			$porcentaje = Categoria::where('id', $this->categoria)->select('margen')->get();
+			$this->precio_venta = $this->precio_costo + ($this->precio_costo * $porcentaje[0]->margen / 100);
+		}else {
+			session()->flash('msg-error', 'Debe elegir una Categoría');
+		}
+	}
+						
+	public function createCategoriaFromModal($info)
+	{
+		$data = json_decode($info);
+		DB::begintransaction();
+		try{		
+			Categoria::create([
+				'descripcion' => strtoupper($data->descripcion),
+				'margen' => $data->margen,
+				'comercio_id' => $this->comercioId
+			]);
+			session()->flash('msg-ok', 'Categoria creada exitosamente!!!');
+			DB::commit();               
+		}catch (\Exception $e){
+			DB::rollback();
+			session()->flash('msg-error', '¡¡¡ATENCIÓN!!! El registro no se grabó...');
+		}  
+	} 
 }
+	

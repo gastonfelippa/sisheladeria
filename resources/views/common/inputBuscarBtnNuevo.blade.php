@@ -8,8 +8,8 @@
         </div>
     </div>
     @can($create)
-    <div class="col-3 mt-1">
-        <button type="button" wire:click="doAction(2)" onclick="setfocus('nombre')" class="btn btn-danger btn-block">
+    <div class="col-4 mt-1">
+        <button type="button" wire:click="doAction(2)" class="btn btn-danger btn-block">
             Nuevo
         </button>
     </div>

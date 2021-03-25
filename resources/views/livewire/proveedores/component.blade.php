@@ -1,4 +1,5 @@
-<div class="row layout-top-spacing">  
+<div class="row layout-top-spacing"> 
+    @include('common.alerts') 
     @if($action == 1)    
     <div class="col-sm-12 layout-spacing">      
     	<div class="widget-content-area">
@@ -7,51 +8,54 @@
     				<div class="col-xl-12 text-center">
     					<h3><b>Proveedores</b></h3>
     				</div> 
-    			</div>    		
-                @include('common.inputBuscarBtnNuevo', ['create' => 'Proveedores_create'])
-                @include('common.alerts') <!-- mensajes ok/error-->
-                <div class="table-resposive scroll">
-                    <table class="table table-hover table-checkable table-sm">
-                        <thead>
-                            <tr>
-                                <th class="">NOMBRE/EMPRESA</th>
-                                <th class="">COND. IVA/N° CUIT</th>
-                                <th class="">DIRECCIÓN</th>
-                                <th class="text-center">TELÉFONO/EMPRESA</th>
-                                <th class="">|||</th>
-                                <th class="">NOMBRE/CONTACTO</th>
-                                <th class="text-center">TELEFONO/CONTACTO</th>
-                                <th class="text-center">ACCIONES</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($info as $r)
-                            <tr>
-                                <td>{{$r->nombre_empresa}}</td>
-                                <td>{{$r->condiva}} / {{$r->cuit}}</td>
-                                <td>{{$r->calle}} {{$r->numero}} - {{$r->localidad}}</td>
-                                <td class="text-center">{{$r->tel_empresa}}</td>
-                                <td></td>
-                                <td>{{$r->apellido_contacto}}, {{$r->nombre_contacto}}</td>
-                                <td class="text-center">{{$r->tel_contacto}}</td>
-                                <td class="text-center">
-                                    @include('common.actions', ['edit' => 'Proveedores_edit', 'destroy' => 'Proveedores_destroy']) <!--botones editar y eliminar -->            
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+    			</div> 
+                @if($recuperar_registro == 1)
+				@include('common.recuperarRegistro')
+				@else    		
+                    @include('common.inputBuscarBtnNuevo', ['create' => 'Proveedores_create'])
+                    <div class="table-resposive scroll">
+                        <table class="table table-hover table-checkable table-sm">
+                            <thead>
+                                <tr>
+                                    <th class="">NOMBRE/EMPRESA</th>
+                                    <th class="">COND. IVA/N° CUIT</th>
+                                    <th class="">DIRECCIÓN</th>
+                                    <th class="text-center">TELÉFONO/EMPRESA</th>
+                                    <th class="">|||</th>
+                                    <th class="">NOMBRE/CONTACTO</th>
+                                    <th class="text-center">TELEFONO/CONTACTO</th>
+                                    <th class="text-center">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($info as $r)
+                                <tr>
+                                    <td>{{$r->nombre_empresa}}</td>
+                                    <td>{{$r->condiva}} / {{$r->cuit}}</td>
+                                    <td>{{$r->calle}} {{$r->numero}} - {{$r->localidad}}</td>
+                                    <td class="text-center">{{$r->tel_empresa}}</td>
+                                    <td></td>
+                                    <td>{{$r->apellido_contacto}} {{$r->nombre_contacto}}</td>
+                                    <td class="text-center">{{$r->tel_contacto}}</td>
+                                    <td class="text-center">
+                                        @include('common.actions', ['edit' => 'Proveedores_edit', 'destroy' => 'Proveedores_destroy']) <!--botones editar y eliminar -->            
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
     	</div> 
     </div>
-    @elseif($action == 2)
-    <!-- @can('Proveedores_create') -->
-    @include('livewire.proveedores.form')
-    @include('livewire.proveedores.modal') 
-    @include('livewire.proveedores.modalIva') 
-    <!-- @endcan -->
-    @endif
+    @else
+	@can('Proveedores_create')
+	@include('livewire.proveedores.form')		
+	@include('livewire.proveedores.modal')		
+	@include('livewire.proveedores.modalIva')		
+	@endcan
+	@endif
 </div>
 
 <style type="text/css" scoped>
@@ -79,17 +83,11 @@
     		closeOnConfirm: false
     	},
     	function() {
-    		window.livewire.emit('deleteRow', id)    //emitimos evento deleteRow
-    		toastr.success('info', 'Registro eliminado con éxito') //mostramos mensaje de confirmación 
-    		swal.close()   //cerramos la modal
+    		window.livewire.emit('deleteRow', id)  
+    		swal.close()
     	})
     }
-    window.onload = function() {
-        document.getElementById("search").focus();
-    }
-    function setfocus($id) {
-        document.getElementById($id).focus();
-    }
+
     function openModal()
     {        
         $('#localidad').val('')
@@ -98,13 +96,11 @@
 	}
 	function save()
     {
-        if($('#localidad').val() == '')
-        {
+        if($('#localidad').val() == '') {
             toastr.error('El campo Localidad no puede estar vacío')
             return;
         }
-        if($('#provincia option:selected').val() == 'Elegir')
-        {
+        if($('#provincia option:selected').val() == 'Elegir') {
             toastr.error('Elige una opción válida para la Provincia')
             return;
         }
@@ -123,8 +119,7 @@
 	}
 	function saveIva()
     {
-        if($('#descripcion').val() == '')
-        {
+        if($('#descripcion').val() == '') {
             toastr.error('El campo Descripción no puede estar vacío')
             return;
         }
@@ -134,5 +129,9 @@
 
         $('#modalAddIva').modal('hide')
         window.livewire.emit('createIvaFromModal', data)
-    } 
+    }    
+    
+    window.onload = function() {
+        document.getElementById("search").focus();
+    }
 </script>
