@@ -31,6 +31,8 @@ class ProductoController extends Component
                 ->where('comercio_id', $this->comercioId)
 				->orderBy('id','desc')->first();
 				$this->codigo_sugerido = $nuevo_codigo->codigo + 1;
+				$this->codigo_sugerido = $nuevo_codigo->codigo + 1;
+
 			}
 		}else{
 			$this->codigo_sugerido = $this->selected_id;
